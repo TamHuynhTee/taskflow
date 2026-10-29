@@ -1,0 +1,56 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.board__title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.board__desc {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.board__columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .board__columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.board__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.board__heading {
+  flex: 1;
+  min-width: 200px;
+}
+
+.board__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.board__columns {
+  transition: opacity 0.2s;
+}
+
+.board--stale .board__columns {
+  opacity: 0.5;
+}

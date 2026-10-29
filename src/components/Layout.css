@@ -1,0 +1,110 @@
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 56px auto 1fr;
+  grid-template-areas:
+    "header header"
+    "banner banner"
+    "sidebar main";
+  min-height: 100vh;
+}
+
+.layout--no-sidebar {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "banner"
+    "main";
+}
+
+.layout__header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.layout__logo {
+  margin: 0;
+  font-size: 18px;
+  color: var(--accent);
+}
+
+.layout__nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.layout__nav-link {
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.layout__nav-link:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* NavLink của react-router tự thêm class "active" cho link đang mở. */
+.layout__nav-link.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.layout__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.layout__banner {
+  grid-area: banner;
+}
+
+.layout__sidebar {
+  grid-area: sidebar;
+  padding: 16px;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.layout__main {
+  grid-area: main;
+  min-width: 0;
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 56px auto auto 1fr;
+    grid-template-areas:
+      "header"
+      "banner"
+      "sidebar"
+      "main";
+  }
+
+  .layout__header {
+    gap: 12px;
+  }
+
+  .layout__sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .layout__main {
+    padding: 16px;
+  }
+}

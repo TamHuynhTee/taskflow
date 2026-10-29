@@ -1,0 +1,58 @@
+/* Biến màu dùng chung. data-theme='dark' trên <html> sẽ được bật ở T3.2. */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #eef0f3;
+  --text: #1f2328;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #4f46e5;
+  --accent-soft: #eef2ff;
+  --accent-hover: #4338ca;
+  --danger: #d92d20;
+  --danger-soft: #fef3f2;
+  --danger-border: #fecdca;
+  --success: #079455;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+:root[data-theme="dark"] {
+  --bg: #0f1115;
+  --surface: #181b21;
+  --surface-2: #20242b;
+  --text: #e6e8eb;
+  --muted: #9aa3ad;
+  --border: #2a2f37;
+  --accent: #818cf8;
+  --accent-soft: #23264a;
+  --accent-hover: #6366f1;
+  --danger: #f97066;
+  --danger-soft: #2d1514;
+  --danger-border: #7a271a;
+  --success: #47cd89;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

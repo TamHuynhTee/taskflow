@@ -1,0 +1,67 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+  color: var(--badge-fg);
+  background: var(--badge-bg);
+}
+
+.badge--neutral {
+  --badge-fg: var(--muted);
+  --badge-bg: var(--surface-2);
+}
+.badge--red {
+  --badge-fg: #b42318;
+  --badge-bg: #fee4e2;
+}
+.badge--orange {
+  --badge-fg: #b54708;
+  --badge-bg: #fef0c7;
+}
+.badge--yellow {
+  --badge-fg: #854a0e;
+  --badge-bg: #fef7c3;
+}
+.badge--green {
+  --badge-fg: #067647;
+  --badge-bg: #dcfae6;
+}
+.badge--blue {
+  --badge-fg: #175cd3;
+  --badge-bg: #d1e9ff;
+}
+.badge--purple {
+  --badge-fg: #5925dc;
+  --badge-bg: #ebe9fe;
+}
+
+:root[data-theme="dark"] .badge--red {
+  --badge-fg: #fda29b;
+  --badge-bg: #55160c;
+}
+:root[data-theme="dark"] .badge--orange {
+  --badge-fg: #fec84b;
+  --badge-bg: #4e1d09;
+}
+:root[data-theme="dark"] .badge--yellow {
+  --badge-fg: #fde272;
+  --badge-bg: #542c0d;
+}
+:root[data-theme="dark"] .badge--green {
+  --badge-fg: #75e0a7;
+  --badge-bg: #053321;
+}
+:root[data-theme="dark"] .badge--blue {
+  --badge-fg: #84caff;
+  --badge-bg: #102a56;
+}
+:root[data-theme="dark"] .badge--purple {
+  --badge-fg: #bdb4fe;
+  --badge-bg: #27115f;
+}
