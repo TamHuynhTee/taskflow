@@ -3,14 +3,14 @@ import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { SettingsView } from "./SettingsView";
 
-/** /settings — lazy-load (T4.1) nên phải `export default`. */
+/** /settings — lazy-loaded (T4.1), so it must be an `export default`. */
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
 
   return (
     <>
-      <title>Cài đặt · TaskFlow</title>
+      <title>Settings · TaskFlow</title>
       <SettingsView
         theme={theme}
         onThemeChange={setTheme}

@@ -3,7 +3,7 @@ import { todoReducer } from "./todoReducer";
 
 export function TodoLab() {
   const [todos, dispatch] = useReducer(todoReducer, [
-    { id: "t1", text: "Đọc docs useReducer", done: false },
+    { id: "t1", text: "Read the useReducer docs", done: false },
   ]);
   const [text, setText] = useState("");
 
@@ -19,11 +19,11 @@ export function TodoLab() {
         }}
       >
         <input
-          aria-label="Việc mới"
+          aria-label="New todo"
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
-        <button type="submit">Thêm</button>
+        <button type="submit">Add</button>
       </form>
       <ul>
         {todos.map((t) => (
@@ -37,7 +37,7 @@ export function TodoLab() {
               {t.text}
             </label>
             <button onClick={() => dispatch({ type: "removed", id: t.id })}>
-              Xoá {t.text}
+              Delete {t.text}
             </button>
           </li>
         ))}

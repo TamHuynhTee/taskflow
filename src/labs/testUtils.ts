@@ -1,4 +1,4 @@
-/** Promise điều khiển bằng tay trong test: tự quyết định khi nào resolve/reject. */
+/** A promise you control by hand in tests: you decide when it resolves/rejects. */
 export function deferred<T>() {
   let resolve!: (value: T) => void;
   let reject!: (reason: unknown) => void;
@@ -9,7 +9,7 @@ export function deferred<T>() {
   return { promise, resolve, reject };
 }
 
-/** Giả lập độ trễ mạng cho bản demo trên trang /labs. */
+/** Simulates network delay for the demos on the /labs page. */
 export function delay<T>(ms: number, value: T): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
 }

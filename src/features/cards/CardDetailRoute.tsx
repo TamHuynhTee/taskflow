@@ -13,7 +13,7 @@ import { errorText } from "../../utils/error";
 import { CardDetail } from "./CardDetail";
 import { CommentsSection } from "./CommentsSection";
 
-/** Route con /boards/:boardId/cards/:cardId — modal đè lên board (T3.1). */
+/** Child route /boards/:boardId/cards/:cardId — a modal over the board (T3.1). */
 export function CardDetailRoute() {
   const { boardId, cardId } = useParams();
   const { boards, cards, usersById } = useBoardState();
@@ -26,27 +26,27 @@ export function CardDetailRoute() {
   const board = boards.find((b) => b.id === boardId);
   const card = cards.find((c) => c.id === cardId && c.boardId === boardId);
 
-  // ".." theo cây route (cards/:cardId → boards/:boardId), giữ nguyên bộ lọc trên URL.
+  // ".." follows the route tree (cards/:cardId → boards/:boardId), keeping the filters in the URL.
   const close = () => navigate({ pathname: "..", search });
 
   async function handleDelete() {
     if (!card) return;
-    const ok = await confirmRef.current?.open(`Xoá "${card.title}"?`, {
+    const ok = await confirmRef.current?.open(`Delete "${card.title}"?`, {
       danger: true,
-      confirmText: "Xoá",
+      confirmText: "Delete",
     });
     if (!ok) return;
     try {
       await actions.remove(card);
-      toast.show("success", `Đã xoá "${card.title}"`);
+      toast.show("success", `Deleted "${card.title}"`);
       close();
     } catch (error) {
-      toast.show("error", `Xoá thất bại: ${errorText(error)}`);
+      toast.show("error", `Delete failed: ${errorText(error)}`);
     }
   }
 
   return (
-    <Modal open title={card?.title ?? "Không tìm thấy card"} onClose={close} size="lg">
+    <Modal open title={card?.title ?? "Card not found"} onClose={close} size="lg">
       {card ? (
         <CardDetail
           card={card}
@@ -55,15 +55,15 @@ export function CardDetailRoute() {
           today={TODAY}
           actions={
             <Button variant="danger" size="sm" onClick={handleDelete}>
-              Xoá card
+              Delete card
             </Button>
           }
         >
-          {/* key: đổi card → state promise của CommentsSection reset theo card mới. */}
+          {/* key: switching cards → CommentsSection's promise state resets for the new card. */}
           <CommentsSection key={card.id} cardId={card.id} />
         </CardDetail>
       ) : (
-        <NotFoundView action={<Link to={{ pathname: "..", search }}>Đóng</Link>} />
+        <NotFoundView action={<Link to={{ pathname: "..", search }}>Close</Link>} />
       )}
       <ConfirmDialog ref={confirmRef} />
     </Modal>

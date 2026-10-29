@@ -7,7 +7,7 @@ function resizeTo(width: number, height: number) {
   window.dispatchEvent(new Event("resize"));
 }
 
-test("hiện kích thước cửa sổ và cập nhật khi resize", () => {
+test("shows the window size and updates on resize", () => {
   resizeTo(1024, 768);
   render(<WindowSize />);
   expect(screen.getByText("1024 × 768")).toBeInTheDocument();

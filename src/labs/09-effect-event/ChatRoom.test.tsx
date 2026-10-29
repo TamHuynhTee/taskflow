@@ -2,14 +2,14 @@ import { render } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { ChatRoom, type Connection } from "./ChatRoom";
 
-test("chỉ kết nối lại khi roomId đổi, thông báo dùng theme mới nhất", () => {
+test("only reconnects when roomId changes; the notification uses the latest theme", () => {
   const disconnect = vi.fn();
   const connect = vi.fn(
     (): Connection => ({ onConnected: (cb) => cb(), disconnect }),
   );
   const notify = vi.fn();
 
-  // notify là arrow function mới mỗi lần render — giống cách dùng thật.
+  // notify is a new arrow function every render — just like real usage.
   const ui = (roomId: string, theme: "light" | "dark") => (
     <ChatRoom
       roomId={roomId}
@@ -21,7 +21,7 @@ test("chỉ kết nối lại khi roomId đổi, thông báo dùng theme mới n
 
   const { rerender } = render(ui("general", "light"));
   expect(connect).toHaveBeenCalledTimes(1);
-  expect(notify).toHaveBeenLastCalledWith("Đã kết nối #general", "light");
+  expect(notify).toHaveBeenLastCalledWith("Connected to #general", "light");
 
   rerender(ui("general", "dark"));
   expect(connect).toHaveBeenCalledTimes(1);
@@ -30,5 +30,5 @@ test("chỉ kết nối lại khi roomId đổi, thông báo dùng theme mới n
   rerender(ui("travel", "dark"));
   expect(connect).toHaveBeenCalledTimes(2);
   expect(disconnect).toHaveBeenCalledTimes(1);
-  expect(notify).toHaveBeenLastCalledWith("Đã kết nối #travel", "dark");
+  expect(notify).toHaveBeenLastCalledWith("Connected to #travel", "dark");
 });

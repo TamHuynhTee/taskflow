@@ -1,9 +1,9 @@
-// LAB 05 — Context làm render lại cả cây
-// 🐞 Bấm "Tick" (state không liên quan tới theme) → ThemeLabel và ToggleButton đều render lại.
-//    Bấm "Đổi theme" → ToggleButton (chỉ cần hàm toggle) cũng render lại.
-// Mục tiêu: Tick → không consumer nào render lại; Đổi theme → chỉ ThemeLabel render lại.
-// Giữ nguyên: export `ContextLab`, `renderLog`, nút "Tick", nút "Đổi theme", chữ "Theme: light|dark".
-// Không dùng memo() cho consumer — sửa ở phía Provider/context.
+// LAB 05 — Context re-renders the whole tree
+// 🐞 Click "Tick" (state unrelated to the theme) → ThemeLabel and ToggleButton both re-render.
+//    Click "Toggle theme" → ToggleButton (which only needs the toggle function) re-renders too.
+// Goal: Tick → no consumer re-renders; Toggle theme → only ThemeLabel re-renders.
+// Keep as is: the `ContextLab` export, `renderLog`, the "Tick" button, the "Toggle theme" button, the "Theme: light|dark" text.
+// Don't use memo() on the consumers — fix it on the Provider/context side.
 import { createContext, use, useState, type ReactNode } from "react";
 
 export const renderLog: string[] = [];
@@ -18,7 +18,7 @@ const ThemeContext = createContext<ThemeValue | null>(null);
 
 function useThemeValue() {
   const ctx = use(ThemeContext);
-  if (!ctx) throw new Error("Thiếu ThemeProvider");
+  if (!ctx) throw new Error("Missing ThemeProvider");
   return ctx;
 }
 
@@ -49,7 +49,7 @@ function ThemeLabel() {
 function ToggleButton() {
   renderLog.push("ToggleButton");
   const { toggle } = useThemeValue();
-  return <button onClick={toggle}>Đổi theme</button>;
+  return <button onClick={toggle}>Toggle theme</button>;
 }
 
 export function ContextLab() {

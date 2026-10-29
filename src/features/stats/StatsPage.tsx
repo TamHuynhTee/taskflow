@@ -24,23 +24,23 @@ import { SearchResults } from "./SearchResults";
 import { ProfilerTable, StatsOverview } from "./StatsViews";
 
 const TABS = [
-  { id: "overview", label: "Tổng quan" },
-  { id: "search", label: "Tìm kiếm" },
+  { id: "overview", label: "Overview" },
+  { id: "search", label: "Search" },
   { id: "profiler", label: "Profiler" },
 ];
 
 /**
- * T4.8 — mỗi tab bọc <Activity>. Tab ẩn vẫn giữ state (chữ đã gõ, vị trí cuộn) và DOM,
- * nhưng effect của nó bị dọn (cleanup) và update được ưu tiên thấp. So với
- * `{tab === "search" && <SearchPanel />}`: cách đó unmount → mất sạch state khi đổi tab.
+ * T4.8 — each tab is wrapped in <Activity>. A hidden tab keeps its state (typed text, scroll position) and DOM,
+ * but its effects are cleaned up and its updates get low priority. Compare with
+ * `{tab === "search" && <SearchPanel />}`: that unmounts → all state is lost when switching tabs.
  */
 export default function StatsPage() {
   const { usersById } = useBoardState();
   const all = useFetch((signal) => getAllCards(signal), []);
   const [tab, setTab] = useState("overview");
 
-  // T5.3: computeBoardStats duyệt toàn bộ 5.000 card — chỉ tính lại khi dữ liệu đổi,
-  // không tính lại khi đổi tab hay gõ tìm kiếm.
+  // T5.3: computeBoardStats walks all 5,000 cards — only recompute when the data changes,
+  // not when switching tabs or typing a search.
   const stats = useMemo(
     () => (all.data ? computeBoardStats(all.data, TODAY) : null),
     [all.data],
@@ -50,9 +50,9 @@ export default function StatsPage() {
 
   return (
     <>
-      <title>Thống kê · TaskFlow</title>
-      <meta name="description" content="Số liệu và tìm kiếm toàn bộ card" />
-      <PageHeader title="Thống kê" description="Toàn bộ card trên mọi board" />
+      <title>Stats · TaskFlow</title>
+      <meta name="description" content="Numbers and search across every card" />
+      <PageHeader title="Stats" description="Every card on every board" />
       <Tabs items={TABS} activeId={tab} onSelect={setTab} />
 
       {all.error ? (
@@ -83,15 +83,15 @@ function SearchPanel({
   cards: Card[];
   usersById: Record<string, User>;
 }) {
-  // Controlled, KHÔNG debounce: ô input cập nhật ngay mỗi phím (T4.7).
+  // Controlled, NO debounce: the input updates immediately on every keystroke (T4.7).
   const [query, setQuery] = useState("");
-  // Khác debounce: debounce luôn chờ cố định N ms kể cả máy nhanh; useDeferredValue không
-  // có độ trễ cố định — máy nhanh thì gần như tức thì, máy chậm thì React tự hoãn và bỏ
-  // các lần render dang dở khi có phím mới. Debounce còn hợp để GIẢM SỐ REQUEST mạng.
+  // Unlike debounce: debounce always waits a fixed N ms even on fast machines; useDeferredValue has
+  // no fixed delay — on a fast machine it's nearly instant, on a slow one React defers and abandons
+  // half-finished renders when a new key arrives. Debounce is still the right tool to CUT NETWORK REQUESTS.
   const deferredQuery = useDeferredValue(query);
   const isStale = query !== deferredQuery;
 
-  // Quan sát <Activity>: sang tab khác → cleanup chạy; quay lại → effect chạy lại.
+  // Watch <Activity>: switch to another tab → cleanup runs; come back → the effect runs again.
   useEffect(() => {
     console.debug("[stats] SearchPanel effect mount");
     return () => console.debug("[stats] SearchPanel effect cleanup");
@@ -104,7 +104,7 @@ function SearchPanel({
         onChange={(e) => setQuery(e.target.value)}
         onClear={query ? () => setQuery("") : undefined}
         busy={isStale}
-        placeholder="Tìm trong 5.000 card…"
+        placeholder="Search 5,000 cards…"
       />
       <Profiler id="SearchResults" onRender={onRender}>
         <SearchResults

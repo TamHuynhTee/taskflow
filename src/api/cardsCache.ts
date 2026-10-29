@@ -5,5 +5,5 @@ import { createPromiseCache } from "./promiseCache";
 const cache = createPromiseCache<Card[]>((boardId) => getCards(boardId));
 
 export const getCardsPromise = cache.get;
-/** Gọi sau mỗi lần ghi để lần mở board sau tải dữ liệu mới từ server. */
+/** Call after every write so the next time the board opens it loads fresh data from the server. */
 export const invalidateCards = cache.invalidate;

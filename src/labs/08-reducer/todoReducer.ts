@@ -1,8 +1,8 @@
-// LAB 08 — Reducer phải thuần và immutable
-// 🐞 Bấm "Thêm"/tick checkbox/"Xoá": giao diện không đổi (hoặc đổi chậm một nhịp).
-// 🐞 Chạy reducer 2 lần với cùng input cho ra 2 kết quả khác nhau.
-// Giữ nguyên: export `todoReducer`, `Todo`, `TodoAction`. Có thể đổi payload của action "added"
-// nếu cần (vd. truyền id từ ngoài vào) — nhớ sửa cả TodoLab.tsx.
+// LAB 08 — A reducer must be pure and immutable
+// 🐞 Clicking "Add"/ticking a checkbox/"Delete": the UI doesn't change (or changes one step late).
+// 🐞 Running the reducer twice with the same input gives 2 different results.
+// Keep as is: the `todoReducer`, `Todo`, `TodoAction` exports. You may change the "added" action's payload
+// if needed (e.g. pass the id in from outside) — remember to update TodoLab.tsx too.
 export interface Todo {
   id: string;
   text: string;

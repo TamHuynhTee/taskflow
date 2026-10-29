@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-// subscribe để ngoài component: cùng một hàm giữa các render → React không đăng ký lại.
+// subscribe lives outside the component: the same function across renders → React doesn't resubscribe.
 function subscribe(callback: () => void) {
   window.addEventListener("online", callback);
   window.addEventListener("offline", callback);
@@ -10,11 +10,11 @@ function subscribe(callback: () => void) {
   };
 }
 
-/** T2.6: đọc navigator.onLine — một "store" bên ngoài React. */
+/** T2.6: reads navigator.onLine — a "store" outside React. */
 export function useOnlineStatus(): boolean {
   return useSyncExternalStore(
     subscribe,
     () => navigator.onLine,
-    () => true, // server không biết trạng thái mạng → giả định online
+    () => true, // the server doesn't know the network status → assume online
   );
 }

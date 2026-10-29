@@ -1,8 +1,8 @@
-// Modal: render qua portal vào document.body (T3.4) + quản lý focus (T6.3).
+// Modal: renders through a portal into document.body (T3.4) + manages focus (T6.3).
 //
-// THÍ NGHIỆM (T3.4): bọc <Modal> trong <div onClick={() => console.log("bubble")}>. Click bên trong
-// modal vẫn log dù DOM của modal nằm ở <body>: sự kiện React nổi bọt theo CÂY REACT (cha/con
-// trong JSX), không theo cây DOM. Portal chỉ đổi chỗ gắn DOM, không đổi quan hệ cha/con.
+// EXPERIMENT (T3.4): wrap <Modal> in <div onClick={() => console.log("bubble")}>. Clicking inside
+// the modal still logs even though its DOM lives in <body>: React events bubble along the REACT TREE
+// (parent/child in JSX), not the DOM tree. A portal only moves where the DOM is mounted, not the parent/child relationship.
 import {
   useEffect,
   useEffectEvent,
@@ -22,7 +22,7 @@ interface ModalProps {
   size?: "sm" | "md" | "lg";
 }
 
-// Ngăn xếp modal đang mở: chỉ modal trên cùng phản ứng với Esc/Tab (2 modal lồng nhau).
+// Stack of open modals: only the top one reacts to Esc/Tab (two nested modals).
 const modalStack: symbol[] = [];
 
 const FOCUSABLE =
@@ -42,8 +42,8 @@ export function Modal({
 }: ModalProps) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
-  // onClose thường là arrow function mới mỗi render; đọc qua Effect Event để effect
-  // không phải gỡ/gắn lại listener (và khôi phục focus nhầm) mỗi lần cha render.
+  // onClose is usually a new arrow function every render; reading it through an Effect Event means
+  // the effect doesn't remove/re-add the listener (and restore focus wrongly) every time the parent renders.
   const close = useEffectEvent(onClose);
 
   useEffect(() => {
@@ -56,8 +56,8 @@ export function Modal({
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    // Effect của con chạy TRƯỚC effect của cha: nếu con đã tự focus (vd. ô tiêu đề ở
-    // CreateCardForm) thì giữ nguyên, không cướp focus.
+    // A child's effects run BEFORE the parent's: if the child already focused something (e.g. the title
+    // field in CreateCardForm), leave it alone instead of stealing focus.
     const panel = panelRef.current!;
     if (!panel.contains(document.activeElement)) {
       (focusablesIn(panel)[0] ?? panel).focus();
@@ -71,7 +71,7 @@ export function Modal({
         return;
       }
       if (e.key !== "Tab") return;
-      // Focus trap: Tab ở phần tử cuối → về đầu; Shift+Tab ở đầu → về cuối.
+      // Focus trap: Tab on the last element → back to the first; Shift+Tab on the first → to the last.
       const items = focusablesIn(panel);
       if (items.length === 0) return e.preventDefault();
       const first = items[0];
@@ -91,7 +91,7 @@ export function Modal({
       document.removeEventListener("keydown", onKeyDown);
       modalStack.splice(modalStack.indexOf(token), 1);
       document.body.style.overflow = prevOverflow;
-      // Trả focus về nút đã mở modal (nếu nó vẫn còn trong trang).
+      // Return focus to the button that opened the modal (if it's still in the page).
       if (opener?.isConnected) opener.focus();
     };
   }, [open]);
@@ -102,7 +102,7 @@ export function Modal({
     <div
       className="modal-backdrop"
       onClick={(e) => {
-        // Chỉ đóng khi click đúng backdrop — click trong panel có target là phần tử con.
+        // Only close on a click on the backdrop itself — clicks inside the panel target a child element.
         if (e.target === e.currentTarget) onClose();
       }}
     >
@@ -118,7 +118,7 @@ export function Modal({
           <h2 className="modal__title" id={titleId}>
             {title}
           </h2>
-          <IconButton label="Đóng" onClick={onClose}>
+          <IconButton label="Close" onClick={onClose}>
             ✕
           </IconButton>
         </header>
@@ -142,15 +142,15 @@ interface ConfirmDialogViewProps {
 }
 
 /**
- * Giao diện hộp xác nhận. `ConfirmDialog` (components/ConfirmDialog.tsx) bọc view này và
+ * Confirmation dialog view. `ConfirmDialog` (components/ConfirmDialog.tsx) wraps this view and
  * expose `open(message): Promise<boolean>` qua useImperativeHandle (T3.5).
  */
 export function ConfirmDialogView({
   open,
-  title = "Xác nhận",
+  title = "Confirm",
   message,
-  confirmText = "Đồng ý",
-  cancelText = "Huỷ",
+  confirmText = "OK",
+  cancelText = "Cancel",
   danger = false,
   onConfirm,
   onCancel,

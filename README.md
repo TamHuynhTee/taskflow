@@ -1,19 +1,19 @@
 # TaskFlow
 
-Project học React: Kanban mini (board → cột → card → comment).
+A React learning project: a mini Kanban (board → column → card → comment).
 
-- **Bắt đầu:** đọc [TASKS.md](TASKS.md), làm từ T0.1.
-- **Theo dõi tiến độ hiểu bài:** [CONCEPTS.md](CONCEPTS.md).
-- **Số liệu tối ưu hiệu năng:** [PERF.md](PERF.md).
-- **Bài tập React nâng cao (bug cần sửa / tính năng cần làm):** [LABS.md](LABS.md) — demo ở http://localhost:5173/labs, tự chấm bằng `npm run test:labs`.
+- **Getting started:** read [TASKS.md](TASKS.md) and start at T0.1.
+- **Track what you understand:** [CONCEPTS.md](CONCEPTS.md).
+- **Performance numbers:** [PERF.md](PERF.md).
+- **Advanced React exercises (bugs to fix / features to build):** [LABS.md](LABS.md) — demos at http://localhost:5173/labs, check yourself with `npm run test:labs`.
 
 ```bash
 npm install
-npm run db:reset   # tạo db.json từ db.seed.json
+npm run db:reset   # create db.json from db.seed.json
 npm run dev        # http://localhost:5173
 npm run api        # http://localhost:3001
-npm test           # test của app (xanh)
-npm run test:labs  # test bài tập (đỏ cho tới khi bạn sửa)
+npm test           # app tests (green)
+npm run test:labs  # exercise tests (red until you fix them)
 ```
 
 Stack: React 19 · TypeScript · Vite · React Router · json-server · Vitest + Testing Library · oxlint.

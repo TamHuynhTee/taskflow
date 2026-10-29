@@ -1,8 +1,8 @@
 import type { Card, CardFilter } from "../../types";
 
 /**
- * Lọc card theo bộ lọc + từ khoá (T1.3). Card phải khớp TẤT CẢ điều kiện.
- * Hàm thuần → gọi thẳng lúc render, không lưu kết quả vào state (T2.2).
+ * Filters cards by the filter + search text (T1.3). A card must match ALL conditions.
+ * Pure function → call it directly during render, don't store the result in state (T2.2).
  */
 export function filterCards(
   cards: Card[],

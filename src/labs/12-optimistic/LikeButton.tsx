@@ -1,11 +1,11 @@
-// LAB 12 — useOptimistic  (bài IMPLEMENT)
-// Hiện tại: bấm ❤️ phải chờ server (1.5s) số mới tăng — cảm giác app "đơ".
-// Mục tiêu:
-//   1. Bấm → số tăng NGAY (+1), nút có aria-busy="true" trong lúc chờ.
-//   2. Server OK → hiện số server trả về.
-//   3. Server lỗi → số tự quay về giá trị cũ + hiện role="alert" "Không gửi được".
-// Dùng useOptimistic + startTransition (hoặc <form action>). Không tự viết state "pendingLikes".
-// Giữ nguyên: export `LikeButton` (props `initialLikes`, `sendLike`), nút có tên "❤️ <số>".
+// LAB 12 — useOptimistic  (IMPLEMENT exercise)
+// Right now: clicking ❤️ waits for the server (1.5s) before the number goes up — the app feels "frozen".
+// Goal:
+//   1. Click → the number goes up IMMEDIATELY (+1), the button has aria-busy="true" while waiting.
+//   2. Server OK → show the number the server returned.
+//   3. Server error → the number reverts on its own + show role="alert" "Couldn't send".
+// Use useOptimistic + startTransition (or <form action>). Don't hand-roll a "pendingLikes" state.
+// Keep as is: the `LikeButton` export (props `initialLikes`, `sendLike`), a button named "❤️ <number>".
 import { useState } from "react";
 
 let demoCount = 0;
@@ -20,7 +20,7 @@ export function LikeButton({
   sendLike = demoSendLike,
 }: {
   initialLikes?: number;
-  /** Nhận số like hiện tại, trả về số like mới từ server. */
+  /** Takes the current like count, returns the new like count from the server. */
   sendLike?: (current: number) => Promise<number>;
 }) {
   const [likes, setLikes] = useState(initialLikes);
@@ -31,7 +31,7 @@ export function LikeButton({
     try {
       setLikes(await sendLike(likes));
     } catch {
-      setError("Không gửi được");
+      setError("Couldn't send");
     }
   }
 

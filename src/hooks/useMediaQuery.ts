@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-/** T2.6: true khi media query khớp, tự cập nhật khi đổi kích thước cửa sổ. */
+/** T2.6: true when the media query matches, updates automatically when the window resizes. */
 export function useMediaQuery(query: string): boolean {
   const subscribe = useCallback(
     (callback: () => void) => {
@@ -13,7 +13,7 @@ export function useMediaQuery(query: string): boolean {
 
   return useSyncExternalStore(
     subscribe,
-    () => window.matchMedia(query).matches, // trả boolean (giá trị nguyên thuỷ) → so sánh ổn định
+    () => window.matchMedia(query).matches, // returns a boolean (a primitive) → stable comparison
     () => false,
   );
 }

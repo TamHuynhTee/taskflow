@@ -1,4 +1,4 @@
-// Bộ UI dùng chung. Import từ đây: import { Button, Modal } from '../components/ui'
+// Shared UI kit. Import from here: import { Button, Modal } from '../components/ui'
 import "./ui.css";
 
 export { Button, IconButton } from "./Button";

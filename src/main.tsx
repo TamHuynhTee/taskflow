@@ -5,8 +5,8 @@ import "./index.css";
 import App from "./App.tsx";
 import Gallery from "./dev/Gallery.tsx";
 
-// Mở http://localhost:5173/#gallery để xem toàn bộ UI có sẵn.
-// Gallery dùng BoardSidebar (có NavLink) nên cần một Router — MemoryRouter không đụng tới URL thật.
+// Open http://localhost:5173/#gallery to see all the ready-made UI.
+// Gallery uses BoardSidebar (which has NavLinks) so it needs a Router — MemoryRouter doesn't touch the real URL.
 const root =
   location.hash === "#gallery" ? (
     <MemoryRouter>

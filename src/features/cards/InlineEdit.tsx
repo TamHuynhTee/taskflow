@@ -1,21 +1,21 @@
 interface InlineEditProps {
   defaultValue: string;
-  /** Gọi khi bấm Enter hoặc click ra ngoài, với giá trị đã trim. */
+  /** Called on Enter or clicking outside, with the trimmed value. */
   onCommit: (value: string) => void;
-  /** Gọi khi bấm Esc. */
+  /** Called on Esc. */
   onCancel: () => void;
   label?: string;
 }
 
 /**
- * Ô sửa tiêu đề tại chỗ (T1.1). Bạn quản lý state "card nào đang được sửa" và
- * cập nhật dữ liệu trong onCommit; component này chỉ lo phần nhập và phím tắt.
+ * In-place title editor (T1.1). You manage the "which card is being edited" state and
+ * update the data in onCommit; this component only handles input and shortcuts.
  */
 export function InlineEdit({
   defaultValue,
   onCommit,
   onCancel,
-  label = "Sửa tiêu đề",
+  label = "Edit title",
 }: InlineEditProps) {
   return (
     <input

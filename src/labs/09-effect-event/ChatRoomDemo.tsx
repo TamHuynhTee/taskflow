@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { ChatRoom, type Connection, type Theme } from "./ChatRoom";
 
-// Hàm giả để ngoài component → tham chiếu ổn định, không phải nguyên nhân của bug.
+// Fake functions live outside the component → stable references, not the cause of the bug.
 function connect(roomId: string): Connection {
-  console.log(`🔌 kết nối #${roomId}`);
+  console.log(`🔌 connect #${roomId}`);
   const timer = setTimeout(() => callback?.(), 300);
   let callback: (() => void) | undefined;
   return {
     onConnected: (cb) => (callback = cb),
     disconnect: () => {
       clearTimeout(timer);
-      console.log(`❌ ngắt #${roomId}`);
+      console.log(`❌ disconnect #${roomId}`);
     },
   };
 }

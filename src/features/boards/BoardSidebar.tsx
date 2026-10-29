@@ -5,7 +5,7 @@ import "./BoardSidebar.css";
 
 interface BoardSidebarProps {
   boards: Board[];
-  /** Khu vực bộ lọc — truyền <FilterPanel /> vào (T1.3). */
+  /** Filter area — pass <FilterPanel /> in (T1.3). */
   filters?: ReactNode;
 }
 
@@ -20,7 +20,7 @@ export function BoardSidebar({
         <ul className="board-sidebar__list">
           {boards.map((board) => (
             <li key={board.id}>
-              {/* T3.1: NavLink tự gắn class "active" + aria-current="page" khi URL khớp. */}
+              {/* T3.1: NavLink sets the "active" class + aria-current="page" when the URL matches. */}
               <NavLink
                 to={`/boards/${board.id}`}
                 className="board-sidebar__item"
@@ -34,7 +34,7 @@ export function BoardSidebar({
 
       {filters && (
         <section>
-          <h2 className="board-sidebar__heading">Bộ lọc</h2>
+          <h2 className="board-sidebar__heading">Filters</h2>
           {filters}
         </section>
       )}

@@ -9,36 +9,36 @@ const other = makeCard({ id: "x", boardId: "b2" });
 const state: Card[] = Object.freeze([a, b, other]) as Card[];
 
 describe("boardReducer", () => {
-  test("loaded thay card của đúng board", () => {
+  test("loaded replaces the cards of that board only", () => {
     const fresh = makeCard({ id: "n" });
     const next = boardReducer(state, { type: "loaded", boardId: "b1", cards: [fresh] });
     expect(next.map((c) => c.id)).toEqual(["x", "n"]);
   });
 
-  test("added thêm vào cuối", () => {
+  test("added appends to the end", () => {
     const card = makeCard({ id: "z" });
     expect(boardReducer(state, { type: "added", card }).at(-1)).toBe(card);
   });
 
-  test("replaced thay đúng card", () => {
-    const card = { ...a, title: "Mới" };
+  test("replaced swaps the right card", () => {
+    const card = { ...a, title: "New" };
     expect(boardReducer(state, { type: "replaced", card })[0]).toBe(card);
   });
 
-  test("deleted xoá theo id", () => {
+  test("deleted removes by id", () => {
     expect(boardReducer(state, { type: "deleted", id: "a" }).map((c) => c.id)).toEqual(["b", "x"]);
   });
 
-  test("renamed đổi tiêu đề", () => {
+  test("renamed changes the title", () => {
     expect(boardReducer(state, { type: "renamed", id: "a", title: "T" })[0].title).toBe("T");
   });
 
-  test("moved đổi cột và xếp cuối cột đích", () => {
+  test("moved changes column and puts the card last in the target column", () => {
     const moved = boardReducer(state, { type: "moved", id: "a", toColumnId: "doing" })[0];
     expect(moved).toMatchObject({ columnId: "doing", order: 2 });
   });
 
-  test("priorityBumped tăng 1 bậc", () => {
+  test("priorityBumped raises priority by 1 level", () => {
     expect(boardReducer(state, { type: "priorityBumped", id: "a" })[0].priority).toBe("high");
   });
 
@@ -47,7 +47,7 @@ describe("boardReducer", () => {
     { type: "renamed", id: "a", title: "T" },
     { type: "moved", id: "a", toColumnId: "done" },
     { type: "priorityBumped", id: "a" },
-  ])("không mutate state cũ: $type", (action) => {
+  ])("does not mutate the old state: $type", (action) => {
     const next = boardReducer(state, action);
     expect(next).not.toBe(state);
     expect(state[0]).toBe(a);

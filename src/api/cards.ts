@@ -7,7 +7,7 @@ export function getCards(boardId: string, signal?: AbortSignal) {
   });
 }
 
-/** Toàn bộ card mọi board — trang Stats (T4.7). */
+/** Every card on every board — for the Stats page (T4.7). */
 export function getAllCards(signal?: AbortSignal) {
   return request<Card[]>("/cards", { signal });
 }

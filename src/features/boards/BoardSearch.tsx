@@ -4,16 +4,16 @@ import { useFilterParams } from "../../hooks/useFilterParams";
 import { SearchBox } from "./SearchBox";
 
 /**
- * Ô tìm kiếm của board. State chữ đang gõ nằm Ở ĐÂY — component nhỏ nhất cần nó (T5.4a) —
- * nên mỗi phím gõ chỉ render lại ô này, không render lại cả board. Board chỉ nhận `q`
- * trên URL sau khi ngừng gõ 300ms (useDebouncedValue, T2.4).
+ * The board's search box. The text being typed lives HERE — the smallest component that needs it (T5.4a) —
+ * so each keystroke re-renders only this box, not the whole board. The board only gets `q`
+ * in the URL after typing stops for 300ms (useDebouncedValue, T2.4).
  */
 export function BoardSearch({ ref }: { ref?: Ref<HTMLInputElement> }) {
   const [{ query }, setParams] = useFilterParams();
   const [text, setText] = useState(query);
   const debounced = useDebouncedValue(text, 300);
 
-  // Effect Event: đọc `query` mới nhất mà không biến nó thành dependency.
+  // Effect Event: read the latest `query` without making it a dependency.
   const commit = useEffectEvent((q: string) => {
     if (q !== query) setParams({ query: q });
   });

@@ -21,15 +21,15 @@ type CreateCardState = {
 };
 
 /**
- * Form tạo card bằng Form Actions (T4.3).
+ * Create-card form using Form Actions (T4.3).
  *
- * So với T1.2:
- *  - Controlled (useState cho từng ô): mỗi phím gõ → re-render; dễ validate tức thì, dễ
- *    ràng buộc giữa các ô. Uncontrolled (FormData): DOM giữ giá trị, đọc 1 lần khi submit;
- *    ít render, ít code — hợp với form "điền rồi gửi" như form này.
- *  - useActionState thay cho onSubmit + preventDefault + state loading/error thủ công:
- *    React tự chạy action trong transition, cung cấp isPending, và reset form sau mỗi action.
- *    Vì form tự reset nên khi có lỗi phải trả lại `values` → defaultValues để không mất chữ đã gõ.
+ * Compared with T1.2:
+ *  - Controlled (useState per field): every keystroke → re-render; easy instant validation, easy
+ *    cross-field rules. Uncontrolled (FormData): the DOM holds the values, read once on submit;
+ *    fewer renders, less code — a good fit for "fill in and send" forms like this one.
+ *  - useActionState replaces onSubmit + preventDefault + hand-rolled loading/error state:
+ *    React runs the action in a transition, provides isPending, and resets the form after each action.
+ *    Because the form resets itself, on error we return `values` → defaultValues so typed text isn't lost.
  */
 export function CreateCardForm({
   boardId,
@@ -41,7 +41,7 @@ export function CreateCardForm({
   const actions = useCardActions();
   const titleRef = useRef<HTMLInputElement>(null);
 
-  // T2.3a: focus ô tiêu đề khi form mount (thay cho autoFocus).
+  // T2.3a: focus the title field when the form mounts (instead of autoFocus).
   useEffect(() => {
     titleRef.current?.focus();
   }, []);
@@ -54,7 +54,7 @@ export function CreateCardForm({
     const errors = validateCardForm(values, today);
     if (Object.keys(errors).length > 0) return { errors, values };
     try {
-      // order thật do useCardActions tính theo cột đích.
+      // The real order is computed by useCardActions from the target column.
       const card = await actions.create(createCardFromForm(values, boardId, 0));
       onCreated(card);
       return { createdId: card.id };
@@ -75,8 +75,8 @@ export function CreateCardForm({
       />
       {state.errors?.form && <FormMessage>{state.errors.form}</FormMessage>}
       <FormActions>
-        <Button onClick={onCancel}>Huỷ</Button>
-        <SubmitButton>Tạo card</SubmitButton>
+        <Button onClick={onCancel}>Cancel</Button>
+        <SubmitButton>Create card</SubmitButton>
       </FormActions>
     </form>
   );

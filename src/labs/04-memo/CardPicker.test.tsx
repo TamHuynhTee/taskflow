@@ -7,14 +7,14 @@ beforeEach(() => {
   renderLog.length = 0;
 });
 
-test("state không liên quan đổi → không dòng nào render lại", () => {
+test("unrelated state changes → no row re-renders", () => {
   render(<CardPicker cards={cards} />);
   renderLog.length = 0;
-  fireEvent.click(screen.getByRole("button", { name: "Làm mới" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh" }));
   expect(renderLog).toEqual([]);
 });
 
-test("chọn card → chỉ dòng đổi trạng thái render lại", () => {
+test("selecting a card → only rows whose state changed re-render", () => {
   render(<CardPicker cards={cards} />);
   renderLog.length = 0;
   fireEvent.click(screen.getByRole("button", { name: "B" }));

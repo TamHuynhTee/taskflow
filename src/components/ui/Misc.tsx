@@ -1,14 +1,14 @@
 import type { CSSProperties, ReactNode, Ref } from "react";
 
 interface TooltipBoxProps {
-  /** Ref tới thẻ div để đo kích thước (T2.5) — React 19 cho truyền ref như prop thường. */
+  /** Ref to the div, for measuring its size (T2.5) — React 19 lets you pass ref as a regular prop. */
   ref?: Ref<HTMLDivElement>;
-  /** Toạ độ do bạn tính ở T2.5 (position: fixed, đơn vị px theo viewport). */
+  /** Coordinates you compute in T2.5 (position: fixed, px relative to the viewport). */
   style?: CSSProperties;
   children: ReactNode;
 }
 
-/** Chỉ là cái hộp tooltip. Việc hiện khi hover và tính vị trí không tràn màn hình là T2.5. */
+/** Just the tooltip box. Showing it on hover and positioning it so it doesn't overflow the screen is T2.5. */
 export function TooltipBox({ ref, style, children }: TooltipBoxProps) {
   return (
     <div ref={ref} className="tooltip" role="tooltip" style={style}>
@@ -26,7 +26,7 @@ interface TabsProps {
   items: TabItem[];
   activeId: string;
   onSelect: (id: string) => void;
-  /** true khi đang chuyển tab bằng transition (T4.6) — hiện chấm loading cạnh tab. */
+  /** true while switching tabs in a transition (T4.6) — shows a loading dot next to the tab. */
   pendingId?: string | null;
 }
 
@@ -44,7 +44,7 @@ export function Tabs({ items, activeId, onSelect, pendingId }: TabsProps) {
         >
           {item.label}
           {pendingId === item.id && (
-            <span className="tabs__pending" aria-label="đang tải" />
+            <span className="tabs__pending" aria-label="loading" />
           )}
         </button>
       ))}
@@ -74,7 +74,7 @@ export function StatTile({
   );
 }
 
-/** Tiêu đề trang + mô tả + vùng nút bên phải. */
+/** Page title + description + a button area on the right. */
 export function PageHeader({
   title,
   description,

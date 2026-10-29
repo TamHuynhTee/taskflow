@@ -1,7 +1,7 @@
-// LAB 10 — use(promise) cần promise ổn định
-// 🐞 Trang demo kẹt mãi ở "Đang tải…", console/Network thấy fetchUser bị gọi liên tục.
-// Mục tiêu: mỗi userId chỉ fetch 1 lần; quay lại user đã xem → hiện ngay, không "Đang tải…".
-// Giữ nguyên: export `UseLab` (prop `fetchUser`), nút "An" / "Bình", fallback "Đang tải…".
+// LAB 10 — use(promise) needs a stable promise
+// 🐞 The demo page is stuck on "Loading…" forever; the console/Network show fetchUser being called nonstop.
+// Goal: each userId is fetched only once; going back to a user you've seen → shows immediately, no "Loading…".
+// Keep as is: the `UseLab` export (prop `fetchUser`), the "An" / "Ben" buttons, the "Loading…" fallback.
 import { Suspense, use, useState } from "react";
 import { delay } from "../testUtils";
 
@@ -12,12 +12,12 @@ export interface LabUser {
 
 const USERS: Record<string, LabUser> = {
   u1: { id: "u1", name: "An" },
-  u2: { id: "u2", name: "Bình" },
+  u2: { id: "u2", name: "Ben" },
 };
 
 let demoCalls = 0;
 function demoFetchUser(id: string) {
-  console.log(`[lab10] fetchUser(${id}) lần ${++demoCalls}`);
+  console.log(`[lab10] fetchUser(${id}) call ${++demoCalls}`);
   return delay(500, USERS[id]);
 }
 
@@ -42,9 +42,9 @@ export function UseLab({
     <div className="lab-col">
       <div className="lab-row">
         <button onClick={() => setUserId("u1")}>An</button>
-        <button onClick={() => setUserId("u2")}>Bình</button>
+        <button onClick={() => setUserId("u2")}>Ben</button>
       </div>
-      <Suspense fallback={<p>Đang tải…</p>}>
+      <Suspense fallback={<p>Loading…</p>}>
         <UserProfile userId={userId} fetchUser={fetchUser} />
       </Suspense>
     </div>

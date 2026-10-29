@@ -11,8 +11,8 @@ interface VirtualListProps<T> {
 }
 
 /**
- * T5.5 — chỉ render các dòng đang nằm trong khung nhìn (+ `overscan` dòng đệm mỗi phía).
- * 5.000 kết quả nhưng DOM chỉ có ~ height/itemHeight + 2*overscan dòng.
+ * T5.5 — only renders the rows inside the viewport (+ `overscan` buffer rows on each side).
+ * 5,000 results, but the DOM only holds ~ height/itemHeight + 2*overscan rows.
  */
 export function VirtualList<T>({
   items,
@@ -37,7 +37,7 @@ export function VirtualList<T>({
       isStale={isStale}
       onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}
     >
-      {/* Div "giả" cao bằng toàn bộ danh sách để thanh cuộn đúng kích thước. */}
+      {/* A "fake" div as tall as the whole list so the scrollbar has the right size. */}
       <div style={{ position: "relative", height: items.length * itemHeight }}>
         {items
           .slice(start, end)

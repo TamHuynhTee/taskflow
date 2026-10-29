@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import App from "../App";
 
-test("chưa đăng nhập → chuyển tới màn đăng nhập", async () => {
+test("not signed in → redirects to the login screen", async () => {
   vi.spyOn(globalThis, "fetch").mockResolvedValue(
     new Response(JSON.stringify([{ id: "u1", name: "An", avatarColor: "#f00" }])),
   );

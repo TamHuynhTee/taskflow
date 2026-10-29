@@ -26,8 +26,8 @@ export interface BoardState {
 }
 
 /**
- * Tách 2 context (T3.3): component chỉ cần dispatch (nút, form) không render lại
- * mỗi khi danh sách card thay đổi, vì giá trị `dispatch` của useReducer không bao giờ đổi.
+ * Two separate contexts (T3.3): components that only need dispatch (buttons, forms) don't re-render
+ * whenever the card list changes, because useReducer's `dispatch` never changes.
  */
 export const BoardStateContext = createContext<BoardState | null>(null);
 const BoardDispatchContext = createContext<ActionDispatch<
@@ -61,7 +61,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
   if (meta.error) {
     return (
       <ErrorMessage
-        title="Không tải được dữ liệu"
+        title="Couldn't load data"
         error={meta.error}
         onRetry={meta.reload}
       />
@@ -78,21 +78,21 @@ export function BoardProvider({ children }: { children: ReactNode }) {
 
 export function useBoardState() {
   const ctx = use(BoardStateContext);
-  if (!ctx) throw new Error("useBoardState phải dùng bên trong <BoardProvider>");
+  if (!ctx) throw new Error("useBoardState must be used inside <BoardProvider>");
   return ctx;
 }
 
 export function useBoardDispatch() {
   const ctx = use(BoardDispatchContext);
   if (!ctx) {
-    throw new Error("useBoardDispatch phải dùng bên trong <BoardProvider>");
+    throw new Error("useBoardDispatch must be used inside <BoardProvider>");
   }
   return ctx;
 }
 
 /**
- * Gói "gọi API rồi dispatch" (pessimistic, T2.1). Mỗi lần ghi thành công thì xoá cache
- * promise của board để lần mở board sau tải lại dữ liệu mới (T4.6).
+ * Wraps "call the API, then dispatch" (pessimistic, T2.1). After every successful write it clears
+ * the board's promise cache so the board loads fresh data the next time it opens (T4.6).
  */
 export function useCardActions() {
   const { cards } = useBoardState();

@@ -13,10 +13,10 @@ interface SearchResultsProps {
 }
 
 /**
- * memo: chỉ render lại khi props đổi (so sánh nông). Kết hợp useDeferredValue ở cha:
- * khi gõ, cha render ngay với deferredQuery CŨ → props không đổi → bỏ qua component nặng này;
- * React render bản mới ở nền với query mới, và huỷ được nếu người dùng gõ tiếp.
- * Không có memo thì useDeferredValue vô tác dụng, vì lần render gấp vẫn phải tính lại cả danh sách.
+ * memo: only re-renders when props change (shallow comparison). Combined with useDeferredValue in the parent:
+ * while typing, the parent renders right away with the OLD deferredQuery → props unchanged → this heavy component is skipped;
+ * React renders the new version in the background with the new query, and can abandon it if the user keeps typing.
+ * Without memo, useDeferredValue does nothing, because the urgent render still has to recompute the whole list.
  */
 export const SearchResults = memo(function SearchResults({
   cards,

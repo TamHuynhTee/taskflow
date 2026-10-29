@@ -2,22 +2,22 @@ import { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface ErrorBoundaryProps {
   fallback: (error: unknown, reset: () => void) => ReactNode;
-  /** Đổi giá trị bất kỳ phần tử nào → tự reset (vd. đổi board). */
+  /** Changing any element resets the boundary automatically (e.g. switching boards). */
   resetKeys?: unknown[];
   children: ReactNode;
 }
 
 interface ErrorBoundaryState {
-  // Bọc trong object để phân biệt "chưa lỗi" với trường hợp code `throw undefined`.
+  // Wrapped in an object to tell "no error" apart from code that does `throw undefined`.
   caught: { error: unknown } | null;
 }
 
 /**
- * T3.7 — vẫn phải viết bằng class: chưa có hook tương đương getDerivedStateFromError.
+ * T3.7 — still has to be a class: there is no hook equivalent of getDerivedStateFromError yet.
  *
- * Boundary CHỈ bắt lỗi xảy ra khi React render / chạy lifecycle / effect của cây con.
- * KHÔNG bắt: lỗi trong event handler (onClick), trong code async (setTimeout, promise
- * sau await), và lỗi của chính boundary. Những lỗi đó tự try/catch rồi hiện toast/state.
+ * A boundary ONLY catches errors thrown while React renders / runs lifecycles / effects of its subtree.
+ * It does NOT catch: errors in event handlers (onClick), in async code (setTimeout, a promise
+ * after await), or in the boundary itself. Handle those with try/catch and show a toast/state.
  */
 export class ErrorBoundary extends Component<
   ErrorBoundaryProps,

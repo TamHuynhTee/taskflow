@@ -1,9 +1,9 @@
 import { useSyncExternalStore, type ProfilerOnRenderCallback } from "react";
 import type { ProfilerRow } from "../../types";
 
-// Store đơn giản bên ngoài React (T5.2). Mỗi lần ghi tạo MẢNG MỚI để getSnapshot trả
-// tham chiếu khác → useSyncExternalStore biết có thay đổi. Trả cùng mảng đã bị sửa
-// (push) thì React không thấy khác; trả mảng mới mỗi lần GỌI getSnapshot thì lặp vô hạn.
+// A simple store outside React (T5.2). Every write creates a NEW ARRAY so getSnapshot returns
+// a different reference → useSyncExternalStore knows something changed. Returning the same mutated array
+// (push) means React sees no change; returning a new array on every getSnapshot CALL loops forever.
 const MAX_ROWS = 20;
 let rows: ProfilerRow[] = [];
 const listeners = new Set<() => void>();
@@ -36,16 +36,16 @@ export function useProfilerRows(): ProfilerRow[] {
 }
 
 /**
- * Callback cho <Profiler onRender>.
- *  - actualDuration: thời gian render cây con TRONG LẦN COMMIT NÀY (memo bỏ qua được bao
- *    nhiêu thì nhỏ đi bấy nhiêu).
- *  - baseDuration: ước tính thời gian render LẠI TOÀN BỘ cây con nếu không có memo nào.
- *  actual << base nghĩa là memo đang có tác dụng.
+ * Callback for <Profiler onRender>.
+ *  - actualDuration: time spent rendering the subtree IN THIS COMMIT (the more memo skips,
+ *    the smaller it gets).
+ *  - baseDuration: estimated time to re-render THE WHOLE subtree with no memo at all.
+ *  actual << base means memo is doing its job.
  *
- * Vì sao không setState trong onRender? onRender chạy sau mỗi commit của cây được đo. Nếu
- * component cha của <Profiler> setState ở đây → cha render lại → Profiler commit → onRender
- * → setState... vòng lặp. Ghi vào store bên ngoài thì chỉ component đọc store render lại.
- * (Store này emit đồng bộ — đừng đặt bảng Profiler bên trong chính cây đang đo.)
+ * Why not setState in onRender? onRender runs after every commit of the measured tree. If
+ * the <Profiler>'s parent called setState here → the parent re-renders → Profiler commits → onRender
+ * → setState... a loop. Writing to an external store only re-renders the components reading it.
+ * (This store emits synchronously — don't put the Profiler table inside the tree being measured.)
  */
 export const onRender: ProfilerOnRenderCallback = (
   id,

@@ -5,7 +5,7 @@ import { useDebouncedValue } from "./useDebouncedValue";
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 
-test("chỉ cập nhật sau khi ngừng đổi đủ lâu", () => {
+test("only updates after the value stops changing for long enough", () => {
   const { result, rerender } = renderHook(({ v }) => useDebouncedValue(v, 300), {
     initialProps: { v: "a" },
   });

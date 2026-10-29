@@ -11,8 +11,8 @@ export type BoardAction =
   | { type: "priorityBumped"; id: string };
 
 /**
- * Reducer thuần (T1.6): không Math.random, Date.now hay gọi API — id/ngày tạo
- * được sinh bên ngoài trước khi dispatch. Luôn trả mảng mới, không mutate `cards`.
+ * Pure reducer (T1.6): no Math.random, Date.now or API calls — ids/creation dates
+ * are generated outside before dispatching. Always returns a new array, never mutates `cards`.
  */
 export function boardReducer(cards: Card[], action: BoardAction): Card[] {
   switch (action.type) {
@@ -46,7 +46,7 @@ export function boardReducer(cards: Card[], action: BoardAction): Card[] {
         c.id === action.id ? { ...c, priority: nextPriority(c.priority) } : c,
       );
     default: {
-      // Thêm action mới mà quên xử lý → TypeScript báo lỗi ở đây.
+      // Add a new action and forget to handle it → TypeScript errors here.
       const _exhaustive: never = action;
       return _exhaustive;
     }

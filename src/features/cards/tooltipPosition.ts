@@ -6,8 +6,8 @@ interface Size {
 const EDGE = 8;
 
 /**
- * Vị trí tooltip (T2.5): mặc định dưới anchor, căn trái. Tràn đáy → lật lên trên;
- * tràn phải → dịch sang trái; không bao giờ cách mép < 8px.
+ * Tooltip position (T2.5): below the anchor by default, left-aligned. Overflows the bottom → flips above;
+ * overflows the right → shifts left; never closer than 8px to an edge.
  */
 export function computeTooltipPosition(
   anchor: Pick<DOMRect, "top" | "bottom" | "left">,

@@ -11,13 +11,13 @@ interface CardDetailProps {
   board?: Board;
   assignee: User | undefined;
   today: string;
-  /** Nút thao tác (Sửa, Xoá...) hiện dưới mô tả. */
+  /** Action buttons (Edit, Delete...) shown below the description. */
   actions?: ReactNode;
-  /** Phần bình luận: <CommentList /> + form gửi bình luận (T4.2, T4.5). */
+  /** Comments section: <CommentList /> + the comment form (T4.2, T4.5). */
   children?: ReactNode;
 }
 
-/** Nội dung chi tiết 1 card — đặt bên trong <Modal> (T3.1, T3.4). */
+/** Detail content for 1 card — goes inside a <Modal> (T3.1, T3.4). */
 export function CardDetail({
   card,
   board,
@@ -42,11 +42,11 @@ export function CardDetail({
 
       <dl className="card-detail__meta">
         <div>
-          <dt>Cột</dt>
+          <dt>Column</dt>
           <dd>{column?.title ?? card.columnId}</dd>
         </div>
         <div>
-          <dt>Độ ưu tiên</dt>
+          <dt>Priority</dt>
           <dd>
             <Badge tone={priorityMeta[card.priority].tone}>
               {priorityMeta[card.priority].text}
@@ -54,29 +54,29 @@ export function CardDetail({
           </dd>
         </div>
         <div>
-          <dt>Hạn chót</dt>
+          <dt>Due date</dt>
           <dd className={`card-item__due--${dueStatus}`}>
             {card.dueDate ? formatDueDate(card.dueDate) : "—"}
           </dd>
         </div>
         <div>
-          <dt>Giao cho</dt>
+          <dt>Assignee</dt>
           <dd className="card-detail__assignee">
             {assignee ? (
               <>
                 <Avatar user={assignee} size={20} /> {assignee.name}
               </>
             ) : (
-              "Chưa giao"
+              "Unassigned"
             )}
           </dd>
         </div>
       </dl>
 
       <section>
-        <h3 className="card-detail__heading">Mô tả</h3>
+        <h3 className="card-detail__heading">Description</h3>
         <p className="card-detail__desc">
-          {card.description || <em>Chưa có mô tả.</em>}
+          {card.description || <em>No description.</em>}
         </p>
       </section>
 
@@ -84,7 +84,7 @@ export function CardDetail({
 
       {children && (
         <section>
-          <h3 className="card-detail__heading">Bình luận</h3>
+          <h3 className="card-detail__heading">Comments</h3>
           {children}
         </section>
       )}

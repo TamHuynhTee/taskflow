@@ -3,14 +3,14 @@ import { useFormStatus } from "react-dom";
 import { Button } from "./ui";
 
 /**
- * Nút submit tự biết form cha đang gửi (T4.4).
- * useFormStatus đọc trạng thái của <form> CHA GẦN NHẤT — giống một context do <form> cung cấp.
- * Gọi nó ngay trong component render ra <form> thì luôn pending=false, vì form đó là con,
- * không phải cha của component đang gọi hook.
+ * Submit button that knows when its parent form is submitting (T4.4).
+ * useFormStatus reads the status of the NEAREST PARENT <form> — like a context provided by <form>.
+ * Calling it in the component that renders the <form> always gives pending=false, because that form
+ * is a child, not a parent, of the component calling the hook.
  */
 export function SubmitButton({
   children,
-  pendingText = "Đang lưu…",
+  pendingText = "Saving…",
 }: {
   children: ReactNode;
   pendingText?: string;

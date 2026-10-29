@@ -54,7 +54,7 @@
   font-size: 13px;
 }
 
-/* NavLink (T3.1) tự thêm class "active". */
+/* NavLink (T3.1) adds the "active" class itself. */
 .board-sidebar__item.active {
   background: var(--accent-soft);
   color: var(--accent);

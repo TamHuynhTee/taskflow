@@ -5,14 +5,14 @@ import { Badge, EmptyState, ErrorMessage, PageHeader } from "../components/ui";
 import { LABS } from "./registry";
 import "./labs.css";
 
-/** /labs/:labId — xem demo từng bài. Đề bài + gợi ý: LABS.md. Tự chấm: npm run test:labs. */
+/** /labs/:labId — view each lab's demo. Instructions + hints: LABS.md. Self-check: npm run test:labs. */
 export default function LabsPage() {
   const { labId } = useParams();
   const lab = LABS.find((l) => l.id === labId);
 
   return (
     <Layout
-      nav={<Link className="layout__nav-link" to="/boards">← Về app</Link>}
+      nav={<Link className="layout__nav-link" to="/boards">← Back to app</Link>}
       sidebar={
         <nav className="board-sidebar">
           <h2 className="board-sidebar__heading">Labs</h2>
@@ -36,16 +36,16 @@ export default function LabsPage() {
             description={`${lab.concept} — src/labs/${lab.file}`}
             actions={
               <Badge tone={lab.kind === "bug" ? "red" : "blue"}>
-                {lab.kind === "bug" ? "🐞 Sửa bug" : "🛠 Implement"}
+                {lab.kind === "bug" ? "🐞 Fix the bug" : "🛠 Implement"}
               </Badge>
             }
           />
           <div className="lab-stage">
-            {/* key: đổi lab → mount lại từ đầu (state, effect, boundary đều mới). */}
+            {/* key: switching labs → remount from scratch (fresh state, effects and boundary). */}
             <ErrorBoundary
               key={lab.id}
               fallback={(error, reset) => (
-                <ErrorMessage title="Lab bị crash" error={error} onRetry={reset} />
+                <ErrorMessage title="The lab crashed" error={error} onRetry={reset} />
               )}
             >
               <lab.Demo />
@@ -55,8 +55,8 @@ export default function LabsPage() {
       ) : (
         <EmptyState
           icon="🧪"
-          title="Chọn một bài lab bên trái"
-          description="Đề bài và gợi ý ở LABS.md. Chạy npm run test:labs để tự chấm."
+          title="Pick a lab on the left"
+          description="Instructions and hints are in LABS.md. Run npm run test:labs to check yourself."
         />
       )}
     </Layout>

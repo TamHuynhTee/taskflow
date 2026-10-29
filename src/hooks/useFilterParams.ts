@@ -8,8 +8,8 @@ interface FilterParams {
 }
 
 /**
- * URL là state (T3.1): ?label=bug&label=docs&priority=high&assignee=u1&q=login.
- * Refresh / chia sẻ link / Back-Forward đều giữ đúng bộ lọc.
+ * The URL is the state (T3.1): ?label=bug&label=docs&priority=high&assignee=u1&q=login.
+ * Refresh / sharing a link / Back-Forward all keep the right filters.
  */
 export function useFilterParams(): [
   FilterParams,
@@ -46,7 +46,7 @@ export function useFilterParams(): [
         }
         return p;
       },
-      // Gõ tìm kiếm không nên tạo một mục lịch sử cho mỗi lần đổi.
+      // Typing a search shouldn't create a history entry for every change.
       { replace: next.query !== undefined && !next.filter },
     );
   }

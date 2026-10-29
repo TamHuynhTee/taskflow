@@ -11,7 +11,7 @@ export function Avatar({ user, size = 24 }: AvatarProps) {
     <span
       className="avatar"
       title={user.name}
-      // style inline nhận một object JS: tên thuộc tính viết camelCase, giá trị số tự hiểu là px.
+      // Inline style takes a JS object: property names in camelCase, plain numbers are treated as px.
       style={{
         width: size,
         height: size,

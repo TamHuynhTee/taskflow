@@ -2,22 +2,22 @@ import type { Card, CardFormErrors, CardFormValues } from "../../types";
 import { getDueStatus } from "../../utils/date";
 import { EMPTY_CARD_FORM, isLabel, isPriority } from "./cardMeta";
 
-/** Validate form tạo card (T1.2). Không lỗi → `{}`. */
+/** Validates the create-card form (T1.2). No errors → `{}`. */
 export function validateCardForm(
   values: CardFormValues,
   today: string,
 ): CardFormErrors {
   const errors: CardFormErrors = {};
   const title = values.title.trim();
-  if (!title) errors.title = "Vui lòng nhập tiêu đề";
-  else if (title.length < 3) errors.title = "Tiêu đề tối thiểu 3 ký tự";
-  else if (title.length > 100) errors.title = "Tiêu đề tối đa 100 ký tự";
+  if (!title) errors.title = "Please enter a title";
+  else if (title.length < 3) errors.title = "Title needs at least 3 characters";
+  else if (title.length > 100) errors.title = "Title can be at most 100 characters";
 
   if (values.description.length > 500) {
-    errors.description = "Mô tả tối đa 500 ký tự";
+    errors.description = "Description can be at most 500 characters";
   }
   if (values.dueDate && getDueStatus(values.dueDate, today) === "overdue") {
-    errors.dueDate = "Hạn chót không được trước hôm nay";
+    errors.dueDate = "Due date can't be before today";
   }
   return errors;
 }
@@ -41,7 +41,7 @@ export function createCardFromForm(
   };
 }
 
-/** Đọc FormData của form uncontrolled thành CardFormValues đúng kiểu. */
+/** Reads an uncontrolled form's FormData into correctly typed CardFormValues. */
 export function readCardForm(formData: FormData): CardFormValues {
   const text = (name: string) => {
     const v = formData.get(name);

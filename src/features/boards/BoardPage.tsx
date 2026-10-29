@@ -42,23 +42,23 @@ import { filterCards } from "./filterCards";
 
 interface BoardPageProps {
   board: Board;
-  /** Đang chuyển board bằng transition (T4.6). */
+  /** Switching boards in a transition (T4.6). */
   isStale?: boolean;
 }
 
 type Move = { id: string; toColumnId: ColumnId };
 
 export function BoardPage({ board, isStale = false }: BoardPageProps) {
-  // T2.3c: đếm render bằng ref. Không thể là state: setState trong render → render lại →
-  // setState... vòng lặp vô hạn. Ref đổi không gây render. Trong StrictMode (dev) React gọi
-  // component 2 lần mỗi render để phát hiện code không thuần → số đếm tăng 2.
-  // (Đọc/ghi ref.current trong render vi phạm "Rules of React"; chỉ dùng để quan sát/debug.)
+  // T2.3c: count renders with a ref. It can't be state: setState during render → re-render →
+  // setState... an infinite loop. Changing a ref doesn't cause a render. In StrictMode (dev) React calls
+  // the component twice per render to catch impure code → the count goes up by 2.
+  // (Reading/writing ref.current during render breaks the "Rules of React"; only for observing/debugging.)
   const renderCount = useRef(0);
   renderCount.current++;
 
-  // T4.6: tải card bằng use() + promise có cache. useState giữ đúng promise của lần mount này:
-  // useCardActions xoá cache sau mỗi lần ghi, nếu đọc thẳng getCardsPromise() mỗi render thì
-  // mỗi lần ghi sẽ tạo promise mới → suspend → nháy skeleton.
+  // T4.6: load cards with use() + a cached promise. useState holds on to this mount's promise:
+  // useCardActions clears the cache after every write, so reading getCardsPromise() directly every render
+  // would create a new promise after each write → suspend → skeleton flash.
   const [cardsPromise] = useState(() => getCardsPromise(board.id));
   const fetched = use(cardsPromise);
 
@@ -82,8 +82,8 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
   const searchRef = useRef<HTMLInputElement>(null);
   const focusAfterRender = useRef<string | null>(null);
 
-  // Đưa dữ liệu vừa tải vào reducer chung. Trước khi reducer nhận xong (lần render đầu),
-  // hiển thị thẳng `fetched` để không có khung hình nào trống/cũ và log T2.7 đếm đúng.
+  // Put the freshly loaded data into the shared reducer. Until the reducer has it (first render),
+  // show `fetched` directly so no frame is empty/stale and the T2.7 log counts correctly.
   const [synced, setSynced] = useState(false);
   useLayoutEffect(() => {
     dispatch({ type: "loaded", boardId: board.id, cards: fetched });
@@ -94,8 +94,8 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
     ? cards.filter((c) => c.boardId === board.id)
     : fetched;
 
-  // T4.5: card được chuyển cột ngay trên UI, server trả lời xong thì `cards` thật thay vào.
-  // Lỗi → action kết thúc mà `cards` không đổi → optimistic tự "quay về".
+  // T4.5: the card moves column in the UI immediately; once the server answers, the real `cards` take over.
+  // Error → the action ends with `cards` unchanged → the optimistic state "snaps back" on its own.
   const [optimisticCards, applyMove] = useOptimistic(
     boardCards,
     (state: Card[], m: Move) =>
@@ -115,12 +115,12 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
       .map((c) => c.id),
   );
 
-  // Lọc thẳng lúc render (T1.3, T2.2) — không có state `filteredCards`.
+  // Filter directly during render (T1.3, T2.2) — no `filteredCards` state.
   const visibleCards = filterCards(optimisticCards, filter, query);
 
-  // T2.7: log khi mở board (board.id đổi), đọc visibleCount mới nhất nhưng đổi bộ lọc
-  // KHÔNG làm effect chạy lại. Dev StrictMode chạy effect 2 lần (mount → cleanup → mount)
-  // nên thấy 2 log; production chỉ 1.
+  // T2.7: log when a board opens (board.id changes), reading the latest visibleCount, but changing filters
+  // does NOT re-run the effect. Dev StrictMode runs effects twice (mount → cleanup → mount)
+  // so you see 2 logs; production only 1.
   const logOpen = useEffectEvent((boardId: string) => {
     console.info("[analytics] open board", boardId, {
       visibleCount: visibleCards.length,
@@ -128,8 +128,8 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
   });
   useEffect(() => logOpen(board.id), [board.id]);
 
-  // T6.3: sau khi chuyển cột, card render ở Column khác (component mới) → mất focus.
-  // Đặt lại focus sau mỗi lần commit nếu đang có card cần focus.
+  // T6.3: after moving column, the card renders in a different Column (a new component) → focus is lost.
+  // Restore focus after every commit if a card is waiting for focus.
   useLayoutEffect(() => {
     const id = focusAfterRender.current;
     if (!id) return;
@@ -156,24 +156,24 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
       applyMove({ id: cardId, toColumnId });
       try {
         await actions.move(card, toColumnId);
-        setAnnouncement(`Đã chuyển "${card.title}" sang ${columnTitle(toColumnId)}`);
+        setAnnouncement(`Moved "${card.title}" to ${columnTitle(toColumnId)}`);
       } catch (error) {
-        toast.show("error", `Không chuyển được "${card.title}": ${errorText(error)}`);
+        toast.show("error", `Couldn't move "${card.title}": ${errorText(error)}`);
       }
     });
   }
 
   async function deleteCard(card: Card) {
-    const ok = await confirmRef.current?.open(`Xoá "${card.title}"?`, {
+    const ok = await confirmRef.current?.open(`Delete "${card.title}"?`, {
       danger: true,
-      confirmText: "Xoá",
+      confirmText: "Delete",
     });
     if (!ok) return;
     try {
       await actions.remove(card);
-      setAnnouncement(`Đã xoá "${card.title}"`);
+      setAnnouncement(`Deleted "${card.title}"`);
     } catch (error) {
-      toast.show("error", `Xoá thất bại: ${errorText(error)}`);
+      toast.show("error", `Delete failed: ${errorText(error)}`);
     }
   }
 
@@ -183,22 +183,22 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
     try {
       await actions.update(card, { title });
     } catch (error) {
-      toast.show("error", `Đổi tên thất bại: ${errorText(error)}`);
+      toast.show("error", `Rename failed: ${errorText(error)}`);
     }
   }
 
   async function bumpPriority(card: Card) {
-    // T1.4: nút ⏫ tăng 2 bậc. Bản sai thời useState: gọi 2 lần
+    // T1.4: the ⏫ button raises priority by 2 levels. The buggy useState-era version called
     //   setCards(cards.map(c => ({ ...c, priority: nextPriority(c.priority) })))
-    // → cả 2 lần đều đọc cùng snapshot `cards` của lần render này nên kết quả chỉ +1 bậc,
-    // và console.log(cards) ngay sau setCards vẫn in giá trị cũ (state chỉ đổi ở lần render sau).
-    // Bản đúng dùng updater `setCards(prev => ...)` để lần 2 nhận kết quả của lần 1.
-    // Ở đây tính đích 1 lần rồi PATCH 1 request.
+    // → both calls read the same `cards` snapshot from this render, so the result is only +1 level,
+    // and console.log(cards) right after setCards still prints the old value (state only changes on the next render).
+    // The fix uses the updater `setCards(prev => ...)` so the 2nd call gets the 1st call's result.
+    // Here the target is computed once and sent as 1 PATCH request.
     const priority = nextPriority(nextPriority(card.priority));
     try {
       await actions.update(card, { priority });
     } catch (error) {
-      toast.show("error", `Không đổi được độ ưu tiên: ${errorText(error)}`);
+      toast.show("error", `Couldn't change priority: ${errorText(error)}`);
     }
   }
 
@@ -206,7 +206,7 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
     navigate({ pathname: `cards/${card.id}`, search });
 
   function handleCardKeyDown(e: KeyboardEvent<HTMLElement>, card: Card) {
-    if (e.target !== e.currentTarget) return; // phím gõ trong nút/ô con thì bỏ qua
+    if (e.target !== e.currentTarget) return; // ignore keys typed into a child button/field
     if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
       e.preventDefault();
       moveCard(card.id, nextColumnId(card.columnId, e.key === "ArrowLeft" ? "left" : "right"));
@@ -227,7 +227,7 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
 
   return (
     <>
-      {/* T4.9: React 19 tự đưa <title>/<meta> lên <head>. */}
+      {/* T4.9: React 19 hoists <title>/<meta> into <head> automatically. */}
       <title>{`${board.title} · TaskFlow`}</title>
       <meta name="description" content={board.description} />
 
@@ -243,11 +243,11 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
               <BoardSearch ref={searchRef} />
               {isMobile && (
                 <Button size="sm" onClick={() => setIsFilterOpen(true)}>
-                  Bộ lọc
+                  Filters
                 </Button>
               )}
               <Button variant="primary" onClick={() => setIsCreateOpen(true)}>
-                + Tạo card
+                + New card
               </Button>
               <RenderCounter count={renderCount.current} />
             </>
@@ -259,9 +259,9 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
             )
           }
           getCardProps={(card) => {
-            // T3.7 thí nghiệm: hàm này chạy lúc Column render → lỗi ở đây được ErrorBoundary
-            // của cột bắt. Tạo card tên chứa 💣 để thấy chỉ cột đó báo lỗi.
-            if (card.title.includes("💣")) throw new Error("Card bom!");
+            // T3.7 experiment: this runs while Column renders → an error here is caught by the
+            // column's ErrorBoundary. Create a card with 💣 in its title to see only that column fail.
+            if (card.title.includes("💣")) throw new Error("Bomb card!");
             return {
               isPending: pendingIds.has(card.id),
               onOpen: () => openCard(card),
@@ -303,7 +303,7 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
 
       <Modal
         open={isCreateOpen}
-        title="Tạo card mới"
+        title="New card"
         onClose={() => setIsCreateOpen(false)}
       >
         <CreateCardForm
@@ -311,7 +311,7 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
           today={TODAY}
           onCreated={(card) => {
             setIsCreateOpen(false);
-            setAnnouncement(`Đã tạo "${card.title}"`);
+            setAnnouncement(`Created "${card.title}"`);
           }}
           onCancel={() => setIsCreateOpen(false)}
         />
@@ -319,7 +319,7 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
 
       <Modal
         open={isFilterOpen}
-        title="Bộ lọc"
+        title="Filters"
         size="sm"
         onClose={() => setIsFilterOpen(false)}
       >
@@ -331,7 +331,7 @@ export function BoardPage({ board, isStale = false }: BoardPageProps) {
         {announcement}
       </p>
 
-      {/* Route con: modal chi tiết card (T3.1). */}
+      {/* Child route: card detail modal (T3.1). */}
       <Outlet />
     </>
   );

@@ -8,10 +8,10 @@ interface CommentListProps {
   usersById: Record<string, User>;
 }
 
-/** Danh sách bình luận. Comment có `pending: true` hiện mờ kèm "Đang gửi…" (T4.5). */
+/** Comment list. Comments with `pending: true` are dimmed with "Sending…" (T4.5). */
 export function CommentList({ comments, usersById }: CommentListProps) {
   if (comments.length === 0) {
-    return <p className="comment-list__empty">Chưa có bình luận nào.</p>;
+    return <p className="comment-list__empty">No comments yet.</p>;
   }
 
   return (
@@ -26,11 +26,11 @@ export function CommentList({ comments, usersById }: CommentListProps) {
             {author && <Avatar user={author} size={28} />}
             <div className="comment__body">
               <p className="comment__meta">
-                <strong>{author?.name ?? "Ẩn danh"}</strong>
+                <strong>{author?.name ?? "Anonymous"}</strong>
                 <span>
                   {c.pending
-                    ? "Đang gửi…"
-                    : new Date(c.createdAt).toLocaleDateString("vi-VN")}
+                    ? "Sending…"
+                    : new Date(c.createdAt).toLocaleDateString("en-US")}
                 </span>
               </p>
               <p className="comment__content">{c.content}</p>
@@ -42,7 +42,7 @@ export function CommentList({ comments, usersById }: CommentListProps) {
   );
 }
 
-/** Fallback khi comment đang tải (Suspense ở T4.2). */
+/** Fallback while comments are loading (Suspense in T4.2). */
 export function CommentListSkeleton() {
   return (
     <ul className="comment-list" aria-busy>
@@ -61,15 +61,15 @@ export function CommentListSkeleton() {
   );
 }
 
-/** Khung form gửi bình luận: bạn tự đặt <form action=...> bên ngoài và truyền nút submit vào `submit`. */
+/** Comment form frame: you put the <form action=...> around it and pass the submit button as `submit`. */
 export function CommentComposerFields({ submit }: { submit: ReactNode }) {
   return (
     <div className="comment-composer">
       <textarea
         name="content"
         rows={2}
-        placeholder="Viết bình luận…"
-        aria-label="Nội dung bình luận"
+        placeholder="Write a comment…"
+        aria-label="Comment text"
         required
       />
       {submit}

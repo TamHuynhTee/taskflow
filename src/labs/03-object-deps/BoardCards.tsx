@@ -1,7 +1,7 @@
-// LAB 03 — Object trong dependency array
-// 🐞 Mở tab Network/console: `load` bị gọi liên tục không dừng (vòng lặp render ↔ effect).
-// Giữ nguyên: export `BoardCards`, props `boardId` + `load`. Mỗi boardId chỉ được gọi load 1 lần.
-// Không được "chữa" bằng deps rỗng [] — đổi boardId vẫn phải tải lại.
+// LAB 03 — An object in the dependency array
+// 🐞 Open the Network tab/console: `load` is called over and over without stopping (a render ↔ effect loop).
+// Keep as is: the `BoardCards` export, the `boardId` + `load` props. load may only be called once per boardId.
+// Don't "fix" it with empty deps [] — changing boardId must still reload.
 import { useEffect, useState } from "react";
 
 export interface LoadOptions {
@@ -12,9 +12,9 @@ export interface LoadOptions {
 let demoCalls = 0;
 async function demoLoad(options: LoadOptions) {
   demoCalls++;
-  console.log(`[lab03] load lần ${demoCalls}`, options);
+  console.log(`[lab03] load call ${demoCalls}`, options);
   await new Promise((r) => setTimeout(r, 300));
-  return [`Card A của ${options.boardId}`, `Card B của ${options.boardId}`];
+  return [`Card A of ${options.boardId}`, `Card B of ${options.boardId}`];
 }
 
 export function BoardCards({

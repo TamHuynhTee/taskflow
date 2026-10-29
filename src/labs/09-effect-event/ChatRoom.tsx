@@ -1,7 +1,7 @@
-// LAB 09 — Tách "sự kiện" ra khỏi effect (useEffectEvent)
-// 🐞 Đổi theme → phòng chat bị NGẮT KẾT NỐI rồi kết nối lại (xem console), dù phòng không đổi.
-// Mục tiêu: chỉ kết nối lại khi `roomId` đổi; thông báo "Đã kết nối" vẫn dùng theme MỚI NHẤT.
-// Giữ nguyên: export `ChatRoom` và các props. Không được tắt lint exhaustive-deps để "lách".
+// LAB 09 — Separating "events" from effects (useEffectEvent)
+// 🐞 Changing the theme → the chat room DISCONNECTS and reconnects (see the console), even though the room didn't change.
+// Goal: only reconnect when `roomId` changes; the "Connected" notification still uses the LATEST theme.
+// Keep as is: the `ChatRoom` export and its props. Don't disable the exhaustive-deps lint to "sneak around" it.
 import { useEffect } from "react";
 
 export type Theme = "light" | "dark";
@@ -21,9 +21,9 @@ interface ChatRoomProps {
 export function ChatRoom({ roomId, theme, connect, notify }: ChatRoomProps) {
   useEffect(() => {
     const connection = connect(roomId);
-    connection.onConnected(() => notify(`Đã kết nối #${roomId}`, theme));
+    connection.onConnected(() => notify(`Connected to #${roomId}`, theme));
     return () => connection.disconnect();
   }, [roomId, theme, connect, notify]);
 
-  return <h3>Phòng #{roomId}</h3>;
+  return <h3>Room #{roomId}</h3>;
 }

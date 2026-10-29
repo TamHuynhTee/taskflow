@@ -1,13 +1,13 @@
-// LAB 02 — Race condition khi fetch trong effect
-// 🐞 Gõ nhanh "lo": request "l" (chậm) về SAU request "lo" (nhanh) và ghi đè kết quả →
-//    ô đang là "lo" nhưng danh sách lại là kết quả của "l".
-// Giữ nguyên: export `CardSearch`, prop `search`, ô nhập có label "Tìm card", kết quả là <li>.
+// LAB 02 — Race condition when fetching in an effect
+// 🐞 Type "lo" quickly: the "l" request (slow) arrives AFTER the "lo" request (fast) and overwrites the result →
+//    the box says "lo" but the list shows the results for "l".
+// Keep as is: the `CardSearch` export, the `search` prop, the input labelled "Search cards", results as <li>.
 import { useEffect, useState } from "react";
 import { delay } from "../testUtils";
 
-const TITLES = ["layout trang chủ", "login bằng Google", "logo mới", "lỗi thanh toán", "landing page"];
+const TITLES = ["home page layout", "login with Google", "new logo", "payment bug", "landing page"];
 
-/** API giả: từ khoá càng NGẮN trả về càng CHẬM — để dễ thấy bug trên trang demo. */
+/** Fake API: the SHORTER the query, the SLOWER the response — so the bug is easy to see on the demo page. */
 function fakeSearch(q: string) {
   const found = TITLES.filter((t) => t.includes(q));
   return delay(1500 / q.length, found);
@@ -32,10 +32,10 @@ export function CardSearch({
   return (
     <div>
       <input
-        aria-label="Tìm card"
+        aria-label="Search cards"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Gõ nhanh: lo"
+        placeholder="Type fast: lo"
       />
       <ul>
         {results.map((r) => (

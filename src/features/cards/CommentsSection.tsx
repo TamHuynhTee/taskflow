@@ -19,12 +19,12 @@ import {
 } from "./CommentList";
 
 /**
- * Bình luận đọc bằng use(promise) + Suspense (T4.2), gửi optimistic (T4.5).
+ * Comments are read with use(promise) + Suspense (T4.2) and sent optimistically (T4.5).
  *
- * THÍ NGHIỆM: đổi `promise` thành `getComments(cardId)` (không cache) truyền thẳng vào
- * <Comments> → mỗi render là một promise MỚI → use() lại suspend → resolve → render lại →
- * promise mới... Tab Network thấy request lặp vô hạn. Promise phải được tạo bên ngoài
- * render (cache, state, loader của router, hoặc Server Component — T7.5).
+ * EXPERIMENT: change `promise` to `getComments(cardId)` (no cache) passed straight into
+ * <Comments> → every render gets a NEW promise → use() suspends again → resolves → re-renders →
+ * new promise... The Network tab shows requests looping forever. The promise must be created outside
+ * render (a cache, state, a router loader, or a Server Component — T7.5).
  */
 export function CommentsSection({ cardId }: { cardId: string }) {
   const [promise, setPromise] = useState(() => getCommentsPromise(cardId));
@@ -32,7 +32,7 @@ export function CommentsSection({ cardId }: { cardId: string }) {
   function refresh() {
     invalidateComments(cardId);
     const next = getCommentsPromise(cardId);
-    // Trong transition: giữ danh sách cũ trên màn hình thay vì nháy skeleton.
+    // Inside a transition: keep the old list on screen instead of flashing the skeleton.
     startTransition(() => setPromise(next));
     return next;
   }
@@ -43,7 +43,7 @@ export function CommentsSection({ cardId }: { cardId: string }) {
       fallback={(error) => (
         <ErrorMessage
           compact
-          title="Không tải được bình luận"
+          title="Couldn't load comments"
           error={error}
           onRetry={refresh}
         />
@@ -85,16 +85,16 @@ function Comments({
     addOptimistic({ ...input, id: `pending-${crypto.randomUUID()}` });
     try {
       await addComment(input);
-      // Chờ danh sách mới về rồi mới kết thúc action, để comment thật thay chỗ comment
-      // optimistic mà không có khoảnh khắc biến mất.
+      // Wait for the new list before ending the action, so the real comment replaces the
+      // optimistic one without a moment where it disappears.
       await onAdded();
     } catch (error) {
-      // Action kết thúc → optimistic tự bị bỏ (rollback), chỉ cần báo lỗi.
-      toast.show("error", `Không gửi được bình luận: ${errorText(error)}`);
+      // The action ends → the optimistic state is dropped automatically (rollback); just report the error.
+      toast.show("error", `Couldn't send the comment: ${errorText(error)}`);
     }
   }
 
-  // use() được gọi trong if — điều mà hook thường (useContext, useState...) không được phép.
+  // use() is called inside an if — something regular hooks (useContext, useState...) aren't allowed to do.
   const usersById =
     optimistic.length > 0 ? use(BoardStateContext)?.usersById ?? {} : {};
 
@@ -103,7 +103,7 @@ function Comments({
       <CommentList comments={optimistic} usersById={usersById} />
       <form action={submit}>
         <CommentComposerFields
-          submit={<SubmitButton pendingText="Đang gửi…">Gửi</SubmitButton>}
+          submit={<SubmitButton pendingText="Sending…">Send</SubmitButton>}
         />
       </form>
     </>

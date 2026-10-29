@@ -11,19 +11,19 @@ const base: Todo[] = Object.freeze([
 test.each<TodoAction>([
   { type: "toggled", id: "t1" },
   { type: "removed", id: "t2" },
-])("không mutate state cũ: %o", (action) => {
+])("does not mutate the old state: %o", (action) => {
   const next = todoReducer(base, action);
   expect(next).not.toBe(base);
   expect(base).toHaveLength(2);
   expect(base[0].done).toBe(false);
 });
 
-test("removed với id không tồn tại không xoá nhầm phần tử cuối", () => {
+test("removed with an unknown id doesn't delete the last item by mistake", () => {
   expect(todoReducer(base, { type: "removed", id: "nope" })).toEqual(base);
 });
 
-test("added là hàm thuần: cùng input → cùng output", () => {
-  // Nếu bạn đổi payload của "added" (vd. thêm id), sửa action dưới đây cho khớp.
+test("added is pure: same input → same output", () => {
+  // If you change the "added" payload (e.g. add an id), update the action below to match.
   const action = { type: "added", text: "C", id: "t3" } as TodoAction;
   const a = todoReducer(base, action);
   const b = todoReducer(base, action);
@@ -31,16 +31,16 @@ test("added là hàm thuần: cùng input → cùng output", () => {
   expect(a).toHaveLength(3);
 });
 
-test("UI cập nhật khi thêm, tick và xoá", () => {
+test("the UI updates when adding, ticking and deleting", () => {
   render(<TodoLab />);
-  fireEvent.change(screen.getByLabelText("Việc mới"), { target: { value: "Viết test" } });
-  fireEvent.click(screen.getByRole("button", { name: "Thêm" }));
-  expect(screen.getByText("Viết test")).toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText("New todo"), { target: { value: "Write tests" } });
+  fireEvent.click(screen.getByRole("button", { name: "Add" }));
+  expect(screen.getByText("Write tests")).toBeInTheDocument();
 
-  const box = screen.getByRole("checkbox", { name: "Viết test" });
+  const box = screen.getByRole("checkbox", { name: "Write tests" });
   fireEvent.click(box);
   expect(box).toBeChecked();
 
-  fireEvent.click(screen.getByRole("button", { name: "Xoá Viết test" }));
-  expect(screen.queryByText("Viết test")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Delete Write tests" }));
+  expect(screen.queryByText("Write tests")).not.toBeInTheDocument();
 });

@@ -34,29 +34,29 @@ function setup(onCreated = vi.fn()) {
   return onCreated;
 }
 
-test("submit sai → hiện lỗi dưới ô tiêu đề và không gọi API", async () => {
+test("invalid submit → shows an error under the title field and doesn't call the API", async () => {
   const user = userEvent.setup();
   setup();
-  const title = await screen.findByLabelText("Tiêu đề *", {}, { timeout: 3000 });
+  const title = await screen.findByLabelText("Title *", {}, { timeout: 3000 });
   expect(title).toHaveFocus();
   await user.type(title, "ab");
-  await user.click(screen.getByRole("button", { name: "Tạo card" }));
-  expect(await screen.findByText("Tiêu đề tối thiểu 3 ký tự", {}, { timeout: 3000 })).toBeInTheDocument();
-  // Form tự reset sau action nhưng giữ lại chữ đã gõ nhờ defaultValues.
-  expect(screen.getByLabelText("Tiêu đề *")).toHaveValue("ab");
+  await user.click(screen.getByRole("button", { name: "Create card" }));
+  expect(await screen.findByText("Title needs at least 3 characters", {}, { timeout: 3000 })).toBeInTheDocument();
+  // The form resets after the action but keeps the typed text thanks to defaultValues.
+  expect(screen.getByLabelText("Title *")).toHaveValue("ab");
   expect(fetchMock).not.toHaveBeenCalledWith(expect.stringMatching(/\/cards$/), expect.anything());
 });
 
-test("submit đúng → POST card và đưa vào store", async () => {
+test("valid submit → POSTs the card and puts it in the store", async () => {
   const user = userEvent.setup();
   const onCreated = setup();
-  await user.type(await screen.findByLabelText("Tiêu đề *", {}, { timeout: 3000 }), "Viết test");
-  await user.selectOptions(screen.getByLabelText("Giao cho"), "u1");
+  await user.type(await screen.findByLabelText("Title *", {}, { timeout: 3000 }), "Write tests");
+  await user.selectOptions(screen.getByLabelText("Assignee"), "u1");
   await user.click(screen.getByRole("checkbox", { name: "Bug" }));
-  await user.click(screen.getByRole("button", { name: "Tạo card" }));
+  await user.click(screen.getByRole("button", { name: "Create card" }));
 
   expect(await screen.findByText("1 card", {}, { timeout: 3000 })).toBeInTheDocument();
   expect(onCreated).toHaveBeenCalledWith(
-    expect.objectContaining({ id: "new", title: "Viết test", assigneeId: "u1", labels: ["bug"], columnId: "todo" }),
+    expect.objectContaining({ id: "new", title: "Write tests", assigneeId: "u1", labels: ["bug"], columnId: "todo" }),
   );
 });

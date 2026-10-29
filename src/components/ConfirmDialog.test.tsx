@@ -9,20 +9,20 @@ async function openDialog() {
   render(<ConfirmDialog ref={ref} />);
   let result!: Promise<boolean>;
   act(() => {
-    result = ref.current!.open("Xoá card?", { confirmText: "Xoá", danger: true });
+    result = ref.current!.open("Delete card?", { confirmText: "Delete", danger: true });
   });
-  expect(await screen.findByRole("dialog", { name: "Xác nhận" })).toBeInTheDocument();
+  expect(await screen.findByRole("dialog", { name: "Confirm" })).toBeInTheDocument();
   return result;
 }
 
-test("Đồng ý → true, modal đóng", async () => {
+test("confirm → true, modal closes", async () => {
   const result = openDialog();
-  await userEvent.click(await screen.findByRole("button", { name: "Xoá" }));
+  await userEvent.click(await screen.findByRole("button", { name: "Delete" }));
   await expect(result).resolves.toBe(true);
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 });
 
-test("Esc → huỷ (false), modal render trong body qua portal", async () => {
+test("Esc → cancel (false), modal renders into body through a portal", async () => {
   const result = openDialog();
   const dialog = await screen.findByRole("dialog");
   expect(dialog.parentElement?.parentElement).toBe(document.body);

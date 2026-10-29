@@ -7,7 +7,7 @@
     },
     {
       "id": "u2",
-      "name": "Bình",
+      "name": "Ben",
       "avatarColor": "#64b5f6"
     },
     {
@@ -17,47 +17,47 @@
     },
     {
       "id": "u4",
-      "name": "Dũng",
+      "name": "Dan",
       "avatarColor": "#ffb74d"
     }
   ],
   "boards": [
     {
       "id": "b1",
-      "title": "Website bán hàng",
-      "description": "Làm lại trang shop và checkout",
+      "title": "Online store",
+      "description": "Rebuild the shop and checkout pages",
       "columns": [
         {
           "id": "todo",
-          "title": "Cần làm"
+          "title": "To do"
         },
         {
           "id": "doing",
-          "title": "Đang làm"
+          "title": "In progress"
         },
         {
           "id": "done",
-          "title": "Xong"
+          "title": "Done"
         }
       ],
       "createdAt": "2026-09-01T00:00:00.000Z"
     },
     {
       "id": "b2",
-      "title": "App mobile",
-      "description": "Ứng dụng đặt lịch cho phòng gym",
+      "title": "Mobile app",
+      "description": "Booking app for a gym",
       "columns": [
         {
           "id": "todo",
-          "title": "Cần làm"
+          "title": "To do"
         },
         {
           "id": "doing",
-          "title": "Đang làm"
+          "title": "In progress"
         },
         {
           "id": "done",
-          "title": "Xong"
+          "title": "Done"
         }
       ],
       "createdAt": "2026-09-02T00:00:00.000Z"
@@ -68,8 +68,8 @@
       "id": "c1",
       "boardId": "b1",
       "columnId": "doing",
-      "title": "Thêm form thanh toán",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Add payment form",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "design"
       ],
@@ -83,8 +83,8 @@
       "id": "c2",
       "boardId": "b2",
       "columnId": "done",
-      "title": "Thêm dark mode",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Add dark mode",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "feature",
         "design"
@@ -99,8 +99,8 @@
       "id": "c3",
       "boardId": "b1",
       "columnId": "todo",
-      "title": "Refactor trang đăng nhập",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Refactor login page",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "bug",
         "docs"
@@ -115,8 +115,8 @@
       "id": "c4",
       "boardId": "b2",
       "columnId": "todo",
-      "title": "Sửa lỗi dark mode",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Fix bugs in dark mode",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "design"
       ],
@@ -130,7 +130,7 @@
       "id": "c5",
       "boardId": "b1",
       "columnId": "todo",
-      "title": "Thêm phân trang",
+      "title": "Add pagination",
       "description": "",
       "labels": [
         "feature",
@@ -146,7 +146,7 @@
       "id": "c6",
       "boardId": "b2",
       "columnId": "todo",
-      "title": "Tối ưu dark mode",
+      "title": "Optimize dark mode",
       "description": "",
       "labels": [
         "bug"
@@ -161,7 +161,7 @@
       "id": "c7",
       "boardId": "b1",
       "columnId": "done",
-      "title": "Review giỏ hàng",
+      "title": "Review shopping cart",
       "description": "",
       "labels": [
         "bug"
@@ -176,7 +176,7 @@
       "id": "c8",
       "boardId": "b2",
       "columnId": "doing",
-      "title": "Viết test cho trang hồ sơ",
+      "title": "Write tests for profile page",
       "description": "",
       "labels": [
         "feature"
@@ -191,7 +191,7 @@
       "id": "c9",
       "boardId": "b1",
       "columnId": "doing",
-      "title": "Viết test cho upload ảnh",
+      "title": "Write tests for image upload",
       "description": "",
       "labels": [
         "feature",
@@ -207,8 +207,8 @@
       "id": "c10",
       "boardId": "b2",
       "columnId": "done",
-      "title": "Sửa lỗi dark mode",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Fix bugs in dark mode",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "docs",
         "design"
@@ -223,7 +223,7 @@
       "id": "c11",
       "boardId": "b1",
       "columnId": "todo",
-      "title": "Thiết kế upload ảnh",
+      "title": "Design image upload",
       "description": "",
       "labels": [
         "chore"
@@ -238,8 +238,8 @@
       "id": "c12",
       "boardId": "b2",
       "columnId": "todo",
-      "title": "Thêm thanh tìm kiếm",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Add search bar",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "bug"
       ],
@@ -253,8 +253,8 @@
       "id": "c13",
       "boardId": "b1",
       "columnId": "done",
-      "title": "Viết test cho menu điều hướng",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Write tests for navigation menu",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "bug",
         "design"
@@ -269,8 +269,8 @@
       "id": "c14",
       "boardId": "b2",
       "columnId": "doing",
-      "title": "Refactor danh sách sản phẩm",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Refactor product list",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "docs"
       ],
@@ -284,8 +284,8 @@
       "id": "c15",
       "boardId": "b1",
       "columnId": "todo",
-      "title": "Thiết kế bộ lọc",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Design filters",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "bug"
       ],
@@ -314,7 +314,7 @@
       "id": "c17",
       "boardId": "b1",
       "columnId": "doing",
-      "title": "Tối ưu dashboard",
+      "title": "Optimize dashboard",
       "description": "",
       "labels": [
         "design"
@@ -329,7 +329,7 @@
       "id": "c18",
       "boardId": "b2",
       "columnId": "done",
-      "title": "Thêm dashboard",
+      "title": "Add dashboard",
       "description": "",
       "labels": [
         "chore"
@@ -344,8 +344,8 @@
       "id": "c19",
       "boardId": "b1",
       "columnId": "doing",
-      "title": "Viết test cho dashboard",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Write tests for dashboard",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "chore"
       ],
@@ -359,8 +359,8 @@
       "id": "c20",
       "boardId": "b2",
       "columnId": "done",
-      "title": "Sửa lỗi thanh tìm kiếm",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Fix bugs in search bar",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "design"
       ],
@@ -374,8 +374,8 @@
       "id": "c21",
       "boardId": "b1",
       "columnId": "done",
-      "title": "Refactor trang hồ sơ",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Refactor profile page",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "bug"
       ],
@@ -389,8 +389,8 @@
       "id": "c22",
       "boardId": "b2",
       "columnId": "todo",
-      "title": "Thêm trang hồ sơ",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Add profile page",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "design"
       ],
@@ -404,8 +404,8 @@
       "id": "c23",
       "boardId": "b1",
       "columnId": "doing",
-      "title": "Thiết kế menu điều hướng",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Design navigation menu",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "bug"
       ],
@@ -419,8 +419,8 @@
       "id": "c24",
       "boardId": "b2",
       "columnId": "doing",
-      "title": "Review thông báo email",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Review email notifications",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "docs"
       ],
@@ -434,7 +434,7 @@
       "id": "c25",
       "boardId": "b1",
       "columnId": "doing",
-      "title": "Viết test cho thanh tìm kiếm",
+      "title": "Write tests for search bar",
       "description": "",
       "labels": [
         "chore",
@@ -450,7 +450,7 @@
       "id": "c26",
       "boardId": "b2",
       "columnId": "doing",
-      "title": "Thêm bộ lọc",
+      "title": "Add filters",
       "description": "",
       "labels": [
         "chore"
@@ -465,7 +465,7 @@
       "id": "c27",
       "boardId": "b1",
       "columnId": "doing",
-      "title": "Review thanh tìm kiếm",
+      "title": "Review search bar",
       "description": "",
       "labels": [
         "chore"
@@ -495,8 +495,8 @@
       "id": "c29",
       "boardId": "b1",
       "columnId": "todo",
-      "title": "Thêm phân trang",
-      "description": "Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.",
+      "title": "Add pagination",
+      "description": "Details: acceptance criteria, design link, technical notes.",
       "labels": [
         "docs"
       ],
@@ -510,7 +510,7 @@
       "id": "c30",
       "boardId": "b2",
       "columnId": "doing",
-      "title": "Tối ưu trang hồ sơ",
+      "title": "Optimize profile page",
       "description": "",
       "labels": [
         "chore"
@@ -527,252 +527,252 @@
       "id": "cm1",
       "cardId": "c1",
       "authorId": "u4",
-      "content": "Có lỗi trên Safari.",
+      "content": "Broken on Safari.",
       "createdAt": "2026-09-25T00:00:00.000Z"
     },
     {
       "id": "cm2",
       "cardId": "c4",
       "authorId": "u3",
-      "content": "Đã có PR, nhờ review giúp.",
+      "content": "PR is up, please review.",
       "createdAt": "2026-09-23T00:00:00.000Z"
     },
     {
       "id": "cm3",
       "cardId": "c5",
       "authorId": "u4",
-      "content": "Có lỗi trên Safari.",
+      "content": "Broken on Safari.",
       "createdAt": "2026-09-28T00:00:00.000Z"
     },
     {
       "id": "cm4",
       "cardId": "c5",
       "authorId": "u1",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-09-29T00:00:00.000Z"
     },
     {
       "id": "cm5",
       "cardId": "c6",
       "authorId": "u2",
-      "content": "Đã có PR, nhờ review giúp.",
+      "content": "PR is up, please review.",
       "createdAt": "2026-09-24T00:00:00.000Z"
     },
     {
       "id": "cm6",
       "cardId": "c7",
       "authorId": "u2",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-09-30T00:00:00.000Z"
     },
     {
       "id": "cm7",
       "cardId": "c7",
       "authorId": "u4",
-      "content": "Đã test trên mobile, ổn.",
+      "content": "Tested on mobile, looks good.",
       "createdAt": "2026-09-22T00:00:00.000Z"
     },
     {
       "id": "cm8",
       "cardId": "c11",
       "authorId": "u1",
-      "content": "Đã có PR, nhờ review giúp.",
+      "content": "PR is up, please review.",
       "createdAt": "2026-09-22T00:00:00.000Z"
     },
     {
       "id": "cm9",
       "cardId": "c12",
       "authorId": "u4",
-      "content": "Bị block bởi API, chờ backend.",
+      "content": "Blocked by the API, waiting on backend.",
       "createdAt": "2026-09-25T00:00:00.000Z"
     },
     {
       "id": "cm10",
       "cardId": "c12",
       "authorId": "u1",
-      "content": "Đã test trên mobile, ổn.",
+      "content": "Tested on mobile, looks good.",
       "createdAt": "2026-09-24T00:00:00.000Z"
     },
     {
       "id": "cm11",
       "cardId": "c13",
       "authorId": "u1",
-      "content": "Đã test trên mobile, ổn.",
+      "content": "Tested on mobile, looks good.",
       "createdAt": "2026-09-26T00:00:00.000Z"
     },
     {
       "id": "cm12",
       "cardId": "c16",
       "authorId": "u2",
-      "content": "Có lỗi trên Safari.",
+      "content": "Broken on Safari.",
       "createdAt": "2026-09-24T00:00:00.000Z"
     },
     {
       "id": "cm13",
       "cardId": "c16",
       "authorId": "u2",
-      "content": "Có lỗi trên Safari.",
+      "content": "Broken on Safari.",
       "createdAt": "2026-09-30T00:00:00.000Z"
     },
     {
       "id": "cm14",
       "cardId": "c16",
       "authorId": "u1",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-09-25T00:00:00.000Z"
     },
     {
       "id": "cm15",
       "cardId": "c18",
       "authorId": "u1",
-      "content": "Mình nhận task này nhé.",
+      "content": "I'll take this one.",
       "createdAt": "2026-09-25T00:00:00.000Z"
     },
     {
       "id": "cm16",
       "cardId": "c18",
       "authorId": "u3",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-09-29T00:00:00.000Z"
     },
     {
       "id": "cm17",
       "cardId": "c18",
       "authorId": "u4",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-09-24T00:00:00.000Z"
     },
     {
       "id": "cm18",
       "cardId": "c20",
       "authorId": "u3",
-      "content": "Đã có PR, nhờ review giúp.",
+      "content": "PR is up, please review.",
       "createdAt": "2026-10-01T00:00:00.000Z"
     },
     {
       "id": "cm19",
       "cardId": "c20",
       "authorId": "u2",
-      "content": "Đã test trên mobile, ổn.",
+      "content": "Tested on mobile, looks good.",
       "createdAt": "2026-09-24T00:00:00.000Z"
     },
     {
       "id": "cm20",
       "cardId": "c20",
       "authorId": "u2",
-      "content": "Có lỗi trên Safari.",
+      "content": "Broken on Safari.",
       "createdAt": "2026-09-27T00:00:00.000Z"
     },
     {
       "id": "cm21",
       "cardId": "c22",
       "authorId": "u3",
-      "content": "Đã có PR, nhờ review giúp.",
+      "content": "PR is up, please review.",
       "createdAt": "2026-09-23T00:00:00.000Z"
     },
     {
       "id": "cm22",
       "cardId": "c22",
       "authorId": "u1",
-      "content": "Mình nhận task này nhé.",
+      "content": "I'll take this one.",
       "createdAt": "2026-09-22T00:00:00.000Z"
     },
     {
       "id": "cm23",
       "cardId": "c24",
       "authorId": "u3",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-09-27T00:00:00.000Z"
     },
     {
       "id": "cm24",
       "cardId": "c25",
       "authorId": "u1",
-      "content": "Có lỗi trên Safari.",
+      "content": "Broken on Safari.",
       "createdAt": "2026-09-23T00:00:00.000Z"
     },
     {
       "id": "cm25",
       "cardId": "c25",
       "authorId": "u2",
-      "content": "Đã có PR, nhờ review giúp.",
+      "content": "PR is up, please review.",
       "createdAt": "2026-09-26T00:00:00.000Z"
     },
     {
       "id": "cm26",
       "cardId": "c26",
       "authorId": "u2",
-      "content": "Bị block bởi API, chờ backend.",
+      "content": "Blocked by the API, waiting on backend.",
       "createdAt": "2026-09-29T00:00:00.000Z"
     },
     {
       "id": "cm27",
       "cardId": "c26",
       "authorId": "u2",
-      "content": "Mình nhận task này nhé.",
+      "content": "I'll take this one.",
       "createdAt": "2026-09-23T00:00:00.000Z"
     },
     {
       "id": "cm28",
       "cardId": "c26",
       "authorId": "u2",
-      "content": "Bị block bởi API, chờ backend.",
+      "content": "Blocked by the API, waiting on backend.",
       "createdAt": "2026-09-29T00:00:00.000Z"
     },
     {
       "id": "cm29",
       "cardId": "c27",
       "authorId": "u1",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-10-01T00:00:00.000Z"
     },
     {
       "id": "cm30",
       "cardId": "c27",
       "authorId": "u4",
-      "content": "Đã test trên mobile, ổn.",
+      "content": "Tested on mobile, looks good.",
       "createdAt": "2026-09-25T00:00:00.000Z"
     },
     {
       "id": "cm31",
       "cardId": "c28",
       "authorId": "u1",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-09-26T00:00:00.000Z"
     },
     {
       "id": "cm32",
       "cardId": "c28",
       "authorId": "u2",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-09-27T00:00:00.000Z"
     },
     {
       "id": "cm33",
       "cardId": "c28",
       "authorId": "u2",
-      "content": "Cần thêm mockup.",
+      "content": "Needs another mockup.",
       "createdAt": "2026-10-01T00:00:00.000Z"
     },
     {
       "id": "cm34",
       "cardId": "c29",
       "authorId": "u1",
-      "content": "Đã test trên mobile, ổn.",
+      "content": "Tested on mobile, looks good.",
       "createdAt": "2026-09-30T00:00:00.000Z"
     },
     {
       "id": "cm35",
       "cardId": "c29",
       "authorId": "u2",
-      "content": "Đã test trên mobile, ổn.",
+      "content": "Tested on mobile, looks good.",
       "createdAt": "2026-09-22T00:00:00.000Z"
     },
     {
       "id": "cm36",
       "cardId": "c30",
       "authorId": "u3",
-      "content": "Có lỗi trên Safari.",
+      "content": "Broken on Safari.",
       "createdAt": "2026-09-27T00:00:00.000Z"
     }
   ]

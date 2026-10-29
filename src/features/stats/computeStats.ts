@@ -1,7 +1,7 @@
 import type { BoardStats, Card } from "../../types";
 import { getDueStatus } from "../../utils/date";
 
-/** Số liệu thống kê (T5.3). Một vòng lặp O(n) — bọc useMemo ở nơi gọi. */
+/** Stats numbers (T5.3). A single O(n) loop — wrap it in useMemo at the call site. */
 export function computeBoardStats(cards: Card[], today: string): BoardStats {
   const stats: BoardStats = {
     total: cards.length,

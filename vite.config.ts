@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    // Test không cần giả lập độ trễ mạng.
+    // Tests don't need simulated network delay.
     env: { VITE_API_DELAY: '0', VITE_API_FAIL_RATE: '0' },
     projects: [
       {
@@ -19,7 +19,7 @@ export default defineConfig({
         },
       },
       {
-        // Bài tập: test ĐỎ cho tới khi bạn sửa xong — xem LABS.md.
+        // Exercises: tests are RED until you fix them — see LABS.md.
         extends: true,
         test: { name: 'labs', include: ['src/labs/**/*.test.{ts,tsx}'] },
       },

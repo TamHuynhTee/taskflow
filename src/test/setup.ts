@@ -7,7 +7,7 @@ afterEach(() => {
   localStorage.clear();
 });
 
-// jsdom chưa có matchMedia (dùng ở useMediaQuery, ThemeProvider).
+// jsdom has no matchMedia yet (used by useMediaQuery, ThemeProvider).
 if (!window.matchMedia) {
   window.matchMedia = vi.fn((query: string) => ({
     matches: false,

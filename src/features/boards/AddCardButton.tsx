@@ -1,9 +1,9 @@
 import type { ComponentProps } from "react";
 import "./boardWidgets.css";
 
-/** Nút "+ Thêm card" đặt cuối cột (qua renderColumnFooter của BoardView). */
+/** "+ Add card" button at the bottom of a column (via BoardView's renderColumnFooter). */
 export function AddCardButton({
-  children = "+ Thêm card",
+  children = "+ Add card",
   ...rest
 }: ComponentProps<"button">) {
   return (

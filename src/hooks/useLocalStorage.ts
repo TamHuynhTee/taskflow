@@ -5,23 +5,23 @@ function read<T>(key: string, initial: T): T {
     const raw = localStorage.getItem(key);
     return raw === null ? initial : (JSON.parse(raw) as T);
   } catch {
-    return initial; // JSON hỏng hoặc localStorage bị chặn
+    return initial; // broken JSON or localStorage is blocked
   }
 }
 
-/** useState có lưu vào localStorage (T2.4). */
+/** useState persisted to localStorage (T2.4). */
 export function useLocalStorage<T>(
   key: string,
   initial: T,
 ): [T, (next: T | ((prev: T) => T)) => void] {
-  // Lazy init: hàm chỉ chạy ở lần render đầu, không đọc localStorage mỗi render.
+  // Lazy init: the function only runs on the first render, so localStorage isn't read every render.
   const [value, setValue] = useState<T>(() => read(key, initial));
 
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch {
-      // Hết dung lượng / chế độ ẩn danh: bỏ qua, state trong bộ nhớ vẫn đúng.
+      // Quota exceeded / private mode: ignore it, the in-memory state is still correct.
     }
   }, [key, value]);
 

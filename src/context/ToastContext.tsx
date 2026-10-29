@@ -40,7 +40,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     [dismiss],
   );
 
-  // Unmount → huỷ mọi timer còn chờ, tránh setState trên component đã gỡ.
+  // Unmount → cancel every pending timer, avoiding setState on an unmounted component.
   useEffect(() => {
     const map = timers.current;
     return () => {
@@ -49,7 +49,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // `show` ổn định → component chỉ cần show() không render lại khi danh sách toast đổi.
+  // `show` is stable → components that only need show() don't re-render when the toast list changes.
   const value = useMemo(() => ({ show }), [show]);
 
   return (
@@ -62,6 +62,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 export function useToast() {
   const ctx = use(ToastContext);
-  if (!ctx) throw new Error("useToast phải dùng bên trong <ToastProvider>");
+  if (!ctx) throw new Error("useToast must be used inside <ToastProvider>");
   return ctx;
 }

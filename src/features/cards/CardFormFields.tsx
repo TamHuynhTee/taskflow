@@ -1,9 +1,9 @@
-// Các ô nhập của form tạo/sửa card. KHÔNG chứa thẻ <form>, state, validate hay submit —
-// đó là phần bạn viết trong CreateCardForm (T1.2, T4.3).
+// Inputs for the create/edit card form. NO <form> tag, state, validation or submit —
+// those are yours to write in CreateCardForm (T1.2, T4.3).
 //
-// Hai cách dùng:
-//   • Controlled (T1.2 bản 1): truyền `values` + `onFieldChange`.
-//   • Uncontrolled (T1.2 bản 2, T4.3): truyền `defaultValues` (hoặc không truyền gì), rồi đọc bằng
+// Two ways to use it:
+//   • Controlled (T1.2 version 1): pass `values` + `onFieldChange`.
+//   • Uncontrolled (T1.2 version 2, T4.3): pass `defaultValues` (or nothing), then read with
 //     new FormData(form): get('title'), get('description'), get('priority'), getAll('labels'),
 //     get('dueDate'), get('assigneeId').
 import type { ReactNode, Ref } from "react";
@@ -26,7 +26,7 @@ interface CardFormFieldsProps {
     value: CardFormValues[K],
   ) => void;
   defaultValues?: Partial<CardFormValues>;
-  /** Ref tới ô tiêu đề — để tự focus khi mở form (T2.3). */
+  /** Ref to the title field — to focus it when the form opens (T2.3). */
   titleRef?: Ref<HTMLInputElement>;
 }
 
@@ -47,7 +47,7 @@ export function CardFormFields({
   defaultValues,
   titleRef,
 }: CardFormFieldsProps) {
-  // Controlled khi có `values`: mỗi ô nhận value + onChange. Ngược lại dùng defaultValue.
+  // Controlled when `values` is given: each field gets value + onChange. Otherwise defaultValue.
   const bind = <
     K extends "title" | "description" | "priority" | "dueDate" | "assigneeId",
   >(
@@ -64,29 +64,29 @@ export function CardFormFields({
   return (
     <div className="card-form">
       <TextField
-        label="Tiêu đề *"
+        label="Title *"
         name="title"
-        placeholder="Vd: Sửa lỗi trang đăng nhập"
+        placeholder="E.g. Fix the login page"
         ref={titleRef}
         error={errors.title}
         {...bind("title")}
       />
       <TextAreaField
-        label="Mô tả"
+        label="Description"
         name="description"
         error={errors.description}
         {...bind("description")}
       />
       <div className="card-form__row">
         <SelectField
-          label="Độ ưu tiên"
+          label="Priority"
           name="priority"
           options={priorityOptions}
           error={errors.priority}
           {...bind("priority")}
         />
         <TextField
-          label="Hạn chót"
+          label="Due date"
           name="dueDate"
           type="date"
           error={errors.dueDate}
@@ -94,10 +94,10 @@ export function CardFormFields({
         />
       </div>
       <SelectField
-        label="Giao cho"
+        label="Assignee"
         name="assigneeId"
         options={[
-          { value: "", label: "— Chưa giao —" },
+          { value: "", label: "— Unassigned —" },
           ...users.map((u) => ({ value: u.id, label: u.name })),
         ]}
         error={errors.assigneeId}
@@ -116,12 +116,12 @@ export function CardFormFields({
   );
 }
 
-/** Hàng nút cuối form (đặt Huỷ / Lưu vào). */
+/** Button row at the bottom of the form (put Cancel / Save in it). */
 export function FormActions({ children }: { children: ReactNode }) {
   return <div className="form-actions">{children}</div>;
 }
 
-/** Thông báo chung của form: lỗi server, "Đã lưu"... */
+/** General form message: server error, "Saved"... */
 export function FormMessage({
   tone = "error",
   children,

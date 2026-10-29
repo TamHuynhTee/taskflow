@@ -22,12 +22,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     systemTheme(),
   );
 
-  // Đồng bộ ra "hệ thống bên ngoài" React: thuộc tính trên <html>.
+  // Sync to a system "outside" React: an attribute on <html>.
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
 
-  // useMemo: value chỉ đổi khi theme đổi → consumer không render lại vô cớ khi Provider render lại (T5.4c).
+  // useMemo: value only changes when the theme changes → consumers don't re-render needlessly when the Provider re-renders (T5.4c).
   const value = useMemo(
     () => ({
       theme,
@@ -37,12 +37,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     [theme, setTheme],
   );
 
-  // React 19: dùng <Context> trực tiếp làm Provider.
+  // React 19: use <Context> directly as the Provider.
   return <ThemeContext value={value}>{children}</ThemeContext>;
 }
 
 export function useTheme() {
   const ctx = use(ThemeContext);
-  if (!ctx) throw new Error("useTheme phải dùng bên trong <ThemeProvider>");
+  if (!ctx) throw new Error("useTheme must be used inside <ThemeProvider>");
   return ctx;
 }

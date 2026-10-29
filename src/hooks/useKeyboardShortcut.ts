@@ -8,7 +8,7 @@ function isTyping(target: EventTarget | null) {
   );
 }
 
-/** Phím tắt toàn trang, bỏ qua khi đang gõ trong ô nhập (T2.4). */
+/** Page-wide keyboard shortcut, ignored while typing in an input (T2.4). */
 export function useKeyboardShortcut(
   key: string,
   handler: (e: KeyboardEvent) => void,

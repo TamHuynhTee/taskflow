@@ -1,8 +1,8 @@
 // LAB 06 — useSyncExternalStore & getSnapshot
-// 🐞 Mở trang demo: lab crash ("Maximum update depth exceeded") + console báo
-//    "The result of getSnapshot should be cached". Không có ErrorBoundary thì cả app trắng trang.
-// Giữ nguyên: export `useWindowSize` (trả { width, height }) và `WindowSize` (hiện "<w> × <h>").
-// Bonus (không có test): thêm getServerSnapshot để hook chạy được khi SSR.
+// 🐞 Open the demo page: the lab crashes ("Maximum update depth exceeded") + the console says
+//    "The result of getSnapshot should be cached". Without an ErrorBoundary the whole app goes blank.
+// Keep as is: the `useWindowSize` export (returns { width, height }) and `WindowSize` (shows "<w> × <h>").
+// Bonus (no test): add getServerSnapshot so the hook works during SSR.
 import { useSyncExternalStore } from "react";
 
 function subscribe(callback: () => void) {

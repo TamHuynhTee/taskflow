@@ -3,7 +3,7 @@ import type { Card, ColumnId, Priority } from "../../types";
 const COLUMN_ORDER: ColumnId[] = ["todo", "doing", "done"];
 const PRIORITY_ORDER: Priority[] = ["low", "medium", "high", "urgent"];
 
-/** todo ⇄ doing ⇄ done; ở biên thì giữ nguyên (T1.1). */
+/** todo ⇄ doing ⇄ done; stays put at the edges (T1.1). */
 export function nextColumnId(
   columnId: ColumnId,
   direction: "left" | "right",
@@ -13,7 +13,7 @@ export function nextColumnId(
   return COLUMN_ORDER[next] ?? columnId;
 }
 
-/** `order` lớn nhất trong cột + 1; cột rỗng → 0 (T1.1). */
+/** Highest `order` in the column + 1; empty column → 0 (T1.1). */
 export function nextOrder(
   cards: Card[],
   boardId: string,
@@ -28,7 +28,7 @@ export function nextOrder(
   return max + 1;
 }
 
-/** low → medium → high → urgent; urgent giữ nguyên (T1.4). */
+/** low → medium → high → urgent; urgent stays put (T1.4). */
 export function nextPriority(p: Priority): Priority {
   return PRIORITY_ORDER[PRIORITY_ORDER.indexOf(p) + 1] ?? p;
 }

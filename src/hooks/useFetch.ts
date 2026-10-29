@@ -7,8 +7,8 @@ interface FetchState<T> {
 }
 
 /**
- * Gọi API trong effect (T2.1 → T2.4). Mỗi lần `deps` đổi: huỷ request cũ bằng AbortController
- * trong cleanup, nên kết quả về muộn của request cũ không bao giờ ghi đè dữ liệu mới (race condition).
+ * Calls an API in an effect (T2.1 → T2.4). Whenever `deps` change: the old request is aborted with an AbortController
+ * in the cleanup, so a late result from an old request never overwrites newer data (race condition).
  */
 export function useFetch<T>(
   load: (signal: AbortSignal) => Promise<T>,
@@ -20,8 +20,8 @@ export function useFetch<T>(
     loading: true,
   });
   const [reloadKey, setReloadKey] = useState(0);
-  // `load` thường là arrow function mới mỗi render — không muốn effect chạy lại vì nó,
-  // nên đọc qua Effect Event (luôn thấy bản `load` mới nhất nhưng không phải dependency).
+  // `load` is usually a new arrow function every render — we don't want the effect to re-run because of it,
+  // so read it through an Effect Event (always sees the latest `load` but isn't a dependency).
   const runLoad = useEffectEvent(load);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export function useFetch<T>(
       },
     );
     return () => controller.abort();
-    // deps do nơi gọi truyền vào, giống chữ ký của useEffect.
+    // deps are passed in by the caller, like useEffect's signature.
     // oxlint-disable-next-line react/exhaustive-deps
   }, [...deps, reloadKey]);
 

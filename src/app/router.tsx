@@ -7,14 +7,14 @@ import { CardDetailRoute } from "../features/cards/CardDetailRoute";
 import { NotFoundView } from "../pages/NotFoundView";
 import { RootLayout } from "./RootLayout";
 
-// T4.1: mỗi trang lazy là một chunk JS riêng, chỉ tải khi mở trang lần đầu.
+// T4.1: each lazy page is its own JS chunk, loaded only the first time the page opens.
 const StatsPage = lazy(() => import("../features/stats/StatsPage"));
 const SettingsPage = lazy(() => import("../features/settings/SettingsPage"));
 const LabsPage = lazy(() => import("../labs/LabsPage"));
 
 export const routes = [
   { path: "/login", element: <LoginPage /> },
-  // Bài tập React nâng cao — không cần đăng nhập, không cần API.
+  // Advanced React exercises — no login, no API needed.
   { path: "/labs/:labId?", element: <LabsPage /> },
   {
     path: "/",
@@ -35,7 +35,7 @@ export const routes = [
       { path: "settings", element: <SettingsPage /> },
       {
         path: "*",
-        element: <NotFoundView action={<Link to="/boards">Về trang board</Link>} />,
+        element: <NotFoundView action={<Link to="/boards">Back to boards</Link>} />,
       },
     ],
   },

@@ -3,8 +3,8 @@ import { expect, test, vi } from "vitest";
 import { deferred } from "../testUtils";
 import { ReportLab } from "./ReportLab";
 
-test("lỗi async hiện ở ErrorBoundary và thử lại được", async () => {
-  vi.spyOn(console, "error").mockImplementation(() => {}); // React log lỗi đã bắt
+test("an async error shows in the ErrorBoundary and can be retried", async () => {
+  vi.spyOn(console, "error").mockImplementation(() => {}); // React logs caught errors
   const first = deferred<string>();
   const load = vi
     .fn<() => Promise<string>>()
@@ -12,13 +12,13 @@ test("lỗi async hiện ở ErrorBoundary và thử lại được", async () =
     .mockResolvedValueOnce("OK");
 
   render(<ReportLab load={load} />);
-  fireEvent.click(screen.getByRole("button", { name: "Tải báo cáo" }));
-  expect(screen.getByRole("button", { name: "Tải báo cáo" })).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: "Load report" }));
+  expect(screen.getByRole("button", { name: "Load report" })).toBeDisabled();
 
-  await act(async () => first.reject(new Error("Server trả về 500")));
-  expect(screen.getByRole("alert")).toHaveTextContent("Lỗi: Server trả về 500");
+  await act(async () => first.reject(new Error("Server returned 500")));
+  expect(screen.getByRole("alert")).toHaveTextContent("Error: Server returned 500");
 
-  fireEvent.click(screen.getByRole("button", { name: "Thử lại" }));
-  fireEvent.click(screen.getByRole("button", { name: "Tải báo cáo" }));
-  expect(await screen.findByText("Báo cáo: OK")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+  fireEvent.click(screen.getByRole("button", { name: "Load report" }));
+  expect(await screen.findByText("Report: OK")).toBeInTheDocument();
 });

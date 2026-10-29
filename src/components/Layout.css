@@ -54,7 +54,7 @@
   color: var(--text);
 }
 
-/* NavLink của react-router tự thêm class "active" cho link đang mở. */
+/* react-router's NavLink adds the "active" class to the current link. */
 .layout__nav-link.active {
   background: var(--accent-soft);
   color: var(--accent);

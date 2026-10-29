@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { makeCard } from "../../test/factories";
 import { computeBoardStats } from "./computeStats";
 
-test("computeBoardStats đếm đúng, card xong không tính quá hạn", () => {
+test("computeBoardStats counts correctly; done cards aren't counted as overdue", () => {
   const stats = computeBoardStats(
     [
       makeCard({ id: "1", dueDate: "2026-10-01", assigneeId: "u1" }),

@@ -1,8 +1,8 @@
-// LAB 07 — Reset state bằng `key`
-// 🐞 Chọn card 1, sửa ô tiêu đề, rồi chọn card 2 → ô vẫn hiện bản nháp của card 1.
-//    Bấm "Lưu" lúc đó sẽ ghi đè tiêu đề card 2 bằng nội dung của card 1!
-// Giữ nguyên: export `KeyLab`, nút chọn card có tên = title, ô nhập label "Tiêu đề", nút "Lưu".
-// KHÔNG dùng useEffect để đồng bộ draft theo card (xem "You Might Not Need an Effect").
+// LAB 07 — Resetting state with `key`
+// 🐞 Select card 1, edit the title field, then select card 2 → the field still shows card 1's draft.
+//    Pressing "Save" at that point overwrites card 2's title with card 1's text!
+// Keep as is: the `KeyLab` export, card buttons named after their title, the input labelled "Title", the "Save" button.
+// DON'T use useEffect to sync the draft with the card (see "You Might Not Need an Effect").
 import { useState } from "react";
 
 interface LabCard {
@@ -11,8 +11,8 @@ interface LabCard {
 }
 
 const INITIAL: LabCard[] = [
-  { id: "c1", title: "Sửa lỗi đăng nhập" },
-  { id: "c2", title: "Viết tài liệu API" },
+  { id: "c1", title: "Fix login bug" },
+  { id: "c2", title: "Write API docs" },
 ];
 
 export function KeyLab() {
@@ -54,9 +54,9 @@ function CardEditor({
   return (
     <div className="lab-row">
       <label>
-        Tiêu đề <input value={draft} onChange={(e) => setDraft(e.target.value)} />
+        Title <input value={draft} onChange={(e) => setDraft(e.target.value)} />
       </label>
-      <button onClick={() => onSave(draft)}>Lưu</button>
+      <button onClick={() => onSave(draft)}>Save</button>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-/* Biến màu dùng chung. data-theme='dark' trên <html> sẽ được bật ở T3.2. */
+/* Shared color variables. data-theme='dark' on <html> gets switched on in T3.2. */
 :root {
   --bg: #f6f7f9;
   --surface: #ffffff;
@@ -57,13 +57,13 @@ input:focus-visible {
   outline-offset: 2px;
 }
 
-/* Card focus được bằng bàn phím (T6.3). */
+/* Cards are keyboard-focusable (T6.3). */
 .card-item:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Ẩn khỏi màn hình nhưng trình đọc màn hình vẫn đọc được (T6.3). */
+/* Hidden from the screen but still read by screen readers (T6.3). */
 .sr-only {
   position: absolute;
   width: 1px;

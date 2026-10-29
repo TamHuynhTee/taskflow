@@ -1,6 +1,6 @@
 // LAB 01 — Stale closure
-// 🐞 Bấm "Bắt đầu": đồng hồ lên 1 rồi đứng im mãi mãi.
-// Giữ nguyên: export `Stopwatch`, chữ "<n> giây", tên nút "Bắt đầu" / "Dừng" / "Đặt lại".
+// 🐞 Press "Start": the stopwatch goes to 1 and then stays there forever.
+// Keep as is: the `Stopwatch` export, the "<n> seconds" text, the button names "Start" / "Stop" / "Reset".
 import { useEffect, useState } from "react";
 
 export function Stopwatch() {
@@ -17,9 +17,9 @@ export function Stopwatch() {
 
   return (
     <div className="lab-row">
-      <output className="lab-big">{seconds} giây</output>
+      <output className="lab-big">{seconds} seconds</output>
       <button onClick={() => setRunning(!running)}>
-        {running ? "Dừng" : "Bắt đầu"}
+        {running ? "Stop" : "Start"}
       </button>
       <button
         onClick={() => {
@@ -27,7 +27,7 @@ export function Stopwatch() {
           setSeconds(0);
         }}
       >
-        Đặt lại
+        Reset
       </button>
     </div>
   );

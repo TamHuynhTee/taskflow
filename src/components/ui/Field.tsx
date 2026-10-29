@@ -1,11 +1,11 @@
-// Các ô nhập liệu có label + thông báo lỗi.
-// Mọi props còn lại (value, onChange, defaultValue, name, ref, ...) được chuyển thẳng xuống
-// thẻ <input>/<select>/<textarea>, nên dùng được cả kiểu controlled lẫn uncontrolled.
-// Từ React 19, `ref` cũng là một prop thường nên `...rest` truyền luôn ref xuống input (T3.5).
+// Inputs with a label + an error message.
+// All remaining props (value, onChange, defaultValue, name, ref, ...) are passed straight down to
+// the <input>/<select>/<textarea>, so they work both controlled and uncontrolled.
+// Since React 19, `ref` is a regular prop too, so `...rest` passes the ref down to the input (T3.5).
 //
-// T3.6: `id` là tuỳ chọn — không truyền thì tự sinh bằng useId(). useId cho id ổn định giữa
-// các lần render, duy nhất trong trang (2 form cùng lúc không trùng) và khớp giữa server/client khi SSR.
-// Không dùng Math.random()/biến đếm toàn cục: mỗi render ra id khác, và lệch khi hydrate.
+// T3.6: `id` is optional — if omitted it's generated with useId(). useId gives an id that's stable across
+// renders, unique in the page (two forms at once never clash) and matches between server/client with SSR.
+// Don't use Math.random()/a global counter: a different id on every render, and a mismatch on hydration.
 import { useId, type ComponentProps, type ReactNode } from "react";
 
 interface FieldShellProps {
@@ -135,7 +135,7 @@ interface CheckboxGroupProps {
   label: string;
   name: string;
   options: Option[];
-  /** Controlled: truyền value + onChange. Uncontrolled: truyền defaultValue (đọc bằng FormData.getAll(name)). */
+  /** Controlled: pass value + onChange. Uncontrolled: pass defaultValue (read with FormData.getAll(name)). */
   value?: string[];
   defaultValue?: string[];
   onChange?: (values: string[]) => void;

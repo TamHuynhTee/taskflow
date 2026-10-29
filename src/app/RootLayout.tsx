@@ -16,7 +16,7 @@ import { useMediaQuery } from "../hooks/useMediaQuery";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
 
 export function RootLayout() {
-  // T4.9: mở sẵn kết nối tới API (DNS + TCP + TLS) trước khi request đầu tiên cần tới.
+  // T4.9: open the connection to the API early (DNS + TCP + TLS), before the first request needs it.
   preconnect(API_URL);
 
   return (
@@ -39,10 +39,10 @@ function AppShell() {
             Board
           </NavLink>
           <NavLink to="/stats" className="layout__nav-link">
-            Thống kê
+            Stats
           </NavLink>
           <NavLink to="/settings" className="layout__nav-link">
-            Cài đặt
+            Settings
           </NavLink>
         </>
       }
@@ -50,14 +50,14 @@ function AppShell() {
       banner={
         !online && (
           <Banner tone="warning">
-            Mất kết nối mạng — thay đổi sẽ không được lưu.
+            You're offline — changes won't be saved.
           </Banner>
         )
       }
-      // T2.6: màn hình hẹp → bỏ sidebar, BoardPage hiện nút "Bộ lọc" mở Modal.
+      // T2.6: narrow screen → drop the sidebar; BoardPage shows a "Filters" button that opens a Modal.
       sidebar={isMobile ? undefined : <AppSidebar />}
     >
-      {/* resetKeys: lỗi ở một trang không "dính" sang trang khác sau khi điều hướng. */}
+      {/* resetKeys: an error on one page doesn't "stick" to the next page after navigating. */}
       <ErrorBoundary
         resetKeys={[pathname]}
         fallback={(error, reset) => <ErrorMessage error={error} onRetry={reset} />}
@@ -71,8 +71,8 @@ function AppShell() {
 }
 
 /**
- * Tách riêng để chỉ phần header đọc ThemeContext/AuthContext (T5.4c): đổi theme chỉ render
- * lại component này (+ những nơi useTheme), không kéo cả board render lại.
+ * Split out so only the header reads ThemeContext/AuthContext (T5.4c): changing the theme only
+ * re-renders this component (+ whatever calls useTheme), not the whole board.
  */
 function HeaderActions() {
   const { theme, toggleTheme } = useTheme();

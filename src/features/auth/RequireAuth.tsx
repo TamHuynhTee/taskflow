@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 
-/** Chưa đăng nhập → /login, nhớ trang đang muốn vào trong `state.from` (T3.2). */
+/** Not signed in → /login, remembering the requested page in `state.from` (T3.2). */
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const location = useLocation();

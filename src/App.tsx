@@ -6,8 +6,8 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
 
 function App() {
-  // Tạo router 1 lần cho mỗi App (lazy init) thay vì ở cấp module → mỗi test render App
-  // có router riêng đọc đúng URL hiện tại.
+  // Create the router once per App (lazy init) instead of at module level, so each test that
+  // renders App gets its own router reading the current URL.
   const [router] = useState(createAppRouter);
 
   return (

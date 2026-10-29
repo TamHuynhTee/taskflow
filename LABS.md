@@ -1,136 +1,136 @@
-# Labs — React nâng cao
+# Labs — Advanced React
 
-12 bài nhỏ, mỗi bài là **một component đang có bug** (🐞) hoặc **cần implement thêm** (🛠).
-Không cần API hay đăng nhập.
+12 small exercises. Each one is **a component with a bug** (🐞) or **something left to implement** (🛠).
+No API or login needed.
 
 ```bash
-npm run test:labs          # tự chấm: test ĐỎ cho tới khi bạn sửa đúng
-npm run test:labs:watch    # vừa sửa vừa xem test
-npm run dev                # xem demo: http://localhost:5173/labs
+npm run test:labs          # self-check: tests stay RED until your fix is right
+npm run test:labs:watch    # watch the tests while you edit
+npm run dev                # demos: http://localhost:5173/labs
 ```
 
-Cách làm mỗi bài:
-1. Mở demo `/labs/NN`, **tái hiện bug** bằng mắt (mở cả Console / React DevTools).
-2. Đọc comment đầu file: mô tả bug + những gì phải giữ nguyên (tên export, chữ trên nút…) vì test dựa vào đó.
-3. **Giải thích bằng lời** vì sao bug xảy ra *trước* khi sửa. Ghi 1–2 dòng comment `// Vì sao:` vào file.
-4. Sửa → `npm run test:labs` xanh bài đó. Không sửa file test (trừ chỗ test cho phép).
-5. Nhắn **"review lab NN"** để được review.
+How to work through each lab:
+1. Open the demo `/labs/NN` and **reproduce the bug** yourself (with the Console / React DevTools open).
+2. Read the comment at the top of the file: it describes the bug + what must stay as is (export names, button text…) because the tests rely on it.
+3. **Explain in words** why the bug happens *before* fixing it. Write a 1–2 line `// Why:` comment in the file.
+4. Fix it → `npm run test:labs` goes green for that lab. Don't edit the test files (except where a test says you may).
+5. Send **"review lab NN"** to get a review.
 
-Gợi ý được giấu trong `<details>` — cố gắng tự nghĩ ≥ 15 phút trước khi mở.
+Hints are hidden in `<details>` — try thinking on your own for ≥ 15 minutes before opening them.
 
-| # | Bài | Khái niệm | Loại |
+| # | Lab | Concept | Type |
 | --- | --- | --- | --- |
-| 01 | Đồng hồ đứng im | Stale closure, updater function | 🐞 |
-| 02 | Kết quả tìm kiếm nhảy lung tung | Race condition, cleanup | 🐞 |
-| 03 | Fetch không bao giờ dừng | Referential equality, deps | 🐞 |
-| 04 | memo mà vẫn render lại | `memo`, `useCallback`, props ổn định | 🐞 |
-| 05 | Context kéo cả cây render | Context value, tách context | 🐞 |
-| 06 | Lab crash vì getSnapshot | `useSyncExternalStore` | 🐞 |
-| 07 | Bản nháp dính sang card khác | Reset state bằng `key` | 🐞 |
-| 08 | Reducer bấm không ăn | Immutability, reducer thuần | 🐞 |
-| 09 | Đổi theme bị rớt kết nối | `useEffectEvent` | 🐞 |
-| 10 | Suspense kẹt mãi | `use(promise)`, cache promise | 🐞 |
-| 11 | Lỗi async lọt khỏi Error Boundary | Error Boundary + async | 🛠 |
-| 12 | Nút like phải chờ server | `useOptimistic`, transition | 🛠 |
+| 01 | The frozen stopwatch | Stale closure, updater function | 🐞 |
+| 02 | Search results jump around | Race condition, cleanup | 🐞 |
+| 03 | The fetch that never stops | Referential equality, deps | 🐞 |
+| 04 | memo, yet it still re-renders | `memo`, `useCallback`, stable props | 🐞 |
+| 05 | Context drags the whole tree along | Context value, splitting contexts | 🐞 |
+| 06 | The lab crashes because of getSnapshot | `useSyncExternalStore` | 🐞 |
+| 07 | The draft sticks to another card | Resetting state with `key` | 🐞 |
+| 08 | The reducer that ignores clicks | Immutability, pure reducers | 🐞 |
+| 09 | Changing the theme drops the connection | `useEffectEvent` | 🐞 |
+| 10 | Suspense stuck forever | `use(promise)`, caching promises | 🐞 |
+| 11 | Async errors slip past the Error Boundary | Error Boundary + async | 🛠 |
+| 12 | The like button waits for the server | `useOptimistic`, transitions | 🛠 |
 
 ---
 
-### 01 — Đồng hồ đứng im · `src/labs/01-stale-closure/Stopwatch.tsx`
-Bấm "Bắt đầu", đồng hồ lên 1 rồi đứng im. `npm run lint` cũng đang mách bạn một điều.
-- Câu hỏi: hàm trong `setInterval` "nhìn thấy" biến `seconds` của lần render nào?
-- Có ít nhất 2 cách sửa. Cách nào không cần tạo lại interval mỗi giây? Vì sao cách đó tốt hơn?
-<details><summary>Gợi ý</summary>
+### 01 — The frozen stopwatch · `src/labs/01-stale-closure/Stopwatch.tsx`
+Press "Start": the stopwatch goes to 1 and then freezes. `npm run lint` is also trying to tell you something.
+- Question: which render's `seconds` does the function inside `setInterval` "see"?
+- There are at least 2 fixes. Which one doesn't need to recreate the interval every second? Why is it better?
+<details><summary>Hint</summary>
 
-Closure chụp `seconds` của render lúc effect chạy (= 0) → mãi là `setSeconds(0 + 1)`. Dùng updater `setSeconds(s => s + 1)`: React đưa giá trị mới nhất vào, effect không cần phụ thuộc `seconds`.
+The closure captures `seconds` from the render when the effect ran (= 0) → it's always `setSeconds(0 + 1)`. Use the updater `setSeconds(s => s + 1)`: React passes in the latest value, so the effect doesn't need to depend on `seconds`.
 </details>
 
-### 02 — Kết quả tìm kiếm nhảy lung tung · `src/labs/02-race-condition/CardSearch.tsx`
-Gõ thật nhanh "lo" ở demo: kết quả cuối cùng là của "l". Có 2 test: request về sai thứ tự, và xoá ô tìm kiếm khi request cũ chưa về.
-<details><summary>Gợi ý</summary>
+### 02 — Search results jump around · `src/labs/02-race-condition/CardSearch.tsx`
+Type "lo" really fast in the demo: the final results are the ones for "l". There are 2 tests: requests arriving out of order, and clearing the search box before an old request comes back.
+<details><summary>Hint</summary>
 
-Mỗi lần effect chạy lại, cleanup của lần trước chạy trước. Đặt `let ignore = false` trong effect, cleanup gán `ignore = true`, chỉ `setResults` khi `!ignore`. (Hoặc `AbortController` nếu API hỗ trợ `signal` — như `useFetch` trong app.)
+Every time the effect re-runs, the previous run's cleanup runs first. Put `let ignore = false` in the effect, set `ignore = true` in the cleanup, and only call `setResults` when `!ignore`. (Or an `AbortController` if the API supports `signal` — like `useFetch` in the app.)
 </details>
 
-### 03 — Fetch không bao giờ dừng · `src/labs/03-object-deps/BoardCards.tsx`
-Console log "load lần 1, 2, 3…" mãi mãi. Không được sửa bằng `[]`.
-- Câu hỏi: `{ a: 1 } === { a: 1 }`? React so sánh deps bằng gì?
-<details><summary>Gợi ý</summary>
+### 03 — The fetch that never stops · `src/labs/03-object-deps/BoardCards.tsx`
+The console logs "load call 1, 2, 3…" forever. You may not fix it with `[]`.
+- Question: is `{ a: 1 } === { a: 1 }`? How does React compare deps?
+<details><summary>Hint</summary>
 
-`options` là object mới mỗi render → deps luôn "đổi" → effect chạy → `setCards` → render → object mới… Tạo object **bên trong** effect và phụ thuộc vào giá trị nguyên thuỷ `boardId`. (`useMemo` cũng được, nhưng ở đây là thừa.) Nhớ thêm cleanup chống race như bài 02.
+`options` is a new object every render → the deps always "change" → the effect runs → `setCards` → render → new object… Create the object **inside** the effect and depend on the primitive `boardId`. (`useMemo` works too, but it's overkill here.) Remember to add the race cleanup from lab 02.
 </details>
 
-### 04 — memo mà vẫn render lại · `src/labs/04-memo/CardPicker.tsx`
-Có 2 thứ phá `memo`. Bật React DevTools › Components › ⚙ › "Highlight updates when components render".
-<details><summary>Gợi ý</summary>
+### 04 — memo, yet it still re-renders · `src/labs/04-memo/CardPicker.tsx`
+There are 2 things defeating `memo`. Turn on React DevTools › Components › ⚙ › "Highlight updates when components render".
+<details><summary>Hint</summary>
 
-`memo` so sánh nông từng prop: `style={{...}}` và `onSelect={() => ...}` là tham chiếu mới mỗi render. Đưa style ra hằng ngoài component; cho `CardRow` gọi `onSelect(title)` để cha truyền thẳng `setSelected` (hàm set của useState luôn ổn định) — hoặc `useCallback`.
-Câu hỏi thêm: nếu bật React Compiler thì bài này còn bug không?
+`memo` shallow-compares each prop: `style={{...}}` and `onSelect={() => ...}` are new references every render. Move the style into a constant outside the component; have `CardRow` call `onSelect(title)` so the parent can pass `setSelected` directly (useState's setter is always stable) — or use `useCallback`.
+Bonus question: with the React Compiler on, does this lab still have the bug?
 </details>
 
-### 05 — Context kéo cả cây render · `src/labs/05-context/ContextLab.tsx`
-Hai vấn đề riêng: (1) Tick làm mọi consumer render lại; (2) Đổi theme làm cả `ToggleButton` render lại.
-<details><summary>Gợi ý</summary>
+### 05 — Context drags the whole tree along · `src/labs/05-context/ContextLab.tsx`
+Two separate problems: (1) Tick re-renders every consumer; (2) Toggle theme re-renders `ToggleButton` too.
+<details><summary>Hint</summary>
 
-(1) `value={{...}}` mới mỗi render → mọi consumer render lại. `useMemo` cho value (và `useCallback`/hàm ổn định cho toggle).
-(2) Một context chứa cả dữ liệu hay đổi (`theme`) lẫn hàm không đổi (`toggle`) → tách thành 2 context: `ThemeStateContext` và `ThemeActionsContext` — giống `BoardStateContext`/`BoardDispatchContext` ở T3.3.
-Vì sao `children` không render lại khi Provider render lại? (xem T5.4b)
+(1) `value={{...}}` is new every render → every consumer re-renders. `useMemo` the value (and use `useCallback`/a stable function for toggle).
+(2) One context holds both frequently changing data (`theme`) and a function that never changes (`toggle`) → split it into 2 contexts: `ThemeStateContext` and `ThemeActionsContext` — like `BoardStateContext`/`BoardDispatchContext` in T3.3.
+Why don't `children` re-render when the Provider re-renders? (see T5.4b)
 </details>
 
-### 06 — Lab crash vì getSnapshot · `src/labs/06-external-store/WindowSize.tsx`
-<details><summary>Gợi ý</summary>
+### 06 — The lab crashes because of getSnapshot · `src/labs/06-external-store/WindowSize.tsx`
+<details><summary>Hint</summary>
 
-`getSnapshot` bị gọi nhiều lần, React so kết quả bằng `Object.is`. Trả object mới mỗi lần → React tưởng store luôn đổi → render vô hạn. Cache snapshot (chỉ tạo object mới khi width/height thực sự đổi), hoặc dùng 2 hook trả số nguyên thuỷ. Bonus: tham số thứ 3 `getServerSnapshot`.
+`getSnapshot` is called many times and React compares the results with `Object.is`. Returning a new object each time → React thinks the store always changed → infinite renders. Cache the snapshot (only create a new object when width/height actually change), or use 2 hooks that return primitive numbers. Bonus: the 3rd parameter, `getServerSnapshot`.
 </details>
 
-### 07 — Bản nháp dính sang card khác · `src/labs/07-key-reset/KeyLab.tsx`
-Cấm dùng `useEffect(() => setDraft(card.title), [card])` — thử viết nó trước để thấy vì sao tệ (render thừa, nháy giá trị cũ 1 khung hình, đè mất chữ đang gõ khi cha render lại).
-<details><summary>Gợi ý</summary>
+### 07 — The draft sticks to another card · `src/labs/07-key-reset/KeyLab.tsx`
+`useEffect(() => setDraft(card.title), [card])` is not allowed — try writing it first to see why it's bad (an extra render, the old value flashes for a frame, it wipes out typed text when the parent re-renders).
+<details><summary>Hint</summary>
 
-`useState(card.title)` chỉ dùng giá trị khởi tạo ở lần mount. Cùng vị trí + cùng loại component = React giữ state. `<CardEditor key={card.id} />` → đổi card là component mới, state mới.
+`useState(card.title)` only uses the initial value on mount. Same position + same component type = React keeps the state. `<CardEditor key={card.id} />` → a different card is a new component with new state.
 </details>
 
-### 08 — Reducer bấm không ăn · `src/labs/08-reducer/todoReducer.ts`
-Có 4 bug: `push`, gán `todo.done`, `splice` (và `findIndex` trả `-1`!), `Math.random()` trong reducer.
-<details><summary>Gợi ý</summary>
+### 08 — The reducer that ignores clicks · `src/labs/08-reducer/todoReducer.ts`
+There are 4 bugs: `push`, assigning `todo.done`, `splice` (and `findIndex` returning `-1`!), and `Math.random()` inside the reducer.
+<details><summary>Hint</summary>
 
-React bỏ qua render nếu reducer trả **cùng tham chiếu** (`Object.is`). Dùng spread/`map`/`filter`. Reducer phải thuần (StrictMode gọi nó 2 lần!) → sinh id ở event handler: `dispatch({ type: "added", id: crypto.randomUUID(), text })`.
+React skips the render if the reducer returns **the same reference** (`Object.is`). Use spread/`map`/`filter`. A reducer must be pure (StrictMode calls it twice!) → generate the id in the event handler: `dispatch({ type: "added", id: crypto.randomUUID(), text })`.
 </details>
 
-### 09 — Đổi theme bị rớt kết nối · `src/labs/09-effect-event/ChatRoom.tsx`
-Test truyền `notify` là arrow function mới mỗi render — xoá `theme` khỏi deps thôi là chưa đủ.
-<details><summary>Gợi ý</summary>
+### 09 — Changing the theme drops the connection · `src/labs/09-effect-event/ChatRoom.tsx`
+The test passes `notify` as a new arrow function every render — just removing `theme` from the deps isn't enough.
+<details><summary>Hint</summary>
 
-"Kết nối phòng" là việc *phản ứng* theo `roomId`; "thông báo với theme hiện tại" là *sự kiện* — muốn đọc giá trị mới nhất nhưng không muốn nó gây chạy lại effect. `const onConnected = useEffectEvent(() => notify(..., theme))`, gọi trong effect, deps chỉ còn `[roomId, connect]`.
+"Connecting to the room" is something that *reacts* to `roomId`; "notifying with the current theme" is an *event* — you want the latest value but don't want it to re-run the effect. `const onConnected = useEffectEvent(() => notify(..., theme))`, call it inside the effect, and the deps become just `[roomId, connect]`.
 </details>
 
-### 10 — Suspense kẹt mãi · `src/labs/10-use-promise/UserProfile.tsx`
-<details><summary>Gợi ý</summary>
+### 10 — Suspense stuck forever · `src/labs/10-use-promise/UserProfile.tsx`
+<details><summary>Hint</summary>
 
-`use(fetchUser(id))` tạo promise mới mỗi render → suspend → resolve → render lại → promise mới… Cache promise **bên ngoài** component (Map theo `userId`, xem `src/api/promiseCache.ts`). Lưu ý: test truyền `fetchUser` riêng — cache nên gắn với `fetchUser` (vd. `WeakMap<fetchUser, Map<id, Promise>>`), hoặc truyền promise từ cha. Vì sao không dùng `useState`/`useMemo` trong chính `UserProfile` được? (gợi ý: state của component suspend lần đầu bị bỏ).
+`use(fetchUser(id))` creates a new promise every render → suspend → resolve → re-render → new promise… Cache the promise **outside** the component (a Map keyed by `userId`, see `src/api/promiseCache.ts`). Note: the test passes its own `fetchUser` — the cache should be tied to `fetchUser` (e.g. `WeakMap<fetchUser, Map<id, Promise>>`), or pass the promise in from the parent. Why can't you use `useState`/`useMemo` inside `UserProfile` itself? (hint: the state of a component that suspends on its first render is thrown away).
 </details>
 
-### 11 — Lỗi async lọt khỏi Error Boundary (🛠) · `src/labs/11-async-error/ReportLab.tsx`
-Yêu cầu: lỗi của `load()` hiện ở fallback của boundary, "Thử lại" hoạt động, nút disabled khi đang tải.
-<details><summary>Gợi ý</summary>
+### 11 — Async errors slip past the Error Boundary (🛠) · `src/labs/11-async-error/ReportLab.tsx`
+Requirements: `load()`'s error shows in the boundary's fallback, "Retry" works, and the button is disabled while loading.
+<details><summary>Hint</summary>
 
-Boundary chỉ bắt lỗi ném ra **lúc render**. Bắt lỗi trong handler (`try/catch`), lưu vào state, rồi `if (error) throw error` trong thân component. (Mẹo khác: `setState(() => { throw error })`.) Bonus: viết hook `useAsyncError()` dùng lại được.
+A boundary only catches errors thrown **during render**. Catch the error in the handler (`try/catch`), store it in state, then `if (error) throw error` in the component body. (Another trick: `setState(() => { throw error })`.) Bonus: write a reusable `useAsyncError()` hook.
 </details>
 
-### 12 — Nút like phải chờ server (🛠) · `src/labs/12-optimistic/LikeButton.tsx`
-<details><summary>Gợi ý</summary>
+### 12 — The like button waits for the server (🛠) · `src/labs/12-optimistic/LikeButton.tsx`
+<details><summary>Hint</summary>
 
-`const [optimisticLikes, addOptimistic] = useOptimistic(likes, (n) => n + 1)`. Trong `startTransition(async () => { addOptimistic(); try { const n = await sendLike(likes); startTransition(() => setLikes(n)) } catch { ... } })`. Optimistic chỉ sống trong lúc transition chạy — xong (dù lỗi) là tự quay về `likes` thật. `aria-busy` = `optimisticLikes !== likes`. Vì sao `setLikes` sau `await` phải bọc `startTransition` lần nữa?
+`const [optimisticLikes, addOptimistic] = useOptimistic(likes, (n) => n + 1)`. Inside `startTransition(async () => { addOptimistic(); try { const n = await sendLike(likes); startTransition(() => setLikes(n)) } catch { ... } })`. The optimistic value only lives while the transition is running — once it ends (even with an error) it falls back to the real `likes`. `aria-busy` = `optimisticLikes !== likes`. Why does `setLikes` after `await` need to be wrapped in `startTransition` again?
 </details>
 
 ---
 
-## Bài mở rộng (không có test — tự kiểm bằng DevTools)
+## Extension exercises (no tests — check with DevTools)
 
-Làm trên app TaskFlow chính:
+Done on the main TaskFlow app:
 
-- **E1 · React Compiler:** bật compiler (T5.7) rồi chạy lại lab 04 & 05 — test nào tự xanh? Vì sao lab 05 phần (2) vẫn đỏ?
-- **E2 · `useTransition` cho bộ lọc:** ở `BoardPage`, lọc 5.000 card (`npm run api:big`) khi tick label bị giật. Bọc cập nhật URL của `FilterPanel` trong `startTransition`, làm mờ board khi `isPending`. So sánh với `useDeferredValue`.
-- **E3 · Ref callback cleanup (React 19):** viết `useAutoHeight()` trả về ref callback dùng `ResizeObserver`, **trả về hàm cleanup** từ ref callback (tính năng mới React 19) thay cho `useEffect`.
-- **E4 · `useActionState` cho đổi tên card:** thay `InlineEdit` + `renameCard` bằng `<form action>`; hiện lỗi server ngay dưới ô.
-- **E5 · Huỷ optimistic khi rời board:** đang kéo card (API delay 3s) thì chuyển board — chuyện gì xảy ra với toast/focus? Sửa cho gọn.
-- **E6 · Bug thật trong app:** `useKeyboardShortcut("n")` vẫn mở form khi đang xem modal chi tiết card. Sửa để phím tắt tắt khi có bất kỳ modal nào đang mở (gợi ý: `modalStack` trong `Modal.tsx`, hoặc một context "overlay").
+- **E1 · React Compiler:** turn on the compiler (T5.7) and re-run labs 04 & 05 — which tests turn green on their own? Why does part (2) of lab 05 stay red?
+- **E2 · `useTransition` for filters:** in `BoardPage`, filtering 5,000 cards (`npm run api:big`) stutters when ticking a label. Wrap `FilterPanel`'s URL update in `startTransition` and dim the board while `isPending`. Compare with `useDeferredValue`.
+- **E3 · Ref callback cleanup (React 19):** write `useAutoHeight()` that returns a ref callback using `ResizeObserver`, and **return a cleanup function** from the ref callback (new in React 19) instead of using `useEffect`.
+- **E4 · `useActionState` for renaming cards:** replace `InlineEdit` + `renameCard` with a `<form action>`; show the server error right under the field.
+- **E5 · Cancel the optimistic move when leaving a board:** move a card (API delay 3s) and switch boards meanwhile — what happens to the toast/focus? Clean it up.
+- **E6 · A real bug in the app:** `useKeyboardShortcut("n")` still opens the form while the card detail modal is open. Fix it so the shortcut is off whenever any modal is open (hint: `modalStack` in `Modal.tsx`, or an "overlay" context).

@@ -13,15 +13,15 @@ export function LoginPage() {
   const from = (location.state as { from?: Location } | null)?.from;
   const target = from ? `${from.pathname}${from.search}` : "/boards";
 
-  // Đăng nhập xong → user khác null → render lại → chuyển về trang `from`.
+  // Once signed in → user is no longer null → re-render → go back to the `from` page.
   if (user) return <Navigate to={target} replace />;
 
   return (
     <>
-      <title>Đăng nhập · TaskFlow</title>
+      <title>Sign in · TaskFlow</title>
       {users.error ? (
         <ErrorMessage
-          title="Không tải được danh sách tài khoản"
+          title="Couldn't load the account list"
           error={users.error}
           onRetry={users.reload}
         />

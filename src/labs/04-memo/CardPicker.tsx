@@ -1,10 +1,10 @@
-// LAB 04 — memo bị vô hiệu
-// 🐞 CardRow đã bọc memo, nhưng bấm "Làm mới" (state không liên quan) vẫn render lại MỌI dòng;
-//    chọn 1 card cũng render lại mọi dòng. Bật "Highlight updates" trong React DevTools để thấy.
-// Mục tiêu: "Làm mới" → 0 dòng render lại; chọn card X → chỉ những dòng đổi trạng thái chọn render lại.
-// Giữ nguyên: export `CardPicker`, `renderLog` (mỗi lần CardRow render push title vào), nút "Làm mới",
-//             mỗi dòng là button có tên = title, dòng đang chọn có aria-pressed="true".
-// Được phép sửa CardRow và props của nó. KHÔNG bật React Compiler.
+// LAB 04 — memo defeated
+// 🐞 CardRow is wrapped in memo, yet clicking "Refresh" (unrelated state) still re-renders EVERY row;
+//    selecting 1 card also re-renders every row. Turn on "Highlight updates" in React DevTools to see it.
+// Goal: "Refresh" → 0 rows re-render; selecting card X → only the rows whose selected state changed re-render.
+// Keep as is: the `CardPicker` export, `renderLog` (every CardRow render pushes its title), the "Refresh" button,
+//             each row is a button named after its title, the selected row has aria-pressed="true".
+// You may change CardRow and its props. DON'T turn on the React Compiler.
 import { memo, useState, type CSSProperties } from "react";
 
 export const renderLog: string[] = [];
@@ -31,7 +31,7 @@ const CardRow = memo(function CardRow({
 });
 
 export function CardPicker({
-  cards = ["Thiết kế logo", "Viết API", "Sửa lỗi Safari", "Deploy"],
+  cards = ["Design logo", "Write API", "Fix Safari bug", "Deploy"],
 }: {
   cards?: string[];
 }) {
@@ -40,8 +40,8 @@ export function CardPicker({
 
   return (
     <div className="lab-col">
-      <button onClick={() => setRefreshCount((n) => n + 1)}>Làm mới</button>
-      <small>Đã làm mới {refreshCount} lần</small>
+      <button onClick={() => setRefreshCount((n) => n + 1)}>Refresh</button>
+      <small>Refreshed {refreshCount} times</small>
       {cards.map((title) => (
         <CardRow
           key={title}
