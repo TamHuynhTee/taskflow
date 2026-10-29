@@ -10,7 +10,9 @@ export function Stopwatch() {
   useEffect(() => {
     if (!running) return;
     const id = setInterval(() => {
-      setSeconds(seconds + 1);
+      setSeconds((s) => s + 1);
+      // Reason: the state 'seconds' will always be 0 here since it is not passed as a useEffect's dependency
+      // setSeconds(seconds + 1);
     }, 1000);
     return () => clearInterval(id);
   }, [running]);
