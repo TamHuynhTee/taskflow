@@ -6,6 +6,8 @@ import type {
   Column as ColumnType,
   User,
 } from "../../types";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
+import { ErrorMessage } from "../../components/ui";
 import { Column, type CardExtraProps } from "./Column";
 import "./BoardView.css";
 
@@ -52,8 +54,21 @@ export function BoardView({
 
       <div className="board__columns">
         {board.columns.map((column) => (
-          <Column
+          // T3.7: mỗi cột một boundary → 1 card lỗi chỉ làm hỏng cột của nó.
+          <ErrorBoundary
             key={column.id}
+            fallback={(error, reset) => (
+              <section className="column" aria-label={column.title}>
+                <ErrorMessage
+                  compact
+                  title={`Cột "${column.title}" bị lỗi`}
+                  error={error}
+                  onRetry={reset}
+                />
+              </section>
+            )}
+          >
+          <Column
             column={column}
             cards={boardCards
               .filter((c) => c.columnId === column.id)
@@ -64,6 +79,7 @@ export function BoardView({
             onDropCard={onDropCard}
             footer={renderColumnFooter?.(column)}
           />
+          </ErrorBoundary>
         ))}
       </div>
     </div>

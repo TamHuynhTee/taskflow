@@ -112,7 +112,6 @@ export default function Gallery() {
       sidebar={
         <BoardSidebar
           boards={sampleBoards}
-          activeBoardId="b1"
           filters={
             <FilterPanel
               value={filter}

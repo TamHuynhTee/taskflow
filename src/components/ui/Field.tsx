@@ -3,9 +3,10 @@
 // thẻ <input>/<select>/<textarea>, nên dùng được cả kiểu controlled lẫn uncontrolled.
 // Từ React 19, `ref` cũng là một prop thường nên `...rest` truyền luôn ref xuống input (T3.5).
 //
-// T3.6: hiện `id` là BẮT BUỘC để nối <label htmlFor> với input. Nhiệm vụ của bạn là làm
-// `id` thành tuỳ chọn, tự sinh bằng useId() khi không truyền vào.
-import type { ComponentProps, ReactNode } from "react";
+// T3.6: `id` là tuỳ chọn — không truyền thì tự sinh bằng useId(). useId cho id ổn định giữa
+// các lần render, duy nhất trong trang (2 form cùng lúc không trùng) và khớp giữa server/client khi SSR.
+// Không dùng Math.random()/biến đếm toàn cục: mỗi render ra id khác, và lệch khi hydrate.
+import { useId, type ComponentProps, type ReactNode } from "react";
 
 interface FieldShellProps {
   id: string;
@@ -44,19 +45,21 @@ function describedBy(id: string, error?: string, hint?: string) {
 }
 
 type BaseFieldProps = {
-  id: string;
+  id?: string;
   label: string;
   error?: string;
   hint?: string;
 };
 
 export function TextField({
-  id,
+  id: idProp,
   label,
   error,
   hint,
   ...rest
 }: BaseFieldProps & ComponentProps<"input">) {
+  const autoId = useId();
+  const id = idProp ?? autoId;
   return (
     <FieldShell id={id} label={label} error={error} hint={hint}>
       <input
@@ -71,12 +74,14 @@ export function TextField({
 }
 
 export function TextAreaField({
-  id,
+  id: idProp,
   label,
   error,
   hint,
   ...rest
 }: BaseFieldProps & ComponentProps<"textarea">) {
+  const autoId = useId();
+  const id = idProp ?? autoId;
   return (
     <FieldShell id={id} label={label} error={error} hint={hint}>
       <textarea
@@ -97,13 +102,15 @@ export interface Option {
 }
 
 export function SelectField({
-  id,
+  id: idProp,
   label,
   error,
   hint,
   options,
   ...rest
 }: BaseFieldProps & { options: Option[] } & ComponentProps<"select">) {
+  const autoId = useId();
+  const id = idProp ?? autoId;
   return (
     <FieldShell id={id} label={label} error={error} hint={hint}>
       <select
@@ -124,7 +131,7 @@ export function SelectField({
 }
 
 interface CheckboxGroupProps {
-  id: string;
+  id?: string;
   label: string;
   name: string;
   options: Option[];
@@ -136,7 +143,7 @@ interface CheckboxGroupProps {
 }
 
 export function CheckboxGroup({
-  id,
+  id: idProp,
   label,
   name,
   options,
@@ -145,6 +152,8 @@ export function CheckboxGroup({
   onChange,
   error,
 }: CheckboxGroupProps) {
+  const autoId = useId();
+  const id = idProp ?? autoId;
   return (
     <fieldset
       className={`field field--group ${error ? "field--invalid" : ""}`}

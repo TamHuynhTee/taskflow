@@ -1,31 +1,23 @@
-import { Layout } from "./components/Layout";
-import { sampleBoards, sampleCards, sampleUsers } from "./data/sample";
-import { BoardPage } from "./features/boards/BoardPage";
-import { BoardSidebar } from "./features/boards/BoardSidebar";
-import { BoardView } from "./features/boards/BoardView";
-import { todayIso } from "./utils/date";
-
-// Đọc ngày hiện tại 1 lần khi load module, rồi truyền xuống qua props.
-// Gọi new Date() ngay trong render sẽ làm component không còn thuần (mỗi lần render một kết quả khác).
-const TODAY = todayIso();
+import { useState } from "react";
+import { RouterProvider } from "react-router";
+import { createAppRouter } from "./app/router";
+import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
 
 function App() {
-  // Level 0: board cố định. T1.5 sẽ biến activeBoardId thành state để đổi board.
-  const activeBoard = sampleBoards[0];
+  // Tạo router 1 lần cho mỗi App (lazy init) thay vì ở cấp module → mỗi test render App
+  // có router riêng đọc đúng URL hiện tại.
+  const [router] = useState(createAppRouter);
 
   return (
-    <Layout
-      sidebar={
-        <BoardSidebar boards={sampleBoards} activeBoardId={activeBoard.id} />
-      }
-    >
-      <BoardPage
-        board={activeBoard}
-        initialCards={sampleCards}
-        users={sampleUsers}
-        today={TODAY}
-      />
-    </Layout>
+    <ThemeProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <RouterProvider router={router} />
+        </ToastProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

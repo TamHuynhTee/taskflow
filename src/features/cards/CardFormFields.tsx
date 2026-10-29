@@ -28,8 +28,6 @@ interface CardFormFieldsProps {
   defaultValues?: Partial<CardFormValues>;
   /** Ref tới ô tiêu đề — để tự focus khi mở form (T2.3). */
   titleRef?: Ref<HTMLInputElement>;
-  /** Tiền tố id cho các ô. Đổi khi render 2 form cùng lúc. T3.6 sẽ thay bằng useId(). */
-  idPrefix?: string;
 }
 
 const priorityOptions = Object.entries(priorityMeta).map(([value, m]) => ({
@@ -48,7 +46,6 @@ export function CardFormFields({
   onFieldChange,
   defaultValues,
   titleRef,
-  idPrefix = "card-form",
 }: CardFormFieldsProps) {
   // Controlled khi có `values`: mỗi ô nhận value + onChange. Ngược lại dùng defaultValue.
   const bind = <
@@ -67,7 +64,6 @@ export function CardFormFields({
   return (
     <div className="card-form">
       <TextField
-        id={`${idPrefix}-title`}
         label="Tiêu đề *"
         name="title"
         placeholder="Vd: Sửa lỗi trang đăng nhập"
@@ -76,7 +72,6 @@ export function CardFormFields({
         {...bind("title")}
       />
       <TextAreaField
-        id={`${idPrefix}-description`}
         label="Mô tả"
         name="description"
         error={errors.description}
@@ -84,7 +79,6 @@ export function CardFormFields({
       />
       <div className="card-form__row">
         <SelectField
-          id={`${idPrefix}-priority`}
           label="Độ ưu tiên"
           name="priority"
           options={priorityOptions}
@@ -92,7 +86,6 @@ export function CardFormFields({
           {...bind("priority")}
         />
         <TextField
-          id={`${idPrefix}-dueDate`}
           label="Hạn chót"
           name="dueDate"
           type="date"
@@ -101,7 +94,6 @@ export function CardFormFields({
         />
       </div>
       <SelectField
-        id={`${idPrefix}-assigneeId`}
         label="Giao cho"
         name="assigneeId"
         options={[
@@ -112,7 +104,6 @@ export function CardFormFields({
         {...bind("assigneeId")}
       />
       <CheckboxGroup
-        id={`${idPrefix}-labels`}
         label="Label"
         name="labels"
         options={labelOptions}

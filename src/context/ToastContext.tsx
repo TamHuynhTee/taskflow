@@ -1,0 +1,67 @@
+import {
+  createContext,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { ToastStack } from "../components/ui";
+import type { ToastItem } from "../types";
+
+interface ToastContextValue {
+  show: (kind: ToastItem["kind"], message: string) => void;
+}
+
+const ToastContext = createContext<ToastContextValue | null>(null);
+const TOAST_MS = 4000;
+
+export function ToastProvider({ children }: { children: ReactNode }) {
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+
+  const dismiss = useCallback((id: string) => {
+    clearTimeout(timers.current.get(id));
+    timers.current.delete(id);
+    setToasts((ts) => ts.filter((t) => t.id !== id));
+  }, []);
+
+  const show = useCallback(
+    (kind: ToastItem["kind"], message: string) => {
+      const id = crypto.randomUUID();
+      setToasts((ts) => [...ts, { id, kind, message }]);
+      timers.current.set(
+        id,
+        setTimeout(() => dismiss(id), TOAST_MS),
+      );
+    },
+    [dismiss],
+  );
+
+  // Unmount → huỷ mọi timer còn chờ, tránh setState trên component đã gỡ.
+  useEffect(() => {
+    const map = timers.current;
+    return () => {
+      map.forEach(clearTimeout);
+      map.clear();
+    };
+  }, []);
+
+  // `show` ổn định → component chỉ cần show() không render lại khi danh sách toast đổi.
+  const value = useMemo(() => ({ show }), [show]);
+
+  return (
+    <ToastContext value={value}>
+      {children}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </ToastContext>
+  );
+}
+
+export function useToast() {
+  const ctx = use(ToastContext);
+  if (!ctx) throw new Error("useToast phải dùng bên trong <ToastProvider>");
+  return ctx;
+}

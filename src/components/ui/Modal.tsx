@@ -1,8 +1,16 @@
-// Phần giao diện của Modal. Các hành vi sau là bài tập, CHƯA làm:
-//   T3.4 — render vào document.body bằng createPortal; đóng khi bấm Esc; đóng khi click
-//          ra backdrop (nhưng không đóng khi click bên trong panel); khoá scroll body khi mở.
-//   T6.3 — focus trap (Tab không thoát ra ngoài modal), trả focus về phần tử cũ khi đóng.
-import type { ReactNode } from "react";
+// Modal: render qua portal vào document.body (T3.4) + quản lý focus (T6.3).
+//
+// THÍ NGHIỆM (T3.4): bọc <Modal> trong <div onClick={() => console.log("bubble")}>. Click bên trong
+// modal vẫn log dù DOM của modal nằm ở <body>: sự kiện React nổi bọt theo CÂY REACT (cha/con
+// trong JSX), không theo cây DOM. Portal chỉ đổi chỗ gắn DOM, không đổi quan hệ cha/con.
+import {
+  useEffect,
+  useEffectEvent,
+  useId,
+  useRef,
+  type ReactNode,
+} from "react";
+import { createPortal } from "react-dom";
 import { Button, IconButton } from "./Button";
 
 interface ModalProps {
@@ -14,6 +22,16 @@ interface ModalProps {
   size?: "sm" | "md" | "lg";
 }
 
+// Ngăn xếp modal đang mở: chỉ modal trên cùng phản ứng với Esc/Tab (2 modal lồng nhau).
+const modalStack: symbol[] = [];
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function focusablesIn(el: HTMLElement) {
+  return [...el.querySelectorAll<HTMLElement>(FOCUSABLE)];
+}
+
 export function Modal({
   open,
   title,
@@ -22,18 +40,82 @@ export function Modal({
   footer,
   size = "md",
 }: ModalProps) {
+  const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+  // onClose thường là arrow function mới mỗi render; đọc qua Effect Event để effect
+  // không phải gỡ/gắn lại listener (và khôi phục focus nhầm) mỗi lần cha render.
+  const close = useEffectEvent(onClose);
+
+  useEffect(() => {
+    if (!open) return;
+    const token = Symbol("modal");
+    modalStack.push(token);
+    const isTop = () => modalStack.at(-1) === token;
+
+    const opener = document.activeElement as HTMLElement | null;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    // Effect của con chạy TRƯỚC effect của cha: nếu con đã tự focus (vd. ô tiêu đề ở
+    // CreateCardForm) thì giữ nguyên, không cướp focus.
+    const panel = panelRef.current!;
+    if (!panel.contains(document.activeElement)) {
+      (focusablesIn(panel)[0] ?? panel).focus();
+    }
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (!isTop()) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        close();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      // Focus trap: Tab ở phần tử cuối → về đầu; Shift+Tab ở đầu → về cuối.
+      const items = focusablesIn(panel);
+      if (items.length === 0) return e.preventDefault();
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !panel.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !panel.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      modalStack.splice(modalStack.indexOf(token), 1);
+      document.body.style.overflow = prevOverflow;
+      // Trả focus về nút đã mở modal (nếu nó vẫn còn trong trang).
+      if (opener?.isConnected) opener.focus();
+    };
+  }, [open]);
+
   if (!open) return null;
 
-  return (
-    <div className="modal-backdrop">
+  return createPortal(
+    <div
+      className="modal-backdrop"
+      onClick={(e) => {
+        // Chỉ đóng khi click đúng backdrop — click trong panel có target là phần tử con.
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
+        ref={panelRef}
         className={`modal modal--${size}`}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="modal-title"
+        aria-labelledby={titleId}
+        tabIndex={-1}
       >
         <header className="modal__header">
-          <h2 className="modal__title" id="modal-title">
+          <h2 className="modal__title" id={titleId}>
             {title}
           </h2>
           <IconButton label="Đóng" onClick={onClose}>
@@ -43,7 +125,8 @@ export function Modal({
         <div className="modal__body">{children}</div>
         {footer && <footer className="modal__footer">{footer}</footer>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -59,8 +142,8 @@ interface ConfirmDialogViewProps {
 }
 
 /**
- * Giao diện hộp xác nhận. Ở T3.5 bạn viết component `ConfirmDialog` bọc view này,
- * tự quản lý state open/message và expose `open(message): Promise<boolean>` qua useImperativeHandle.
+ * Giao diện hộp xác nhận. `ConfirmDialog` (components/ConfirmDialog.tsx) bọc view này và
+ * expose `open(message): Promise<boolean>` qua useImperativeHandle (T3.5).
  */
 export function ConfirmDialogView({
   open,

@@ -1,20 +1,16 @@
 import type { ReactNode } from "react";
+import { NavLink } from "react-router";
 import type { Board } from "../../types";
 import "./BoardSidebar.css";
 
 interface BoardSidebarProps {
   boards: Board[];
-  activeBoardId: string | null;
-  /** Bấm vào board (T1.5). Ở T3.1 bạn đổi các nút này thành <NavLink to={`/boards/${id}`}>. */
-  onSelectBoard?: (boardId: string) => void;
   /** Khu vực bộ lọc — truyền <FilterPanel /> vào (T1.3). */
   filters?: ReactNode;
 }
 
 export function BoardSidebar({
   boards,
-  activeBoardId,
-  onSelectBoard,
   filters,
 }: BoardSidebarProps) {
   return (
@@ -24,14 +20,13 @@ export function BoardSidebar({
         <ul className="board-sidebar__list">
           {boards.map((board) => (
             <li key={board.id}>
-              <button
-                type="button"
+              {/* T3.1: NavLink tự gắn class "active" + aria-current="page" khi URL khớp. */}
+              <NavLink
+                to={`/boards/${board.id}`}
                 className="board-sidebar__item"
-                aria-current={board.id === activeBoardId ? "page" : undefined}
-                onClick={() => onSelectBoard?.(board.id)}
               >
                 {board.title}
-              </button>
+              </NavLink>
             </li>
           ))}
         </ul>
