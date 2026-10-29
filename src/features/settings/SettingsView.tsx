@@ -7,12 +7,12 @@ interface SettingsViewProps {
   onThemeChange: (theme: Theme) => void;
   user: User | null;
   onLogout: () => void;
-  /** Thông tin môi trường hiển thị cho vui (đọc từ import.meta.env). */
+  /** Environment info, shown just for fun (read from import.meta.env). */
   apiUrl?: string;
   apiDelay?: number;
 }
 
-/** Trang /settings (T3.2, lazy-load ở T4.1). */
+/** The /settings page (T3.2, lazy-loaded in T4.1). */
 export function SettingsView({
   theme,
   onThemeChange,
@@ -23,11 +23,11 @@ export function SettingsView({
 }: SettingsViewProps) {
   return (
     <div className="settings">
-      <PageHeader title="Cài đặt" description="Giao diện và tài khoản" />
+      <PageHeader title="Settings" description="Appearance and account" />
 
       <section className="settings__section">
-        <h3 className="settings__title">Giao diện</h3>
-        <div className="settings__themes" role="radiogroup" aria-label="Chủ đề">
+        <h3 className="settings__title">Appearance</h3>
+        <div className="settings__themes" role="radiogroup" aria-label="Theme">
           {(["light", "dark"] as const).map((t) => (
             <label key={t} className="settings__theme">
               <input
@@ -41,14 +41,14 @@ export function SettingsView({
                 className={`settings__swatch settings__swatch--${t}`}
                 aria-hidden
               />
-              {t === "light" ? "Sáng" : "Tối"}
+              {t === "light" ? "Light" : "Dark"}
             </label>
           ))}
         </div>
       </section>
 
       <section className="settings__section">
-        <h3 className="settings__title">Tài khoản</h3>
+        <h3 className="settings__title">Account</h3>
         {user ? (
           <div className="settings__account">
             <Avatar user={user} size={40} />
@@ -57,17 +57,17 @@ export function SettingsView({
               <p className="settings__muted">ID: {user.id}</p>
             </div>
             <Button variant="danger" size="sm" onClick={onLogout}>
-              Đăng xuất
+              Sign out
             </Button>
           </div>
         ) : (
-          <p className="settings__muted">Chưa đăng nhập.</p>
+          <p className="settings__muted">Not signed in.</p>
         )}
       </section>
 
       {(apiUrl || apiDelay !== undefined) && (
         <section className="settings__section">
-          <h3 className="settings__title">Môi trường</h3>
+          <h3 className="settings__title">Environment</h3>
           <dl className="settings__env">
             {apiUrl && (
               <>
@@ -77,7 +77,7 @@ export function SettingsView({
             )}
             {apiDelay !== undefined && (
               <>
-                <dt>Độ trễ giả lập</dt>
+                <dt>Simulated delay</dt>
                 <dd>{apiDelay} ms</dd>
               </>
             )}

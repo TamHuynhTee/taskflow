@@ -3,21 +3,21 @@ import "./boardWidgets.css";
 import { Spinner } from "../../components/ui";
 
 interface SearchBoxProps extends Omit<ComponentProps<"input">, "type"> {
-  /** Hiện nút ✕ — gọi khi bấm. */
+  /** Shows a ✕ button — called when it's clicked. */
   onClear?: () => void;
-  /** Hiện spinner nhỏ bên phải, vd. khi kết quả đang được tính lại (T4.7). */
+  /** Shows a small spinner on the right, e.g. while results are being recomputed (T4.7). */
   busy?: boolean;
 }
 
 /**
- * Ô tìm kiếm. Mọi props còn lại (value, onChange, defaultValue, ref...) chuyển thẳng xuống <input>,
- * nên dùng được cả controlled (T1.3) lẫn uncontrolled + ref (T2.3 debounce).
+ * Search box. All remaining props (value, onChange, defaultValue, ref...) go straight down to the <input>,
+ * so it works both controlled (T1.3) and uncontrolled + ref (T2.3 debounce).
  */
 export function SearchBox({
   onClear,
   busy = false,
   className = "",
-  placeholder = "Tìm card…",
+  placeholder = "Search cards…",
   ...rest
 }: SearchBoxProps) {
   return (
@@ -29,14 +29,14 @@ export function SearchBox({
         {...rest}
         type="search"
         placeholder={placeholder}
-        aria-label={rest["aria-label"] ?? "Tìm card"}
+        aria-label={rest["aria-label"] ?? "Search cards"}
       />
-      {busy && <Spinner size={14} label="Đang lọc" />}
+      {busy && <Spinner size={14} label="Filtering" />}
       {onClear && (
         <button
           type="button"
           className="search-box__clear"
-          aria-label="Xoá tìm kiếm"
+          aria-label="Clear search"
           onClick={onClear}
         >
           ✕

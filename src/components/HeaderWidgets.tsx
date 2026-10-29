@@ -3,7 +3,7 @@ import { Avatar } from "./Avatar";
 import { Button, IconButton } from "./ui";
 import "./HeaderWidgets.css";
 
-/** Nút đổi theme. Việc lưu theme và gắn data-theme lên <html> là T3.2. */
+/** Theme toggle button. Persisting the theme and setting data-theme on <html> is T3.2. */
 export function ThemeToggle({
   theme,
   onToggle,
@@ -15,8 +15,8 @@ export function ThemeToggle({
     <IconButton
       label={
         theme === "dark"
-          ? "Chuyển sang giao diện sáng"
-          : "Chuyển sang giao diện tối"
+          ? "Switch to light theme"
+          : "Switch to dark theme"
       }
       onClick={onToggle}
     >
@@ -25,7 +25,7 @@ export function ThemeToggle({
   );
 }
 
-/** Người dùng đang đăng nhập + nút đăng xuất (T3.2). */
+/** Signed-in user + sign-out button (T3.2). */
 export function UserMenu({
   user,
   onLogout,
@@ -38,7 +38,7 @@ export function UserMenu({
       <Avatar user={user} size={28} />
       <span className="user-menu__name">{user.name}</span>
       <Button size="sm" variant="ghost" onClick={onLogout}>
-        Đăng xuất
+        Sign out
       </Button>
     </div>
   );

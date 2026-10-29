@@ -12,24 +12,24 @@ export interface CardItemProps {
   assignee: User | undefined;
   today: string;
 
-  // ---- Tương tác: tất cả tuỳ chọn. Không truyền thì nút tương ứng bị ẩn. ----
-  /** Click tiêu đề → mở chi tiết card (T3.1). */
+  // ---- Interactions: all optional. If not passed, the matching button is hidden. ----
+  /** Clicking the title → opens the card detail (T3.1). */
   onOpen?: () => void;
-  /** Nút 🗑 (T1.1). */
+  /** The 🗑 button (T1.1). */
   onDelete?: () => void;
-  /** Nút ← → chuyển cột (T1.1). Nút tự disable ở cột đầu/cuối. */
+  /** ← → buttons to move columns (T1.1). Disabled automatically in the first/last column. */
   onMove?: (direction: "left" | "right") => void;
-  /** Nút ⏫ tăng độ ưu tiên (T1.4). */
+  /** ⏫ button to raise priority (T1.4). */
   onBumpPriority?: () => void;
-  /** Double-click tiêu đề → bắt đầu sửa (T1.1). */
+  /** Double-clicking the title → start editing (T1.1). */
   onTitleDoubleClick?: () => void;
-  /** Khi đang sửa tiêu đề, truyền <InlineEdit /> vào đây để thay chỗ tiêu đề (T1.1). */
+  /** While editing the title, pass <InlineEdit /> here to replace the title (T1.1). */
   titleEditor?: ReactNode;
-  /** Đang chờ server (optimistic, T4.5) → card mờ đi. */
+  /** Waiting on the server (optimistic, T4.5) → the card is dimmed. */
   isPending?: boolean;
-  /** Hiện ô ghi chú — chỉ dùng cho thí nghiệm `key` ở T0.2. */
+  /** Shows a note field — only for the `key` experiment in T0.2. */
   showNote?: boolean;
-  /** Props gắn thẳng vào thẻ <article>: onMouseEnter/onMouseLeave (tooltip T2.5), tabIndex/onKeyDown (T6.3), ... */
+  /** Props attached directly to the <article>: onMouseEnter/onMouseLeave (tooltip T2.5), tabIndex/onKeyDown (T6.3), ... */
   articleProps?: ComponentProps<"article">;
 }
 
@@ -48,7 +48,7 @@ export function CardItem({
   articleProps,
 }: CardItemProps) {
   const priority = priorityMeta[card.priority];
-  // Card đã xong thì không cảnh báo quá hạn nữa.
+  // Finished cards no longer get an overdue warning.
   const dueStatus =
     card.columnId === "done" ? "normal" : getDueStatus(card.dueDate, today);
   const hasActions = onMove || onBumpPriority || onDelete;
@@ -73,14 +73,14 @@ export function CardItem({
             {onMove && (
               <>
                 <IconButton
-                  label="Chuyển sang cột trái"
+                  label="Move to the left column"
                   disabled={card.columnId === "todo"}
                   onClick={() => onMove("left")}
                 >
                   ←
                 </IconButton>
                 <IconButton
-                  label="Chuyển sang cột phải"
+                  label="Move to the right column"
                   disabled={card.columnId === "done"}
                   onClick={() => onMove("right")}
                 >
@@ -90,7 +90,7 @@ export function CardItem({
             )}
             {onBumpPriority && (
               <IconButton
-                label="Tăng độ ưu tiên"
+                label="Raise priority"
                 disabled={card.priority === "urgent"}
                 onClick={onBumpPriority}
               >
@@ -98,7 +98,7 @@ export function CardItem({
               </IconButton>
             )}
             {onDelete && (
-              <IconButton label="Xoá card" variant="danger" onClick={onDelete}>
+              <IconButton label="Delete card" variant="danger" onClick={onDelete}>
                 🗑
               </IconButton>
             )}
@@ -122,14 +122,14 @@ export function CardItem({
         </h3>
       )}
 
-      {/* && : chỉ render khi vế trái truthy. An toàn ở đây vì description là string
-          ('' là falsy và React không render chuỗi rỗng). Cẩn thận với số: {0 && ...} sẽ in ra "0". */}
+      {/* && : only renders when the left side is truthy. Safe here because description is a string
+          ('' is falsy and React doesn't render empty strings). Careful with numbers: {0 && ...} prints "0". */}
       {card.description && (
         <p className="card-item__desc">{card.description}</p>
       )}
 
       <footer className="card-item__footer">
-        <Badge tone={priority.tone} title="Độ ưu tiên">
+        <Badge tone={priority.tone} title="Priority">
           {priority.text}
         </Badge>
 
@@ -138,7 +138,7 @@ export function CardItem({
             className={`card-item__due card-item__due--${dueStatus}`}
             title={card.dueDate}
           >
-            {dueStatus === "overdue" ? "⚠ Quá hạn " : "📅 "}
+            {dueStatus === "overdue" ? "⚠ Overdue " : "📅 "}
             {formatDueDate(card.dueDate)}
           </span>
         )}
@@ -147,7 +147,7 @@ export function CardItem({
           {assignee ? (
             <Avatar user={assignee} />
           ) : (
-            <span className="card-item__unassigned">Chưa giao</span>
+            <span className="card-item__unassigned">Unassigned</span>
           )}
         </span>
       </footer>
@@ -155,8 +155,8 @@ export function CardItem({
       {showNote && (
         <input
           className="card-item__note"
-          placeholder="Ghi chú nhanh…"
-          aria-label={`Ghi chú cho ${card.title}`}
+          placeholder="Quick note…"
+          aria-label={`Note for ${card.title}`}
         />
       )}
     </article>

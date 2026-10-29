@@ -3,7 +3,7 @@ import "../../features/boards/Column.css";
 
 export function Spinner({
   size = 20,
-  label = "Đang tải",
+  label = "Loading",
 }: {
   size?: number;
   label?: string;
@@ -38,7 +38,7 @@ export function Skeleton({
   );
 }
 
-/** Khung giả của board 3 cột — fallback cho loading/Suspense (T2.1, T4.1, T4.6). */
+/** Placeholder 3-column board — fallback for loading/Suspense (T2.1, T4.1, T4.6). */
 export function BoardSkeleton() {
   return (
     <div className="board" aria-busy>
@@ -72,7 +72,7 @@ export function CardSkeleton() {
   );
 }
 
-/** Fallback chung cho trang lazy-load (T4.1). */
+/** Shared fallback for lazy-loaded pages (T4.1). */
 export function PageSkeleton() {
   return (
     <div className="page-skeleton" aria-busy>

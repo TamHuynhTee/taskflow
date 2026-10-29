@@ -6,22 +6,24 @@ import type {
   Column as ColumnType,
   User,
 } from "../../types";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
+import { ErrorMessage } from "../../components/ui";
 import { Column, type CardExtraProps } from "./Column";
 import "./BoardView.css";
 
 interface BoardViewProps {
   board: Board;
-  /** Card cần hiển thị. Có thể truyền tất cả card — BoardView tự lọc theo board.id. */
+  /** Cards to display. You can pass every card — BoardView filters by board.id itself. */
   cards: Card[];
   users: User[];
   today: string;
-  /** Thanh công cụ góc phải tiêu đề: ô tìm kiếm, nút tạo card, RenderCounter... */
+  /** Toolbar to the right of the title: search box, new card button, RenderCounter... */
   toolbar?: ReactNode;
-  /** Truyền xuống từng Column — xem Column.tsx. */
+  /** Passed down to each Column — see Column.tsx. */
   getCardProps?: (card: Card) => CardExtraProps;
   onDropCard?: (cardId: string, toColumnId: ColumnId) => void;
   renderColumnFooter?: (column: ColumnType) => ReactNode;
-  /** Làm mờ các cột khi dữ liệu đang hiển thị là dữ liệu cũ (T4.6 isPending, T4.7 deferred). */
+  /** Dims the columns when the data shown is stale (T4.6 isPending, T4.7 deferred). */
   isStale?: boolean;
 }
 
@@ -36,7 +38,7 @@ export function BoardView({
   renderColumnFooter,
   isStale = false,
 }: BoardViewProps) {
-  // Dữ liệu dẫn xuất: tính thẳng trong lúc render từ props, không cần lưu vào state.
+  // Derived data: computed directly from props during render, no need to store it in state.
   const usersById = Object.fromEntries(users.map((u) => [u.id, u]));
   const boardCards = cards.filter((c) => c.boardId === board.id);
 
@@ -52,8 +54,21 @@ export function BoardView({
 
       <div className="board__columns">
         {board.columns.map((column) => (
-          <Column
+          // T3.7: one boundary per column → one broken card only breaks its own column.
+          <ErrorBoundary
             key={column.id}
+            fallback={(error, reset) => (
+              <section className="column" aria-label={column.title}>
+                <ErrorMessage
+                  compact
+                  title={`Column "${column.title}" crashed`}
+                  error={error}
+                  onRetry={reset}
+                />
+              </section>
+            )}
+          >
+          <Column
             column={column}
             cards={boardCards
               .filter((c) => c.columnId === column.id)
@@ -64,6 +79,7 @@ export function BoardView({
             onDropCard={onDropCard}
             footer={renderColumnFooter?.(column)}
           />
+          </ErrorBoundary>
         ))}
       </div>
     </div>

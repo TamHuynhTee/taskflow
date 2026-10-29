@@ -1,150 +1,159 @@
-# TaskFlow — Lộ trình học React
+# TaskFlow — React learning path
 
-App quản lý công việc kiểu Trello mini. **Toàn bộ giao diện (component hiển thị + CSS) đã có sẵn** —
-bạn chỉ viết phần logic: state, hooks, effect, context, router, gọi API, tối ưu hiệu năng.
-Làm lần lượt từ trên xuống; mỗi task xây tiếp trên code của task trước.
-Xong task nào thì đánh `[x]`, rồi nhắn **"review T1.3"** để được review.
+A mini Trello-style task manager. **All of the UI (presentational components + CSS) is already built** —
+you only write the logic: state, hooks, effects, context, routing, API calls, performance tuning.
+Work through it top to bottom; each task builds on the code from the previous one.
+When you finish a task, tick it `[x]`, then send **"review T1.3"** to get a review.
 
-## Chạy project
+> **Status (2026-10-29):** Levels 1–6 are done in their *final* form (later tasks replace earlier ones:
+> `useState` → `useReducer` → Context; fetching in effects → `use()` + Suspense; controlled forms → Actions).
+> The intermediate/"wrong" versions are kept as explanatory comments in the code.
+> Still left for **you to measure/do by hand**: T5.1, T5.3, T5.4, T5.6, T5.7 (Profiler numbers go in `PERF.md`) and Level 7 (a separate Next.js project).
+> Advanced React bug/implement exercises: see **[LABS.md](LABS.md)**.
+>
+> Differences from the spec: `createCardFromForm` returns `Omit<Card, "id">` (json-server assigns the id); `useCardActions()` computes `order` itself;
+> the board's SearchBox is its own component, `BoardSearch` (the keystroke state lives there — T5.4a), and it debounces into `?q=` in the URL.
+
+## Running the project
 
 ```bash
 npm install
-npm run db:reset   # tạo db.json từ db.seed.json (chạy lại khi muốn khôi phục dữ liệu)
-npm run dev        # app: http://localhost:5173 — UI mẫu: http://localhost:5173/#gallery
-npm run api        # json-server: http://localhost:3001 (từ Level 2)
-npm run api:big    # json-server với 5.000 card (Level 4.7, Level 5)
+npm run db:reset   # create db.json from db.seed.json (re-run whenever you want to restore the data)
+npm run dev        # app: http://localhost:5173 — UI samples: http://localhost:5173/#gallery
+npm run api        # json-server: http://localhost:3001 (from Level 2)
+npm run api:big    # json-server with 5,000 cards (Level 4.7, Level 5)
 npm test           # Vitest
-npm run lint       # oxlint (có rules-of-hooks + exhaustive-deps)
+npm run lint       # oxlint (includes rules-of-hooks + exhaustive-deps)
 ```
 
-API json-server: `/boards`, `/cards`, `/comments`, `/users`. Lọc: `/cards?boardId=b1`, `/comments?cardId=c1`. Hỗ trợ `GET/POST/PUT/PATCH/DELETE`.
-`src/api/client.ts` có sẵn hàm `request<T>(path, init)` với độ trễ + lỗi giả lập (chỉnh trong `.env.local`, xem `.env.example`).
+json-server API: `/boards`, `/cards`, `/comments`, `/users`. Filtering: `/cards?boardId=b1`, `/comments?cardId=c1`. Supports `GET/POST/PUT/PATCH/DELETE`.
+`src/api/client.ts` already has `request<T>(path, init)` with simulated delay + failures (set in `.env.local`, see `.env.example`).
 
-## Quy ước
+## Conventions
 
-| Loại code | Đặt ở đâu | Ai viết |
+| Kind of code | Where it goes | Who writes it |
 | --- | --- | --- |
-| Component hiển thị (chỉ nhận props, không gọi API) | `src/components/`, `src/features/*/…View.tsx`, `CardItem`, `Column`, `BoardView`… | ✅ có sẵn |
-| Kiểu dữ liệu | `src/types.ts` | ✅ có sẵn |
-| Hằng số & bảng tra | `src/features/cards/cardMeta.ts` (`EMPTY_FILTER`, `EMPTY_CARD_FORM`, `isPriority`, `isLabel`…) | ✅ có sẵn |
-| **Component chứa logic** (state, effect, gọi API) — "container"/"page" | `src/features/*/…Page.tsx`, `…Form.tsx`, `src/app/` | ✍️ bạn |
-| **Hàm thuần** (lọc, validate, tính toán) | cạnh feature, vd. `src/features/boards/filterCards.ts` | ✍️ bạn |
-| **Custom hook** | `src/hooks/useXxx.ts` | ✍️ bạn |
-| **Context** | `src/context/XxxContext.tsx` | ✍️ bạn |
-| **Hàm gọi API** | `src/api/boards.ts`, `cards.ts`, `comments.ts` | ✍️ bạn |
+| Presentational components (props only, no API calls) | `src/components/`, `src/features/*/…View.tsx`, `CardItem`, `Column`, `BoardView`… | ✅ provided |
+| Data types | `src/types.ts` | ✅ provided |
+| Constants & lookup tables | `src/features/cards/cardMeta.ts` (`EMPTY_FILTER`, `EMPTY_CARD_FORM`, `isPriority`, `isLabel`…) | ✅ provided |
+| **Components with logic** (state, effects, API calls) — "containers"/"pages" | `src/features/*/…Page.tsx`, `…Form.tsx`, `src/app/` | ✍️ you |
+| **Pure functions** (filtering, validation, calculations) | next to the feature, e.g. `src/features/boards/filterCards.ts` | ✍️ you |
+| **Custom hooks** | `src/hooks/useXxx.ts` | ✍️ you |
+| **Context** | `src/context/XxxContext.tsx` | ✍️ you |
+| **API functions** | `src/api/boards.ts`, `cards.ts`, `comments.ts` | ✍️ you |
 
-Ký hiệu trong mỗi task:
-📁 file cần tạo/sửa · ✍️ hàm/component phải viết (kèm chữ ký) · 📋 yêu cầu chi tiết · 🧩 UI có sẵn để dùng · ✅ tiêu chí xong · 📖 tài liệu nên đọc trước
+Symbols used in each task:
+📁 files to create/edit · ✍️ functions/components to write (with signatures) · 📋 detailed requirements · 🧩 ready-made UI to use · ✅ done criteria · 📖 reading to do first
 
-## Bộ UI có sẵn
+## The ready-made UI kit
 
-Mở **http://localhost:5173/#gallery** để xem tất cả đang chạy, và mở `src/dev/Gallery.tsx` để xem cách truyền props.
+Open **http://localhost:5173/#gallery** to see everything running, and open `src/dev/Gallery.tsx` to see how props are passed.
 
-| Component | File | Props chính |
+| Component | File | Main props |
 | --- | --- | --- |
 | `Layout` | `components/Layout.tsx` | `sidebar`, `nav`, `headerActions`, `banner`, `children` |
 | `ThemeToggle`, `UserMenu` | `components/HeaderWidgets.tsx` | `theme, onToggle` · `user, onLogout` |
-| `Button`, `IconButton` | `components/ui/Button.tsx` | `variant`, `size`, `loading`, + mọi props của `<button>` |
-| `TextField`, `TextAreaField`, `SelectField`, `CheckboxGroup` | `components/ui/Field.tsx` | `id`, `label`, `error`, `hint`, + props của input |
+| `Button`, `IconButton` | `components/ui/Button.tsx` | `variant`, `size`, `loading`, + every `<button>` prop |
+| `TextField`, `TextAreaField`, `SelectField`, `CheckboxGroup` | `components/ui/Field.tsx` | `id`, `label`, `error`, `hint`, + input props |
 | `Modal`, `ConfirmDialogView` | `components/ui/Modal.tsx` | `open`, `title`, `onClose`, `footer` |
-| `ErrorMessage`, `EmptyState`, `Banner`, `ToastStack`, `RenderCounter` | `components/ui/Feedback.tsx` | xem file |
+| `ErrorMessage`, `EmptyState`, `Banner`, `ToastStack`, `RenderCounter` | `components/ui/Feedback.tsx` | see the file |
 | `Spinner`, `Skeleton`, `BoardSkeleton`, `CardSkeleton`, `PageSkeleton` | `components/ui/Spinner.tsx` | — |
-| `Tabs`, `StatTile`, `PageHeader`, `TooltipBox` | `components/ui/Misc.tsx` | xem file |
+| `Tabs`, `StatTile`, `PageHeader`, `TooltipBox` | `components/ui/Misc.tsx` | see the file |
 | `BoardView` | `features/boards/BoardView.tsx` | `board, cards, users, today, toolbar, getCardProps, onDropCard, renderColumnFooter, isStale` |
-| `Column` | `features/boards/Column.tsx` | (BoardView tự dùng) |
+| `Column` | `features/boards/Column.tsx` | (used by BoardView) |
 | `CardItem` | `features/cards/CardItem.tsx` | `onOpen, onDelete, onMove, onBumpPriority, onTitleDoubleClick, titleEditor, isPending, articleProps` |
-| `BoardSidebar`, `FilterPanel`, `SearchBox`, `AddCardButton` | `features/boards/` | xem file |
+| `BoardSidebar`, `FilterPanel`, `SearchBox`, `AddCardButton` | `features/boards/` | see the file |
 | `InlineEdit` | `features/cards/InlineEdit.tsx` | `defaultValue, onCommit, onCancel` |
-| `CardFormFields`, `FormActions`, `FormMessage` | `features/cards/CardFormFields.tsx` | `users, errors, values+onFieldChange` **hoặc** `defaultValues`, `titleRef` |
+| `CardFormFields`, `FormActions`, `FormMessage` | `features/cards/CardFormFields.tsx` | `users, errors, values+onFieldChange` **or** `defaultValues`, `titleRef` |
 | `CardDetail` | `features/cards/CardDetail.tsx` | `card, board, assignee, today, actions, children` |
 | `CommentList`, `CommentListSkeleton`, `CommentComposerFields` | `features/cards/CommentList.tsx` | `comments, usersById` · `submit` |
 | `LoginView` | `features/auth/LoginView.tsx` | `users, onSelect, loading` |
 | `SettingsView` | `features/settings/SettingsView.tsx` | `theme, onThemeChange, user, onLogout` |
-| `StatsOverview`, `ProfilerTable`, `CardRow`, `ListFrame`, `CARD_ROW_HEIGHT` | `features/stats/StatsViews.tsx` | xem file |
+| `StatsOverview`, `ProfilerTable`, `CardRow`, `ListFrame`, `CARD_ROW_HEIGHT` | `features/stats/StatsViews.tsx` | see the file |
 | `NotFoundView` | `pages/NotFoundView.tsx` | `action` |
 
-> Bạn được phép sửa file UI khi task yêu cầu (vd. T3.1 đổi nút trong `BoardSidebar` thành `NavLink`, T3.4 sửa `Modal`, T3.6 sửa `Field`). Ngoài ra cứ coi chúng là "thư viện".
+> You may edit UI files when a task asks you to (e.g. T3.1 turns the buttons in `BoardSidebar` into `NavLink`s, T3.4 changes `Modal`, T3.6 changes `Field`). Otherwise treat them as a "library".
 
 ---
 
-## Level 0 — Nền tảng: JSX & Component ✅ (đã làm sẵn)
+## Level 0 — Fundamentals: JSX & Components ✅ (already done)
 
-Đọc kỹ code mẫu (có comment giải thích) trước khi sang Level 1:
-- `src/features/cards/CardItem.tsx` — props, conditional rendering, tra bảng `cardMeta.ts`
-- `src/features/boards/Column.tsx` — list + `key` (có hướng dẫn thí nghiệm `key={index}`), trạng thái rỗng
-- `src/features/boards/BoardView.tsx` — dữ liệu dẫn xuất tính trong render
-- `src/components/Layout.tsx` — composition qua `sidebar` + `children`
-- `src/utils/date.ts` — hàm thuần, `today` truyền vào thay vì gọi `new Date()` trong render
+Read the sample code carefully (it has explanatory comments) before moving on to Level 1:
+- `src/features/cards/CardItem.tsx` — props, conditional rendering, lookups in `cardMeta.ts`
+- `src/features/boards/Column.tsx` — lists + `key` (with a `key={index}` experiment), empty state
+- `src/features/boards/BoardView.tsx` — derived data computed during render
+- `src/components/Layout.tsx` — composition through `sidebar` + `children`
+- `src/utils/date.ts` — a pure function, `today` passed in instead of calling `new Date()` during render
 
-- [x] T0.1 `CardItem` tĩnh · [x] T0.2 Danh sách & `key` · [x] T0.3 Conditional rendering · [x] T0.4 Component thuần & composition
+- [x] T0.1 Static `CardItem` · [x] T0.2 Lists & `key` · [x] T0.3 Conditional rendering · [x] T0.4 Pure components & composition
 
-Tự thử: trong `Column.tsx` truyền `showNote` vào `CardItem` và đổi sang `key={index}` để thấy bug; thử gán `card.title = ...` trong `CardItem` để thấy vì sao không được mutate props.
+Try it yourself: in `Column.tsx`, pass `showNote` to `CardItem` and switch to `key={index}` to see the bug; try assigning `card.title = ...` inside `CardItem` to see why you mustn't mutate props.
 
 ---
 
-## Level 1 — State & Sự kiện
+## Level 1 — State & Events
 
-Level 1 chưa gọi API: dữ liệu lấy từ `src/data/sample.ts`.
+Level 1 doesn't call the API yet: data comes from `src/data/sample.ts`.
 
-- [ ] **T1.1 — `useState`: xoá / chuyển cột / sửa tiêu đề card**
-  - 📁 Tạo `src/features/boards/BoardPage.tsx`, `src/features/boards/cardUtils.ts`. Sửa `src/App.tsx` để render `<BoardPage />` thay cho `<BoardView />`.
-  - ✍️ `cardUtils.ts` (hàm thuần):
-    - `nextColumnId(columnId: ColumnId, direction: 'left' | 'right'): ColumnId` — `todo ⇄ doing ⇄ done`, ở biên thì giữ nguyên.
-    - `nextOrder(cards: Card[], boardId: string, columnId: ColumnId): number` — `order` lớn nhất trong cột + 1 (cột rỗng → 0).
+- [x] **T1.1 — `useState`: delete / move / rename cards**
+  - 📁 Create `src/features/boards/BoardPage.tsx`, `src/features/boards/cardUtils.ts`. Change `src/App.tsx` to render `<BoardPage />` instead of `<BoardView />`.
+  - ✍️ `cardUtils.ts` (pure functions):
+    - `nextColumnId(columnId: ColumnId, direction: 'left' | 'right'): ColumnId` — `todo ⇄ doing ⇄ done`, stays put at the edges.
+    - `nextOrder(cards: Card[], boardId: string, columnId: ColumnId): number` — highest `order` in the column + 1 (empty column → 0).
   - ✍️ `BoardPage({ board, users, initialCards, today })`:
     - `const [cards, setCards] = useState<Card[]>(initialCards)`
     - `const [editingCardId, setEditingCardId] = useState<string | null>(null)`
-    - `deleteCard(id: string)`, `moveCard(id: string, direction: 'left' | 'right')` (đặt `order = nextOrder(...)` ở cột mới), `renameCard(id: string, title: string)` (bỏ qua nếu title rỗng).
-  - 📋 Truyền vào `BoardView` qua `getCardProps={card => ({ onDelete, onMove, onTitleDoubleClick, titleEditor })}`. Khi `editingCardId === card.id` thì `titleEditor` = `<InlineEdit defaultValue={card.title} onCommit={...} onCancel={...} />`.
+    - `deleteCard(id: string)`, `moveCard(id: string, direction: 'left' | 'right')` (set `order = nextOrder(...)` in the new column), `renameCard(id: string, title: string)` (ignore empty titles).
+  - 📋 Pass them to `BoardView` through `getCardProps={card => ({ onDelete, onMove, onTitleDoubleClick, titleEditor })}`. When `editingCardId === card.id`, `titleEditor` = `<InlineEdit defaultValue={card.title} onCommit={...} onCancel={...} />`.
   - 🧩 `BoardView`, `InlineEdit`.
-  - ✅ Xoá, ←/→, double-click sửa tiêu đề (Enter lưu, Esc huỷ) đều chạy. Không có `push`/`splice`/`sort()`/gán trực tiếp vào phần tử state — chỉ `map`, `filter`, spread, `toSorted`.
+  - ✅ Delete, ←/→, and double-click to rename (Enter saves, Esc cancels) all work. No `push`/`splice`/`sort()`/direct assignment to state elements — only `map`, `filter`, spread, `toSorted`.
   - 📖 [State: A Component's Memory](https://react.dev/learn/state-a-components-memory), [Updating Objects in State](https://react.dev/learn/updating-objects-in-state), [Updating Arrays in State](https://react.dev/learn/updating-arrays-in-state)
 
-- [ ] **T1.2 — Form tạo card (controlled & uncontrolled)**
-  - 📁 Tạo `src/features/cards/CreateCardForm.tsx`, `src/features/cards/cardForm.ts`.
-  - ✍️ `cardForm.ts` (hàm thuần):
-    - `validateCardForm(values: CardFormValues, today: string): CardFormErrors` — title bắt buộc, trim, 3–100 ký tự; description ≤ 500; dueDate (nếu có) không trước `today` (dùng `getDueStatus`). Không lỗi → `{}`.
+- [x] **T1.2 — Create-card form (controlled & uncontrolled)**
+  - 📁 Create `src/features/cards/CreateCardForm.tsx`, `src/features/cards/cardForm.ts`.
+  - ✍️ `cardForm.ts` (pure functions):
+    - `validateCardForm(values: CardFormValues, today: string): CardFormErrors` — title required, trimmed, 3–100 characters; description ≤ 500; dueDate (if any) not before `today` (use `getDueStatus`). No errors → `{}`.
     - `createCardFromForm(values: CardFormValues, boardId: string, order: number): Card` — `id: crypto.randomUUID()`, `columnId: 'todo'`, `dueDate: values.dueDate || null`, `assigneeId: values.assigneeId || null`, `createdAt: new Date().toISOString()`.
-    - `readCardForm(formData: FormData): CardFormValues` — dùng `get`/`getAll`, `isPriority`, `isLabel` để ép kiểu.
-  - ✍️ `CreateCardForm({ users, onCreate, onCancel })` với `onCreate: (values: CardFormValues) => void`:
-    - **Bản 1 – controlled:** `const [values, setValues] = useState(EMPTY_CARD_FORM)`, `const [errors, setErrors] = useState<CardFormErrors>({})`; `onSubmit` → `preventDefault`, validate, có lỗi thì `setErrors`, không lỗi thì `onCreate(values)` rồi reset form.
-    - **Bản 2 – uncontrolled:** viết `CreateCardFormUncontrolled` cùng props, không giữ `values` trong state, đọc bằng `readCardForm(new FormData(e.currentTarget))`. Ghi comment so sánh 2 cách.
-  - 📋 Trong `BoardPage`: state `isCreateOpen`; mở form bằng nút "+ Tạo card" ở `toolbar` và `AddCardButton` ở cột "Cần làm" (`renderColumnFooter`). Form nằm trong `<Modal>`. Tạo xong thì đóng modal, card mới ở cuối cột "Cần làm".
-  - 🧩 `Modal`, `CardFormFields` (controlled: `values` + `onFieldChange`; uncontrolled: không truyền gì), `FormActions`, `Button`, `AddCardButton`.
-  - ✅ Submit sai hiện lỗi dưới đúng ô; sửa xong lỗi biến mất khi submit lại; tạo được card ở cả 2 bản.
+    - `readCardForm(formData: FormData): CardFormValues` — use `get`/`getAll`, `isPriority`, `isLabel` to coerce types.
+  - ✍️ `CreateCardForm({ users, onCreate, onCancel })` with `onCreate: (values: CardFormValues) => void`:
+    - **Version 1 – controlled:** `const [values, setValues] = useState(EMPTY_CARD_FORM)`, `const [errors, setErrors] = useState<CardFormErrors>({})`; `onSubmit` → `preventDefault`, validate, `setErrors` on errors, otherwise `onCreate(values)` and reset the form.
+    - **Version 2 – uncontrolled:** write `CreateCardFormUncontrolled` with the same props, without keeping `values` in state, reading with `readCardForm(new FormData(e.currentTarget))`. Add a comment comparing the 2 approaches.
+  - 📋 In `BoardPage`: an `isCreateOpen` state; open the form with a "+ New card" button in `toolbar` and an `AddCardButton` in the "To do" column (`renderColumnFooter`). The form lives in a `<Modal>`. After creating, close the modal; the new card goes at the end of the "To do" column.
+  - 🧩 `Modal`, `CardFormFields` (controlled: `values` + `onFieldChange`; uncontrolled: pass nothing), `FormActions`, `Button`, `AddCardButton`.
+  - ✅ An invalid submit shows errors under the right fields; once fixed, the errors disappear on resubmit; both versions can create cards.
   - 📖 [Reacting to Input with State](https://react.dev/learn/reacting-to-input-with-state), [`<input>`](https://react.dev/reference/react-dom/components/input), [`<form>`](https://react.dev/reference/react-dom/components/form)
 
-- [ ] **T1.3 — Lifting state up: bộ lọc + tìm kiếm**
-  - 📁 Tạo `src/features/boards/filterCards.ts`. Sửa `App.tsx`, `BoardPage.tsx`.
-  - ✍️ `filterCards(cards: Card[], filter: CardFilter, query: string): Card[]` — khớp **tất cả** điều kiện: card có ít nhất 1 label trong `filter.labels` (rỗng = bỏ qua); `priority`; `assigneeId`; `query` không phân biệt hoa thường, tìm trong title + description.
-  - 📋 Sidebar (`FilterPanel`) và board (`BoardPage`) là anh em → state phải nằm ở cha chung `App`:
+- [x] **T1.3 — Lifting state up: filters + search**
+  - 📁 Create `src/features/boards/filterCards.ts`. Edit `App.tsx`, `BoardPage.tsx`.
+  - ✍️ `filterCards(cards: Card[], filter: CardFilter, query: string): Card[]` — matches **all** conditions: the card has at least 1 label in `filter.labels` (empty = ignore); `priority`; `assigneeId`; `query` is case-insensitive and searches title + description.
+  - 📋 The sidebar (`FilterPanel`) and the board (`BoardPage`) are siblings → the state must live in their common parent `App`:
     - `App`: `const [filter, setFilter] = useState(EMPTY_FILTER)`, `const [query, setQuery] = useState('')`.
     - `BoardSidebar filters={<FilterPanel value={filter} onChange={setFilter} users={...} />}`
-    - `BoardPage` nhận `filter`, `query`, `onQueryChange`; render `<SearchBox value={query} onChange={...} onClear={...} />` trong `toolbar`; truyền `cards={filterCards(cards, filter, query)}` cho `BoardView`.
-  - ✅ **Không** có state `filteredCards` — lọc trực tiếp lúc render. Lọc + tìm kết hợp đúng; "Xoá bộ lọc" hoạt động.
+    - `BoardPage` takes `filter`, `query`, `onQueryChange`; renders `<SearchBox value={query} onChange={...} onClear={...} />` in `toolbar`; passes `cards={filterCards(cards, filter, query)}` to `BoardView`.
+  - ✅ **No** `filteredCards` state — filter directly during render. Filters + search combine correctly; "Clear filters" works.
   - 📖 [Sharing State Between Components](https://react.dev/learn/sharing-state-between-components), [Choosing the State Structure](https://react.dev/learn/choosing-the-state-structure)
 
-- [ ] **T1.4 — Snapshot & batching**
-  - 📁 Sửa `cardUtils.ts`, `BoardPage.tsx`.
-  - ✍️ `nextPriority(p: Priority): Priority` — `low → medium → high → urgent`, `urgent` giữ nguyên.
-  - ✍️ Trong `BoardPage`: `bumpOnce(id)` tăng 1 bậc; `handleBump(id)` gọi `bumpOnce(id)` **hai lần** (nút ⏫ muốn tăng 2 bậc).
-  - 📋 Bản sai: `bumpOnce` dùng `setCards(cards.map(...))` → bấm chỉ tăng 1 bậc. Thêm `console.log(cards)` ngay sau `setCards`. Bản đúng: `setCards(prev => prev.map(...))`.
+- [x] **T1.4 — Snapshots & batching**
+  - 📁 Edit `cardUtils.ts`, `BoardPage.tsx`.
+  - ✍️ `nextPriority(p: Priority): Priority` — `low → medium → high → urgent`, `urgent` stays put.
+  - ✍️ In `BoardPage`: `bumpOnce(id)` raises it 1 level; `handleBump(id)` calls `bumpOnce(id)` **twice** (the ⏫ button should raise it 2 levels).
+  - 📋 Wrong version: `bumpOnce` uses `setCards(cards.map(...))` → a click only raises it 1 level. Add `console.log(cards)` right after `setCards`. Correct version: `setCards(prev => prev.map(...))`.
   - 🧩 `getCardProps → onBumpPriority`.
-  - ✅ Bản đúng: `low` bấm 1 lần thành `high`. Comment trong code giải thích vì sao bản sai chỉ tăng 1 và vì sao log in giá trị cũ.
+  - ✅ Correct version: one click turns `low` into `high`. A comment in the code explains why the wrong version only raises 1 level and why the log prints the old value.
   - 📖 [State as a Snapshot](https://react.dev/learn/state-as-a-snapshot), [Queueing a Series of State Updates](https://react.dev/learn/queueing-a-series-of-state-updates)
 
-- [ ] **T1.5 — Nhiều board: giữ & reset state**
-  - 📁 Sửa `App.tsx`, `BoardPage.tsx`.
+- [x] **T1.5 — Multiple boards: preserving & resetting state**
+  - 📁 Edit `App.tsx`, `BoardPage.tsx`.
   - 📋
-    - `App`: `const [activeBoardId, setActiveBoardId] = useState(sampleBoards[0].id)`, truyền `onSelectBoard` cho `BoardSidebar`.
-    - **Chuyển state `cards` từ `BoardPage` lên `App`** (cả 2 board dùng chung danh sách card). `BoardPage` nhận `cards` + các hàm cập nhật qua props.
-    - Render `<BoardPage key={activeBoardId} ... />` → state cục bộ (`editingCardId`, `isCreateOpen`, form đang gõ dở) tự reset khi đổi board, còn `cards` thì không mất.
-    - Thí nghiệm: bỏ `key` → mở form, gõ dở, đổi board → form vẫn còn. Thử khai báo một component **bên trong** `BoardPage` → state của nó mất mỗi lần render.
-  - ✅ Đổi board: card đúng board, form/sửa tiêu đề bị reset, card đã thêm/xoá ở board kia vẫn giữ nguyên.
+    - `App`: `const [activeBoardId, setActiveBoardId] = useState(sampleBoards[0].id)`, pass `onSelectBoard` to `BoardSidebar`.
+    - **Move the `cards` state from `BoardPage` up to `App`** (both boards share one card list). `BoardPage` gets `cards` + the update functions through props.
+    - Render `<BoardPage key={activeBoardId} ... />` → local state (`editingCardId`, `isCreateOpen`, a half-typed form) resets when switching boards, while `cards` is kept.
+    - Experiment: remove the `key` → open the form, type something, switch boards → the form is still there. Try declaring a component **inside** `BoardPage` → its state is lost on every render.
+  - ✅ Switching boards: the right board's cards, the form/title editing is reset, cards added/deleted on the other board are kept.
   - 📖 [Preserving and Resetting State](https://react.dev/learn/preserving-and-resetting-state)
 
-- [ ] **T1.6 — `useReducer`**
-  - 📁 Tạo `src/features/boards/boardReducer.ts`. Sửa `App.tsx`, `BoardPage.tsx`.
+- [x] **T1.6 — `useReducer`**
+  - 📁 Create `src/features/boards/boardReducer.ts`. Edit `App.tsx`, `BoardPage.tsx`.
   - ✍️
     ```ts
     export type BoardAction =
@@ -155,134 +164,134 @@ Level 1 chưa gọi API: dữ liệu lấy từ `src/data/sample.ts`.
       | { type: 'priorityBumped'; id: string }
     export function boardReducer(cards: Card[], action: BoardAction): Card[]
     ```
-  - 📋 `App`: `const [cards, dispatch] = useReducer(boardReducer, sampleCards)`. `BoardPage` chỉ `dispatch(...)`. Reducer dùng lại `nextColumnId`, `nextOrder`, `nextPriority`. `switch` có nhánh `default` kiểm tra exhaustive: `const _exhaustive: never = action`.
-  - ✅ Không còn `setCards` nào. Reducer thuần (không `Math.random`, không `Date.now`, không gọi API) — id/ngày tạo sinh ở ngoài trước khi dispatch.
+  - 📋 `App`: `const [cards, dispatch] = useReducer(boardReducer, sampleCards)`. `BoardPage` only calls `dispatch(...)`. The reducer reuses `nextColumnId`, `nextOrder`, `nextPriority`. The `switch` has a `default` branch with an exhaustive check: `const _exhaustive: never = action`.
+  - ✅ No `setCards` left. The reducer is pure (no `Math.random`, no `Date.now`, no API calls) — ids/creation dates are generated outside before dispatching.
   - 📖 [Extracting State Logic into a Reducer](https://react.dev/learn/extracting-state-logic-into-a-reducer), [`useReducer`](https://react.dev/reference/react/useReducer)
 
 ---
 
 ## Level 2 — Effects, Refs, Custom Hooks
 
-Từ đây chạy `npm run api` song song với `npm run dev`. Bỏ `src/data/sample.ts` khỏi App.
+From here on, run `npm run api` alongside `npm run dev`. Remove `src/data/sample.ts` from App.
 
-- [ ] **T2.1 — Gọi API bằng `useEffect`**
-  - 📁 Tạo `src/api/boards.ts`, `src/api/cards.ts`, `src/api/comments.ts`. Sửa `App.tsx`, `BoardPage.tsx`, `boardReducer.ts`.
-  - ✍️ API (đều dùng `request()`; hàm GET nhận `signal?: AbortSignal`):
+- [x] **T2.1 — Calling the API with `useEffect`**
+  - 📁 Create `src/api/boards.ts`, `src/api/cards.ts`, `src/api/comments.ts`. Edit `App.tsx`, `BoardPage.tsx`, `boardReducer.ts`.
+  - ✍️ API (all use `request()`; GET functions take `signal?: AbortSignal`):
     - `getBoards(signal?): Promise<Board[]>`, `getUsers(signal?): Promise<User[]>`
     - `getCards(boardId: string, signal?): Promise<Card[]>`
     - `createCard(input: Omit<Card, 'id'>): Promise<Card>`, `updateCard(id: string, patch: Partial<Card>): Promise<Card>` (PATCH), `deleteCard(id: string): Promise<void>`
     - `getComments(cardId: string, signal?): Promise<Comment[]>`, `addComment(input: Omit<Comment, 'id'>): Promise<Comment>`
-  - ✍️ Thêm action `{ type: 'loaded'; boardId: string; cards: Card[] }` (thay card của board đó) và `{ type: 'replaced'; card: Card }`.
+  - ✍️ Add the actions `{ type: 'loaded'; boardId: string; cards: Card[] }` (replaces that board's cards) and `{ type: 'replaced'; card: Card }`.
   - 📋
-    - `App` tải boards + users 1 lần khi mount. Lỗi → `ErrorMessage` có `onRetry`.
-    - `BoardPage` tải card mỗi khi `board.id` đổi: state `status: 'loading' | 'error' | 'ready'`, `error: unknown`; dùng `AbortController` trong cleanup để huỷ request cũ. Nút "Thử lại" tăng state `reloadKey` (đưa vào deps).
-    - Thao tác ghi (tạo/xoá/chuyển/đổi tên): **chờ API thành công rồi mới dispatch** (pessimistic). Đang chờ thì nút submit `loading`.
+    - `App` loads boards + users once on mount. Error → `ErrorMessage` with `onRetry`.
+    - `BoardPage` loads cards whenever `board.id` changes: state `status: 'loading' | 'error' | 'ready'`, `error: unknown`; use an `AbortController` in the cleanup to cancel the old request. The "Retry" button bumps a `reloadKey` state (included in the deps).
+    - Writes (create/delete/move/rename): **wait for the API to succeed before dispatching** (pessimistic). While waiting, the submit button is `loading`.
   - 🧩 `BoardSkeleton`, `ErrorMessage`, `Button loading`.
-  - ✅ `.env.local` đặt `VITE_API_DELAY=2000`, đổi board liên tục → không bao giờ hiện nhầm card board cũ. Refresh trang dữ liệu vẫn còn (đã lưu vào `db.json`).
+  - ✅ With `VITE_API_DELAY=2000` in `.env.local`, switching boards rapidly → never shows the old board's cards by mistake. After a refresh the data is still there (saved to `db.json`).
   - 📖 [Synchronizing with Effects](https://react.dev/learn/synchronizing-with-effects), [Lifecycle of Reactive Effects](https://react.dev/learn/lifecycle-of-reactive-effects), [Fetching data](https://react.dev/reference/react/useEffect#fetching-data-with-effects)
 
-- [ ] **T2.2 — Bỏ effect thừa**
-  - 📋 Cố tình viết sai rồi sửa, mỗi trường hợp ghi 1 comment "trước/sau":
-    1. `const [visible, setVisible] = useState([]); useEffect(() => setVisible(filterCards(...)), [cards, filter, query])` → đặt `RenderCounter` cạnh để thấy render thừa → sửa thành tính trong render.
-    2. `useEffect(() => { setEditingCardId(null) }, [board.id])` → thay bằng `key` (đã làm ở T1.5).
-    3. Gửi `deleteCard` bên trong effect theo state `pendingDeleteId` → chuyển vào event handler.
-  - ✅ `BoardPage` chỉ còn effect cho việc đồng bộ với bên ngoài (fetch).
+- [x] **T2.2 — Removing unnecessary effects**
+  - 📋 Write it wrong on purpose, then fix it, with a "before/after" comment for each case:
+    1. `const [visible, setVisible] = useState([]); useEffect(() => setVisible(filterCards(...)), [cards, filter, query])` → put a `RenderCounter` next to it to see the extra renders → change it to compute during render.
+    2. `useEffect(() => { setEditingCardId(null) }, [board.id])` → replace with `key` (already done in T1.5).
+    3. Sending `deleteCard` from inside an effect based on a `pendingDeleteId` state → move it into the event handler.
+  - ✅ `BoardPage` only has effects for syncing with the outside world (fetching).
   - 📖 [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect)
 
-- [ ] **T2.3 — `useRef`**
-  - 📁 Sửa `CreateCardForm.tsx`, `App.tsx` (hoặc nơi giữ `query`), `BoardPage.tsx`.
+- [x] **T2.3 — `useRef`**
+  - 📁 Edit `CreateCardForm.tsx`, `App.tsx` (or wherever `query` lives), `BoardPage.tsx`.
   - 📋
-    - (a) Auto focus: `const titleRef = useRef<HTMLInputElement>(null)` → `CardFormFields titleRef={titleRef}`; focus trong `useEffect` khi form mount (không dùng `autoFocus`).
-    - (b) Debounce tìm kiếm 300ms: `SearchBox` để **uncontrolled** (`defaultValue`), `onChange` đặt `setTimeout` lưu id trong `timerRef`, huỷ timer cũ trước khi đặt mới, clear khi unmount. `query` chỉ cập nhật sau khi ngừng gõ 300ms. Nút ✕: xoá input qua `inputRef.current.value = ''`.
-    - (c) Đếm render `BoardPage`: `renderCount = useRef(0)`, tăng mỗi lần render, hiện bằng `<RenderCounter count={...} />` trong `toolbar`.
-  - ✅ Đủ 3 tính năng. Comment giải thích vì sao (c) không thể là state; vì sao trong StrictMode số đếm tăng 2.
+    - (a) Auto focus: `const titleRef = useRef<HTMLInputElement>(null)` → `CardFormFields titleRef={titleRef}`; focus it in a `useEffect` when the form mounts (no `autoFocus`).
+    - (b) Debounce the search by 300ms: keep `SearchBox` **uncontrolled** (`defaultValue`); `onChange` sets a `setTimeout` whose id is stored in `timerRef`, cancels the old timer before setting a new one, and clears it on unmount. `query` only updates after typing stops for 300ms. The ✕ button clears the input via `inputRef.current.value = ''`.
+    - (c) Count `BoardPage` renders: `renderCount = useRef(0)`, incremented every render, shown with `<RenderCounter count={...} />` in `toolbar`.
+  - ✅ All 3 features work. A comment explains why (c) can't be state, and why the count goes up by 2 in StrictMode.
   - 📖 [Referencing Values with Refs](https://react.dev/learn/referencing-values-with-refs), [Manipulating the DOM with Refs](https://react.dev/learn/manipulating-the-dom-with-refs)
 
-- [ ] **T2.4 — Custom hooks**
+- [x] **T2.4 — Custom hooks**
   - 📁 `src/hooks/useFetch.ts`, `useDebouncedValue.ts`, `useLocalStorage.ts`, `useKeyboardShortcut.ts`.
   - ✍️
     - `useFetch<T>(load: (signal: AbortSignal) => Promise<T>, deps: unknown[]): { data: T | undefined; error: unknown; loading: boolean; reload: () => void }`
     - `useDebouncedValue<T>(value: T, delayMs: number): T`
-    - `useLocalStorage<T>(key: string, initial: T): [T, (next: T | ((prev: T) => T)) => void]` — đọc lười (lazy init), JSON parse lỗi thì dùng `initial`, `try/catch` khi ghi.
-    - `useKeyboardShortcut(key: string, handler: (e: KeyboardEvent) => void, options?: { enabled?: boolean })` — bỏ qua khi đang gõ trong input/textarea.
-  - 📋 Áp dụng: `useFetch` cho boards/users/cards; `useDebouncedValue` thay cho timer thủ công ở T2.3b (SearchBox trở lại controlled); `useLocalStorage` nhớ `filter` và `activeBoardId`; phím `/` focus ô tìm kiếm, phím `n` mở form tạo card.
-  - ✅ Component ngắn đi rõ rệt; `npm run lint` không có cảnh báo `exhaustive-deps`.
+    - `useLocalStorage<T>(key: string, initial: T): [T, (next: T | ((prev: T) => T)) => void]` — lazy init, fall back to `initial` when JSON parsing fails, `try/catch` around writes.
+    - `useKeyboardShortcut(key: string, handler: (e: KeyboardEvent) => void, options?: { enabled?: boolean })` — ignored while typing in an input/textarea.
+  - 📋 Apply them: `useFetch` for boards/users/cards; `useDebouncedValue` replaces the hand-rolled timer from T2.3b (SearchBox goes back to controlled); `useLocalStorage` remembers `filter` and `activeBoardId`; the `/` key focuses the search box, the `n` key opens the create-card form.
+  - ✅ Components get noticeably shorter; `npm run lint` has no `exhaustive-deps` warnings.
   - 📖 [Reusing Logic with Custom Hooks](https://react.dev/learn/reusing-logic-with-custom-hooks), [Rules of Hooks](https://react.dev/reference/rules/rules-of-hooks)
 
-- [ ] **T2.5 — `useLayoutEffect`: tooltip mô tả card**
-  - 📁 `src/features/cards/tooltipPosition.ts`, `src/features/cards/CardTooltip.tsx`. Sửa `BoardPage.tsx`.
-  - ✍️ `computeTooltipPosition(anchor: DOMRect, size: { width: number; height: number }, viewport: { width: number; height: number }, gap = 8): { top: number; left: number }` — mặc định nằm **dưới** card căn trái; tràn đáy → lật lên trên; tràn phải → dịch sang trái; không bao giờ < 8px so với mép.
-  - ✍️ `CardTooltip({ anchor, text }: { anchor: DOMRect; text: string })` — render `TooltipBox` ở vị trí tạm, `useLayoutEffect` đo `ref.current.getBoundingClientRect()` rồi set vị trí thật.
-  - 📋 `BoardPage`: state `hovered: { text: string; rect: DOMRect } | null`; gắn qua `getCardProps → articleProps.onMouseEnter/onMouseLeave` (`e.currentTarget.getBoundingClientRect()`). Card không có mô tả thì không hiện.
-  - ✅ Làm bằng `useEffect` trước (thấy nháy ở vị trí sai), đổi sang `useLayoutEffect` thì hết. Tooltip không tràn màn hình ở card góc dưới-phải.
+- [x] **T2.5 — `useLayoutEffect`: card description tooltip**
+  - 📁 `src/features/cards/tooltipPosition.ts`, `src/features/cards/CardTooltip.tsx`. Edit `BoardPage.tsx`.
+  - ✍️ `computeTooltipPosition(anchor: DOMRect, size: { width: number; height: number }, viewport: { width: number; height: number }, gap = 8): { top: number; left: number }` — by default **below** the card, left-aligned; overflows the bottom → flip above; overflows the right → shift left; never < 8px from an edge.
+  - ✍️ `CardTooltip({ anchor, text }: { anchor: DOMRect; text: string })` — renders `TooltipBox` at a temporary position; `useLayoutEffect` measures `ref.current.getBoundingClientRect()` and then sets the real position.
+  - 📋 `BoardPage`: state `hovered: { text: string; rect: DOMRect } | null`; wired up via `getCardProps → articleProps.onMouseEnter/onMouseLeave` (`e.currentTarget.getBoundingClientRect()`). Cards without a description show nothing.
+  - ✅ Do it with `useEffect` first (you'll see it flash in the wrong spot), switch to `useLayoutEffect` and the flash is gone. The tooltip doesn't overflow the screen for a card in the bottom-right corner.
   - 📖 [`useLayoutEffect`](https://react.dev/reference/react/useLayoutEffect)
 
-- [ ] **T2.6 — `useSyncExternalStore`**
-  - 📁 `src/hooks/useOnlineStatus.ts`, `src/hooks/useMediaQuery.ts`. Sửa `App.tsx`, `BoardPage.tsx`.
-  - ✍️ `useOnlineStatus(): boolean` (sự kiện `online`/`offline`), `useMediaQuery(query: string): boolean` (`matchMedia(...).addEventListener('change', ...)`). Cả hai dùng `useSyncExternalStore`, có `getServerSnapshot`.
-  - 📋 Offline → `Layout banner={<Banner tone="warning">Mất kết nối…</Banner>}`. Màn hình ≤ 768px → không render `sidebar`; thay bằng nút "Bộ lọc" trong `toolbar` mở `FilterPanel` trong `Modal`.
-  - ✅ DevTools → Network → Offline thấy banner; thu nhỏ cửa sổ thấy nút Bộ lọc. Không dùng `useState` + `useEffect` trong 2 hook.
+- [x] **T2.6 — `useSyncExternalStore`**
+  - 📁 `src/hooks/useOnlineStatus.ts`, `src/hooks/useMediaQuery.ts`. Edit `App.tsx`, `BoardPage.tsx`.
+  - ✍️ `useOnlineStatus(): boolean` (the `online`/`offline` events), `useMediaQuery(query: string): boolean` (`matchMedia(...).addEventListener('change', ...)`). Both use `useSyncExternalStore` with a `getServerSnapshot`.
+  - 📋 Offline → `Layout banner={<Banner tone="warning">You're offline…</Banner>}`. Screen ≤ 768px → don't render the `sidebar`; instead a "Filters" button in `toolbar` opens `FilterPanel` in a `Modal`.
+  - ✅ DevTools → Network → Offline shows the banner; shrinking the window shows the Filters button. No `useState` + `useEffect` in the 2 hooks.
   - 📖 [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore)
 
-- [ ] **T2.7 — `useEffectEvent`**
-  - 📁 Sửa `BoardPage.tsx`.
-  - 📋 Mỗi khi mở board (đổi `board.id`) ghi `console.info('[analytics] open board', board.id, { visibleCount })` với `visibleCount` = số card đang hiển thị sau lọc. Đổi bộ lọc/tìm kiếm **không** được ghi log lại, nhưng log phải có `visibleCount` mới nhất. Dùng `const onOpen = useEffectEvent(...)`.
-  - ✅ Đổi filter: không log. Đổi board: đúng 1 log ở production (`npm run build && npm run preview`); dev StrictMode có thể 2 — comment giải thích.
+- [x] **T2.7 — `useEffectEvent`**
+  - 📁 Edit `BoardPage.tsx`.
+  - 📋 Whenever a board opens (`board.id` changes), log `console.info('[analytics] open board', board.id, { visibleCount })` where `visibleCount` = the number of cards shown after filtering. Changing filters/search must **not** log again, but the log must have the latest `visibleCount`. Use `const onOpen = useEffectEvent(...)`.
+  - ✅ Changing the filter: no log. Changing the board: exactly 1 log in production (`npm run build && npm run preview`); dev StrictMode may log 2 — a comment explains why.
   - 📖 [Separating Events from Effects](https://react.dev/learn/separating-events-from-effects), [`useEffectEvent`](https://react.dev/reference/react/useEffectEvent)
 
 ---
 
-## Level 3 — Router, Context, Kiến trúc
+## Level 3 — Router, Context, Architecture
 
-- [ ] **T3.1 — Routing**
-  - 📁 Tạo `src/app/router.tsx`, `src/app/RootLayout.tsx`, `src/features/cards/CardDetailRoute.tsx`, `src/hooks/useFilterParams.ts`. Sửa `main.tsx`/`App.tsx`, `BoardPage.tsx`, `BoardSidebar.tsx` (đổi `<button>` thành `<NavLink className="board-sidebar__item">`).
-  - 📋 Routes (`react-router` đã cài):
+- [x] **T3.1 — Routing**
+  - 📁 Create `src/app/router.tsx`, `src/app/RootLayout.tsx`, `src/features/cards/CardDetailRoute.tsx`, `src/hooks/useFilterParams.ts`. Edit `main.tsx`/`App.tsx`, `BoardPage.tsx`, `BoardSidebar.tsx` (turn the `<button>`s into `<NavLink className="board-sidebar__item">`).
+  - 📋 Routes (`react-router` is already installed):
     | Path | Element |
     | --- | --- |
     | `/` | `<Navigate to="/boards" />` |
-    | `/boards` | chuyển tới board đầu tiên, hoặc `EmptyState` nếu chưa có |
-    | `/boards/:boardId` | `BoardPage` (đọc `useParams`) |
-    | `/boards/:boardId/cards/:cardId` | **route con** của board: `CardDetailRoute` = `Modal` + `CardDetail` hiện **đè lên** board (BoardPage render `<Outlet />`) |
-    | `/stats`, `/settings` | `StatsPage`, `SettingsPage` (tạm thời là `PageHeader` rỗng) |
+    | `/boards` | redirect to the first board, or `EmptyState` if there are none |
+    | `/boards/:boardId` | `BoardPage` (reads `useParams`) |
+    | `/boards/:boardId/cards/:cardId` | a **child route** of the board: `CardDetailRoute` = `Modal` + `CardDetail` shown **on top of** the board (BoardPage renders `<Outlet />`) |
+    | `/stats`, `/settings` | `StatsPage`, `SettingsPage` (an empty `PageHeader` for now) |
     | `*` | `NotFoundView` + `<Link to="/boards">` |
-  - 📋 `RootLayout` dùng `Layout` với `nav` = 3 `<NavLink className="layout__nav-link">` (Board, Thống kê, Cài đặt) + `<Outlet />`.
-  - ✍️ `useFilterParams(): [{ filter: CardFilter; query: string }, (next: Partial<{ filter: CardFilter; query: string }>) => void]` — đọc/ghi `?label=bug&label=docs&priority=high&assignee=u1&q=login` bằng `useSearchParams`. Thay cho state/localStorage của filter.
-  - 📋 `CardItem onOpen` → `navigate(\`cards/${card.id}\`)`; đóng modal → `navigate('..')` giữ nguyên search params. `cardId` không tồn tại → `NotFoundView` trong modal.
-  - ✅ Refresh ở `/boards/b1/cards/c1?label=bug` vẫn mở đúng card và đúng bộ lọc. Back/Forward của trình duyệt hoạt động.
+  - 📋 `RootLayout` uses `Layout` with `nav` = 3 `<NavLink className="layout__nav-link">` (Boards, Stats, Settings) + `<Outlet />`.
+  - ✍️ `useFilterParams(): [{ filter: CardFilter; query: string }, (next: Partial<{ filter: CardFilter; query: string }>) => void]` — reads/writes `?label=bug&label=docs&priority=high&assignee=u1&q=login` with `useSearchParams`. Replaces the filter's state/localStorage.
+  - 📋 `CardItem onOpen` → `navigate(\`cards/${card.id}\`)`; closing the modal → `navigate('..')` keeping the search params. A `cardId` that doesn't exist → `NotFoundView` inside the modal.
+  - ✅ Refreshing on `/boards/b1/cards/c1?label=bug` still opens the right card with the right filters. The browser's Back/Forward work.
   - 📖 [React Router](https://reactrouter.com/home)
 
-- [ ] **T3.2 — Context: Theme & Auth**
+- [x] **T3.2 — Context: Theme & Auth**
   - 📁 `src/context/ThemeContext.tsx`, `src/context/AuthContext.tsx`, `src/features/auth/LoginPage.tsx`, `src/features/auth/RequireAuth.tsx`, `src/features/settings/SettingsPage.tsx`.
   - ✍️
-    - `ThemeProvider({ children })`; `useTheme(): { theme: Theme; setTheme(t: Theme): void; toggleTheme(): void }` — ném lỗi nếu dùng ngoài Provider. Lưu bằng `useLocalStorage`; effect gán `document.documentElement.dataset.theme`. Mặc định theo `prefers-color-scheme`.
-    - `AuthProvider({ children })`; `useAuth(): { user: User | null; login(user: User): void; logout(): void }` — lưu user trong localStorage.
-    - `RequireAuth({ children })` — chưa đăng nhập → `<Navigate to="/login" state={{ from: location }} replace />`.
-    - `LoginPage` — `LoginView` + `getUsers()`; đăng nhập xong quay về trang `from`.
-    - `SettingsPage` — `SettingsView` với `useTheme()` + `useAuth()`.
-  - 📋 Header: `headerActions={<><ThemeToggle .../><UserMenu .../></>}`. Comment mới dùng `user.id` làm `authorId`. Provider viết dạng React 19: `<ThemeContext value={...}>`.
-  - ✅ Không truyền `theme`/`user` qua props ở bất kỳ đâu (trừ vào component UI).
+    - `ThemeProvider({ children })`; `useTheme(): { theme: Theme; setTheme(t: Theme): void; toggleTheme(): void }` — throws if used outside the Provider. Persisted with `useLocalStorage`; an effect sets `document.documentElement.dataset.theme`. Defaults to `prefers-color-scheme`.
+    - `AuthProvider({ children })`; `useAuth(): { user: User | null; login(user: User): void; logout(): void }` — keeps the user in localStorage.
+    - `RequireAuth({ children })` — not signed in → `<Navigate to="/login" state={{ from: location }} replace />`.
+    - `LoginPage` — `LoginView` + `getUsers()`; after signing in, go back to the `from` page.
+    - `SettingsPage` — `SettingsView` with `useTheme()` + `useAuth()`.
+  - 📋 Header: `headerActions={<><ThemeToggle .../><UserMenu .../></>}`. New comments use `user.id` as `authorId`. Write the Providers the React 19 way: `<ThemeContext value={...}>`.
+  - ✅ `theme`/`user` are never passed through props anywhere (except into UI components).
   - 📖 [Passing Data Deeply with Context](https://react.dev/learn/passing-data-deeply-with-context), [`createContext`](https://react.dev/reference/react/createContext)
 
-- [ ] **T3.3 — Context + Reducer**
-  - 📁 `src/context/BoardContext.tsx`. Sửa `App`/`RootLayout`, `BoardPage.tsx`.
+- [x] **T3.3 — Context + Reducer**
+  - 📁 `src/context/BoardContext.tsx`. Edit `App`/`RootLayout`, `BoardPage.tsx`.
   - ✍️
-    - `BoardProvider({ children })` — `useReducer(boardReducer, [])`, tải `boards`, `users`.
-    - `BoardStateContext` chứa `{ boards: Board[]; users: User[]; usersById: Record<string, User>; cards: Card[] }`; `BoardDispatchContext` chứa `dispatch`.
-    - `useBoardState()`, `useBoardDispatch()` — ném lỗi ngoài Provider.
-    - (tuỳ chọn) `useCardActions()` trả `{ create, remove, move, rename }` gói "gọi API + dispatch".
-  - 📋 Bỏ hết props `cards`/`dispatch`/`users` đi xuyên qua các tầng.
-  - ✅ Đặt `RenderCounter` trong một component chỉ dùng `useBoardDispatch()` → nó **không** render lại khi card thay đổi (so với khi gộp 1 context).
+    - `BoardProvider({ children })` — `useReducer(boardReducer, [])`, loads `boards`, `users`.
+    - `BoardStateContext` holds `{ boards: Board[]; users: User[]; usersById: Record<string, User>; cards: Card[] }`; `BoardDispatchContext` holds `dispatch`.
+    - `useBoardState()`, `useBoardDispatch()` — throw outside the Provider.
+    - (optional) `useCardActions()` returns `{ create, remove, move, rename }` wrapping "call the API + dispatch".
+  - 📋 Remove every `cards`/`dispatch`/`users` prop that's passed through layers.
+  - ✅ Put a `RenderCounter` in a component that only uses `useBoardDispatch()` → it does **not** re-render when cards change (compared to a single merged context).
   - 📖 [Scaling Up with Reducer and Context](https://react.dev/learn/scaling-up-with-reducer-and-context)
 
-- [ ] **T3.4 — Portal + hành vi Modal**
-  - 📁 Sửa `src/components/ui/Modal.tsx`.
-  - 📋 `createPortal(..., document.body)`; Esc → `onClose` (listener `keydown` trong effect, cleanup); click backdrop → `onClose` nhưng click trong panel thì không (`e.target === e.currentTarget`); khoá scroll `document.body.style.overflow = 'hidden'` khi mở, khôi phục giá trị cũ khi đóng.
-  - 📋 Thí nghiệm: đặt `onClick={() => console.log('bubble')}` trên một `div` bọc ngoài `Modal` trong `BoardPage` → click trong modal vẫn log dù DOM của modal nằm ở `body`. Ghi comment giải thích.
-  - ✅ Modal chi tiết card (T3.1) và form tạo card đều có đủ hành vi trên. 2 modal lồng nhau (xác nhận xoá trong chi tiết card) — Esc chỉ đóng cái trên cùng.
+- [x] **T3.4 — Portals + Modal behaviour**
+  - 📁 Edit `src/components/ui/Modal.tsx`.
+  - 📋 `createPortal(..., document.body)`; Esc → `onClose` (a `keydown` listener in an effect, with cleanup); clicking the backdrop → `onClose`, but clicking inside the panel doesn't (`e.target === e.currentTarget`); lock scrolling with `document.body.style.overflow = 'hidden'` while open, restoring the old value on close.
+  - 📋 Experiment: put `onClick={() => console.log('bubble')}` on a `div` wrapping the `Modal` in `BoardPage` → clicking inside the modal still logs even though the modal's DOM is in `body`. Add a comment explaining why.
+  - ✅ The card detail modal (T3.1) and the create-card form both have all of the above. 2 nested modals (delete confirmation inside card detail) — Esc only closes the top one.
   - 📖 [`createPortal`](https://react.dev/reference/react-dom/createPortal)
 
-- [ ] **T3.5 — Ref as prop & `useImperativeHandle`**
-  - 📁 `src/components/ConfirmDialog.tsx`. Sửa `BoardPage.tsx`, `CardDetailRoute.tsx`.
+- [x] **T3.5 — Ref as a prop & `useImperativeHandle`**
+  - 📁 `src/components/ConfirmDialog.tsx`. Edit `BoardPage.tsx`, `CardDetailRoute.tsx`.
   - ✍️
     ```ts
     export interface ConfirmDialogHandle {
@@ -290,78 +299,78 @@ Từ đây chạy `npm run api` song song với `npm run dev`. Bỏ `src/data/sa
     }
     export function ConfirmDialog({ ref }: { ref: Ref<ConfirmDialogHandle> })
     ```
-    Bên trong: state `{ open, message, options }`, lưu hàm `resolve` của Promise trong `useRef`, `useImperativeHandle(ref, () => ({ open }))`, render `ConfirmDialogView`.
-  - 📋 Xoá card: `if (await confirmRef.current?.open(\`Xoá "${card.title}"?\`, { danger: true })) remove(card.id)`.
-  - 📋 Đọc lại `Field.tsx`: `ref` đi tới `<input>` qua `...rest` mà không cần `forwardRef` — ghi comment vì sao (React 19).
-  - ✅ Huỷ → không xoá; Đồng ý → xoá; đóng bằng Esc = huỷ.
+    Inside: state `{ open, message, options }`, the Promise's `resolve` kept in a `useRef`, `useImperativeHandle(ref, () => ({ open }))`, renders `ConfirmDialogView`.
+  - 📋 Deleting a card: `if (await confirmRef.current?.open(\`Delete "${card.title}"?\`, { danger: true })) remove(card.id)`.
+  - 📋 Re-read `Field.tsx`: `ref` reaches the `<input>` through `...rest` without `forwardRef` — add a comment explaining why (React 19).
+  - ✅ Cancel → nothing is deleted; OK → deleted; closing with Esc = cancel.
   - 📖 [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle), [ref as a prop](https://react.dev/blog/2024/12/05/react-19#ref-as-a-prop)
 
-- [ ] **T3.6 — `useId`**
-  - 📁 Sửa `src/components/ui/Field.tsx`, `CardFormFields.tsx`.
-  - 📋 `id` của `TextField`, `TextAreaField`, `SelectField`, `CheckboxGroup` thành **tuỳ chọn**: không truyền thì dùng `useId()`. Bỏ prop `idPrefix` của `CardFormFields`.
-  - ✅ Mở cùng lúc form tạo card và một `CardFormFields` khác (vd. trong Gallery) → chạy `[...document.querySelectorAll('[id]')].map(e => e.id)` trong console không có id trùng; click label vẫn focus đúng ô.
+- [x] **T3.6 — `useId`**
+  - 📁 Edit `src/components/ui/Field.tsx`, `CardFormFields.tsx`.
+  - 📋 Make the `id` of `TextField`, `TextAreaField`, `SelectField`, `CheckboxGroup` **optional**: when it isn't passed, use `useId()`. Remove the `idPrefix` prop from `CardFormFields`.
+  - ✅ With the create-card form and another `CardFormFields` (e.g. in the Gallery) open at the same time → running `[...document.querySelectorAll('[id]')].map(e => e.id)` in the console shows no duplicate ids; clicking a label still focuses the right field.
   - 📖 [`useId`](https://react.dev/reference/react/useId)
 
-- [ ] **T3.7 — Error Boundary**
-  - 📁 `src/components/ErrorBoundary.tsx`. Sửa `BoardView.tsx` (bọc từng `Column`), `RootLayout.tsx` (bọc `Outlet`).
+- [x] **T3.7 — Error Boundaries**
+  - 📁 `src/components/ErrorBoundary.tsx`. Edit `BoardView.tsx` (wrap each `Column`), `RootLayout.tsx` (wrap the `Outlet`).
   - ✍️
     ```ts
     interface ErrorBoundaryProps {
       fallback: (error: unknown, reset: () => void) => ReactNode
-      resetKeys?: unknown[] // đổi giá trị → tự reset
+      resetKeys?: unknown[] // changing a value → resets automatically
       children: ReactNode
     }
     class ErrorBoundary extends Component<ErrorBoundaryProps, { error: unknown }>
     ```
-    Có `static getDerivedStateFromError`, `componentDidCatch` (log), `componentDidUpdate` so `resetKeys`.
-  - 📋 Thử lỗi: trong `getCardProps` của `BoardPage`, nếu `card.title.includes('💣')` thì `throw new Error('Card bom!')` (hàm này chạy lúc Column render). Tạo card tên "💣".
-  - 🧩 `ErrorMessage compact` làm fallback cột; `ErrorMessage` làm fallback trang.
-  - ✅ Chỉ cột chứa card bom báo lỗi, 2 cột kia vẫn chạy; "Thử lại" sau khi xoá card bom (qua API/db.json) thì cột hồi phục. Comment: lỗi trong event handler/async **không** bị boundary bắt — thử để thấy.
+    With `static getDerivedStateFromError`, `componentDidCatch` (logging), and `componentDidUpdate` comparing `resetKeys`.
+  - 📋 Trigger an error: in `BoardPage`'s `getCardProps`, if `card.title.includes('💣')` then `throw new Error('Bomb card!')` (this function runs while Column renders). Create a card titled "💣".
+  - 🧩 `ErrorMessage compact` as the column fallback; `ErrorMessage` as the page fallback.
+  - ✅ Only the column holding the bomb card shows an error; the other 2 columns keep working; "Retry" after deleting the bomb card (via the API/db.json) brings the column back. Comment: errors in event handlers/async code are **not** caught by the boundary — try it to see.
   - 📖 [Catching rendering errors with an Error Boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)
 
 ---
 
-## Level 4 — React 19: Suspense, Actions, Hooks mới
+## Level 4 — React 19: Suspense, Actions, new Hooks
 
-- [ ] **T4.1 — `lazy` + `Suspense`**
-  - 📁 Sửa `router.tsx`, `RootLayout.tsx`.
-  - 📋 `const StatsPage = lazy(() => import('../features/stats/StatsPage'))`, tương tự `SettingsPage` (file phải `export default`). `<Suspense fallback={<PageSkeleton />}>` bọc `Outlet`.
-  - ✅ `npm run build` có chunk riêng cho 2 trang; tab Network chỉ tải chunk khi mở trang.
+- [x] **T4.1 — `lazy` + `Suspense`**
+  - 📁 Edit `router.tsx`, `RootLayout.tsx`.
+  - 📋 `const StatsPage = lazy(() => import('../features/stats/StatsPage'))`, same for `SettingsPage` (the file must `export default`). `<Suspense fallback={<PageSkeleton />}>` wraps the `Outlet`.
+  - ✅ `npm run build` produces separate chunks for the 2 pages; the Network tab only loads a chunk when its page opens.
   - 📖 [`lazy`](https://react.dev/reference/react/lazy), [`<Suspense>`](https://react.dev/reference/react/Suspense)
 
-- [ ] **T4.2 — `use()` đọc comment**
-  - 📁 `src/api/commentsCache.ts`, `src/features/cards/CommentsSection.tsx`. Sửa `CardDetailRoute.tsx`.
+- [x] **T4.2 — `use()` to read comments**
+  - 📁 `src/api/commentsCache.ts`, `src/features/cards/CommentsSection.tsx`. Edit `CardDetailRoute.tsx`.
   - ✍️
-    - `getCommentsPromise(cardId: string): Promise<Comment[]>` — cache trong `Map<string, Promise<Comment[]>>`; `invalidateComments(cardId: string): void`.
+    - `getCommentsPromise(cardId: string): Promise<Comment[]>` — cached in a `Map<string, Promise<Comment[]>>`; `invalidateComments(cardId: string): void`.
     - `CommentsSection({ cardId })` = `ErrorBoundary` › `Suspense fallback={<CommentListSkeleton />}` › `Comments({ promise })`.
-    - `Comments({ promise })`: `const comments = use(promise)`; nếu `comments.length > 0` thì mới `const { usersById } = use(BoardStateContext)` (gọi `use` trong `if` — điều mà hook khác không được phép).
-  - 📋 Thí nghiệm: tạo promise mới mỗi render (`use(getComments(cardId))` không cache) → thấy request lặp vô hạn trong Network. Ghi comment.
+    - `Comments({ promise })`: `const comments = use(promise)`; only when `comments.length > 0` do `const { usersById } = use(BoardStateContext)` (calling `use` inside an `if` — something other hooks aren't allowed to do).
+  - 📋 Experiment: create a new promise every render (`use(getComments(cardId))` without a cache) → you'll see requests looping forever in Network. Add a comment.
   - 🧩 `CardDetail children={<CommentsSection … />}`, `CommentList`.
-  - ✅ Mở lại card đã xem → comment hiện ngay không skeleton.
+  - ✅ Reopening a card you've seen → the comments show immediately, no skeleton.
   - 📖 [`use`](https://react.dev/reference/react/use)
 
-- [ ] **T4.3 — Form Actions + `useActionState`**
-  - 📁 Viết lại `CreateCardForm.tsx`.
+- [x] **T4.3 — Form Actions + `useActionState`**
+  - 📁 Rewrite `CreateCardForm.tsx`.
   - ✍️
     ```ts
     type CreateCardState = { errors?: CardFormErrors; values?: Partial<CardFormValues>; createdId?: string }
     async function createCardAction(prev: CreateCardState, formData: FormData): Promise<CreateCardState>
     const [state, formAction, isPending] = useActionState(createCardAction, {})
     ```
-  - 📋 `<form action={formAction}>`; action: `readCardForm` → `validateCardForm` → lỗi thì trả `{ errors, values }` → hợp lệ thì `await createCard(...)`, `dispatch({ type: 'added' })`, trả `{ createdId }`. Lỗi API → `errors.form` hiện bằng `FormMessage`. Có lỗi thì truyền `defaultValues={state.values}` để không mất dữ liệu đã gõ (form tự reset sau mỗi action). Thành công → đóng modal.
-  - ✅ Không còn `onSubmit`, `preventDefault`, state loading thủ công. Đặt `VITE_API_FAIL_RATE=1` để thử lỗi server.
+  - 📋 `<form action={formAction}>`; the action: `readCardForm` → `validateCardForm` → on errors return `{ errors, values }` → if valid, `await createCard(...)`, `dispatch({ type: 'added' })`, return `{ createdId }`. API errors → `errors.form`, shown with `FormMessage`. On errors pass `defaultValues={state.values}` so typed data isn't lost (the form resets itself after every action). Success → close the modal.
+  - ✅ No more `onSubmit`, `preventDefault`, or hand-rolled loading state. Set `VITE_API_FAIL_RATE=1` to try server errors.
   - 📖 [`useActionState`](https://react.dev/reference/react/useActionState), [`<form>`](https://react.dev/reference/react-dom/components/form)
 
-- [ ] **T4.4 — `useFormStatus`**
+- [x] **T4.4 — `useFormStatus`**
   - 📁 `src/components/SubmitButton.tsx`.
-  - ✍️ `SubmitButton({ children, pendingText = 'Đang lưu…' })` — `const { pending } = useFormStatus()` → `<Button type="submit" variant="primary" loading={pending}>`.
-  - 📋 Dùng trong `CreateCardForm` và form bình luận (`CommentComposerFields submit={<SubmitButton>Gửi</SubmitButton>}`). Thử đặt `useFormStatus` ngay trong component chứa `<form>` → luôn `false`; ghi comment vì sao.
-  - ✅ Không truyền prop `loading`/`isPending` nào xuống nút.
+  - ✍️ `SubmitButton({ children, pendingText = 'Saving…' })` — `const { pending } = useFormStatus()` → `<Button type="submit" variant="primary" loading={pending}>`.
+  - 📋 Use it in `CreateCardForm` and the comment form (`CommentComposerFields submit={<SubmitButton>Send</SubmitButton>}`). Try calling `useFormStatus` in the component that renders the `<form>` → always `false`; add a comment explaining why.
+  - ✅ No `loading`/`isPending` prop is passed down to the button.
   - 📖 [`useFormStatus`](https://react.dev/reference/react-dom/hooks/useFormStatus)
 
-- [ ] **T4.5 — `useOptimistic` + Toast**
-  - 📁 `src/context/ToastContext.tsx`. Sửa `BoardPage.tsx`, `CommentsSection.tsx`.
-  - ✍️ `ToastProvider`, `useToast(): { show(kind: ToastItem['kind'], message: string): void }` — tự ẩn sau 4s (timer có cleanup), render `ToastStack`.
+- [x] **T4.5 — `useOptimistic` + Toasts**
+  - 📁 `src/context/ToastContext.tsx`. Edit `BoardPage.tsx`, `CommentsSection.tsx`.
+  - ✍️ `ToastProvider`, `useToast(): { show(kind: ToastItem['kind'], message: string): void }` — auto-hides after 4s (the timer has a cleanup), renders `ToastStack`.
   - ✍️ Board:
     ```ts
     const [optimisticCards, moveOptimistic] = useOptimistic(cards, (state, m: { id: string; toColumnId: ColumnId }) => ...)
@@ -369,120 +378,120 @@ Từ đây chạy `npm run api` song song với `npm run dev`. Bỏ `src/data/sa
       startTransition(async () => { moveOptimistic(...); try { await updateCard(...); dispatch(...) } catch { toast.show('error', '...') } })
     }
     ```
-    Truyền `onDropCard={handleDropCard}` cho `BoardView`, nút ←/→ cũng dùng chung. Card đang chờ: `isPending` (so `optimisticCards` với `cards`).
-  - ✍️ Comment: `useOptimistic(comments, (state, c: CommentView) => [...state, { ...c, pending: true }])`; gửi xong `invalidateComments` + làm mới promise.
-  - ✅ `VITE_API_DELAY=2000`: kéo thả thấy card sang cột mới ngay, mờ đến khi xong. `VITE_API_FAIL_RATE=0.5`: lỗi thì card tự quay về + toast đỏ.
+    Pass `onDropCard={handleDropCard}` to `BoardView`; the ←/→ buttons share it too. Cards waiting on the server: `isPending` (compare `optimisticCards` with `cards`).
+  - ✍️ Comments: `useOptimistic(comments, (state, c: CommentView) => [...state, { ...c, pending: true }])`; once sent, `invalidateComments` + refresh the promise.
+  - ✅ `VITE_API_DELAY=2000`: drag and drop moves the card to the new column immediately, dimmed until it's done. `VITE_API_FAIL_RATE=0.5`: on error the card snaps back + a red toast.
   - 📖 [`useOptimistic`](https://react.dev/reference/react/useOptimistic)
 
-- [ ] **T4.6 — `useTransition`**
-  - 📁 `src/api/cardsCache.ts`. Sửa `BoardPage.tsx`, `RootLayout.tsx`.
-  - 📋 Chuyển việc tải card sang Suspense: `getCardsPromise(boardId)` có cache (giống T4.2), `BoardPage` đọc bằng `use()`, `Suspense fallback={<BoardSkeleton />}` bọc ngoài. Thêm `Tabs` phía trên board (`items` = các board) — `onSelect` gọi `startTransition(() => navigate(...))`, `pendingId` = board đang chuyển tới khi `isPending`, `BoardView isStale={isPending}`.
-  - ✅ So sánh: đổi board bằng sidebar (không transition) → nháy skeleton; bằng Tabs → board cũ mờ đi rồi chuyển. Comment giải thích.
+- [x] **T4.6 — `useTransition`**
+  - 📁 `src/api/cardsCache.ts`. Edit `BoardPage.tsx`, `RootLayout.tsx`.
+  - 📋 Move card loading to Suspense: `getCardsPromise(boardId)` with a cache (like T4.2), `BoardPage` reads it with `use()`, wrapped in `Suspense fallback={<BoardSkeleton />}`. Add `Tabs` above the board (`items` = the boards) — `onSelect` calls `startTransition(() => navigate(...))`, `pendingId` = the board being switched to while `isPending`, `BoardView isStale={isPending}`.
+  - ✅ Compare: switching boards from the sidebar (no transition) → the skeleton flashes; with the Tabs → the old board dims, then switches. A comment explains why.
   - 📖 [`useTransition`](https://react.dev/reference/react/useTransition)
 
-- [ ] **T4.7 — `useDeferredValue`**
-  - 📁 `src/features/stats/StatsPage.tsx`, `src/features/stats/SearchResults.tsx`, thêm `getAllCards()` vào `src/api/cards.ts`.
-  - 📋 Chạy `npm run api:big`. `StatsPage`: `SearchBox` (controlled, **không debounce**) + `SearchResults({ cards, query, usersById })` bọc `memo`, render **toàn bộ** kết quả bằng `CardRow` trong `ListFrame height={480} count={...}`.
-    - Bước 1: gõ thấy giật.
-    - Bước 2: `const deferredQuery = useDeferredValue(query)`; truyền `deferredQuery` cho `SearchResults`; `isStale = query !== deferredQuery` → `ListFrame isStale`, `SearchBox busy`.
-  - ✅ Gõ mượt, danh sách mờ khi đang tính. Comment: khác gì debounce (T2.4)?
+- [x] **T4.7 — `useDeferredValue`**
+  - 📁 `src/features/stats/StatsPage.tsx`, `src/features/stats/SearchResults.tsx`, add `getAllCards()` to `src/api/cards.ts`.
+  - 📋 Run `npm run api:big`. `StatsPage`: `SearchBox` (controlled, **no debounce**) + `SearchResults({ cards, query, usersById })` wrapped in `memo`, rendering **every** result as a `CardRow` inside `ListFrame height={480} count={...}`.
+    - Step 1: typing feels janky.
+    - Step 2: `const deferredQuery = useDeferredValue(query)`; pass `deferredQuery` to `SearchResults`; `isStale = query !== deferredQuery` → `ListFrame isStale`, `SearchBox busy`.
+  - ✅ Typing is smooth; the list dims while it's being computed. Comment: how is this different from debounce (T2.4)?
   - 📖 [`useDeferredValue`](https://react.dev/reference/react/useDeferredValue)
 
-- [ ] **T4.8 — `<Activity>`**
-  - 📁 Sửa `StatsPage.tsx`.
-  - 📋 Chia trang Stats thành 3 tab (`Tabs`): "Tổng quan" (`StatsOverview`, dùng tạm số liệu tính bằng vòng lặp đơn giản), "Tìm kiếm" (T4.7), "Profiler" (T5.2). Mỗi tab bọc `<Activity mode={tab === id ? 'visible' : 'hidden'}>`.
-  - ✅ Gõ tìm kiếm + cuộn xuống, sang tab khác rồi quay lại → còn nguyên. Thêm `useEffect` có `console.log` mount/cleanup trong tab Tìm kiếm để thấy effect bị dọn khi ẩn. So sánh với `{tab === 'search' && ...}`.
+- [x] **T4.8 — `<Activity>`**
+  - 📁 Edit `StatsPage.tsx`.
+  - 📋 Split the Stats page into 3 tabs (`Tabs`): "Overview" (`StatsOverview`, using numbers from a simple loop for now), "Search" (T4.7), "Profiler" (T5.2). Wrap each tab in `<Activity mode={tab === id ? 'visible' : 'hidden'}>`.
+  - ✅ Type a search + scroll down, switch to another tab and back → everything is still there. Add a `useEffect` with a mount/cleanup `console.log` in the Search tab to see the effect cleaned up while hidden. Compare with `{tab === 'search' && ...}`.
   - 📖 [`<Activity>`](https://react.dev/reference/react/Activity)
 
-- [ ] **T4.9 — Metadata & tài nguyên**
-  - 📋 Render `<title>` + `<meta name="description">` ngay trong `BoardPage` (`"{board.title} · TaskFlow"`), `StatsPage`, `SettingsPage`, `LoginPage`. Gọi `preconnect(API_URL)` trong `RootLayout`.
-  - ✅ Tiêu đề tab trình duyệt đổi theo trang.
+- [x] **T4.9 — Metadata & resources**
+  - 📋 Render `<title>` + `<meta name="description">` right inside `BoardPage` (`"{board.title} · TaskFlow"`), `StatsPage`, `SettingsPage`, `LoginPage`. Call `preconnect(API_URL)` in `RootLayout`.
+  - ✅ The browser tab title follows the page.
   - 📖 [`<title>`](https://react.dev/reference/react-dom/components/title), [`preconnect`](https://react.dev/reference/react-dom/preconnect)
 
 ---
 
-## Level 5 — Hiệu năng & React Profiler
+## Level 5 — Performance & the React Profiler
 
-Chạy `npm run api:big`. Ghi mọi số đo vào `PERF.md`. **Đo trước → sửa → đo lại.**
+Run `npm run api:big`. Record every measurement in `PERF.md`. **Measure first → fix → measure again.**
 
 - [ ] **T5.1 — React DevTools Profiler (baseline)**
-  - 📋 Cài extension React Developer Tools. Trong Settings của tab Profiler bật "Record why each component rendered"; trong Components bật "Highlight updates". Ghi profile 3 kịch bản: gõ 5 ký tự ở trang Stats › Tìm kiếm; kéo 1 card trên board; đổi theme.
-  - ✅ Bảng baseline trong `PERF.md` + 3 component tốn thời gian nhất (Ranked chart) + lý do render của chúng.
+  - 📋 Install the React Developer Tools extension. In the Profiler tab's settings, turn on "Record why each component rendered"; in Components, turn on "Highlight updates". Record a profile of 3 scenarios: typing 5 characters in Stats › Search; dragging 1 card on the board; toggling the theme.
+  - ✅ A baseline table in `PERF.md` + the 3 most expensive components (Ranked chart) + why they rendered.
   - 📖 [React Developer Tools](https://react.dev/learn/react-developer-tools), [Introducing the React Profiler](https://legacy.reactjs.org/blog/2018/09/10/introducing-the-react-profiler.html)
 
-- [ ] **T5.2 — `<Profiler>` API**
-  - 📁 `src/features/stats/profilerStore.ts`, sửa `StatsPage.tsx`, `BoardPage.tsx`.
-  - ✍️ `profilerStore.ts`: `record(row: ProfilerRow)` (giữ 20 dòng mới nhất), `clear()`, `subscribe(listener)`, `getSnapshot()`; hook `useProfilerRows(): ProfilerRow[]` qua `useSyncExternalStore`. Hàm `onRender: ProfilerOnRenderCallback` gọi `record`.
-  - 📋 Bọc `<Profiler id="SearchResults" onRender={onRender}>` và `<Profiler id="BoardView" ...>`. Tab "Profiler" hiện `ProfilerTable rows={useProfilerRows()} onClear={clear}`.
-  - ⚠️ Vì sao **không** dùng `useState` trong `onRender`? (thử → vòng lặp render). Ghi comment.
-  - ✅ Bảng cập nhật khi thao tác. Comment giải thích `actualDuration` vs `baseDuration`.
+- [x] **T5.2 — The `<Profiler>` API**
+  - 📁 `src/features/stats/profilerStore.ts`, edit `StatsPage.tsx`, `BoardPage.tsx`.
+  - ✍️ `profilerStore.ts`: `record(row: ProfilerRow)` (keeps the 20 latest rows), `clear()`, `subscribe(listener)`, `getSnapshot()`; a `useProfilerRows(): ProfilerRow[]` hook via `useSyncExternalStore`. An `onRender: ProfilerOnRenderCallback` function calls `record`.
+  - 📋 Wrap `<Profiler id="SearchResults" onRender={onRender}>` and `<Profiler id="BoardView" ...>`. The "Profiler" tab shows `ProfilerTable rows={useProfilerRows()} onClear={clear}`.
+  - ⚠️ Why **not** use `useState` in `onRender`? (try it → a render loop). Add a comment.
+  - ✅ The table updates as you interact. A comment explains `actualDuration` vs `baseDuration`.
   - 📖 [`<Profiler>`](https://react.dev/reference/react/Profiler)
 
 - [ ] **T5.3 — `memo`, `useMemo`, `useCallback`**
-  - 📁 `src/features/stats/computeStats.ts`, sửa các component bị Profiler chỉ ra.
-  - ✍️ `computeBoardStats(cards: Card[], today: string): BoardStats` — thay số liệu tạm ở T4.8; bọc `useMemo`.
-  - 📋 Sửa đúng 3 điểm nóng từ T5.1. Hai thí nghiệm memo **vô dụng**: truyền `style={{...}}` mới mỗi render vào component `memo`; truyền `children` JSX vào component `memo`.
-  - ✅ `PERF.md` có số trước/sau cho từng thay đổi + giải thích 2 thí nghiệm.
+  - 📁 `src/features/stats/computeStats.ts`, plus the components the Profiler points to.
+  - ✍️ `computeBoardStats(cards: Card[], today: string): BoardStats` — replaces the temporary numbers from T4.8; wrapped in `useMemo`.
+  - 📋 Fix exactly the 3 hot spots from T5.1. Two experiments where memo is **useless**: pass a new `style={{...}}` every render into a `memo` component; pass JSX `children` into a `memo` component.
+  - ✅ `PERF.md` has before/after numbers for each change + an explanation of the 2 experiments.
   - 📖 [`memo`](https://react.dev/reference/react/memo), [`useMemo`](https://react.dev/reference/react/useMemo), [`useCallback`](https://react.dev/reference/react/useCallback)
 
-- [ ] **T5.4 — Sửa cấu trúc thay vì memo**
-  - 📋 Không dùng memo: (a) đưa state `query` xuống component nhỏ nhất cần nó; (b) truyền phần nặng qua `children` để không bị render lại; (c) kiểm tra `ThemeContext` đổi theme có kéo cả board render lại không, tách nếu cần.
-  - ✅ Ít nhất 1 chỗ bỏ được memo mà vẫn nhanh bằng — có số liệu.
+- [ ] **T5.4 — Fix the structure instead of memoizing**
+  - 📋 Without memo: (a) move the `query` state down into the smallest component that needs it; (b) pass the heavy part through `children` so it doesn't re-render; (c) check whether a theme change in `ThemeContext` drags the whole board into re-rendering, and split it if needed.
+  - ✅ At least 1 place where memo was removed and it's just as fast — with numbers.
   - 📖 [Before you memo()](https://overreacted.io/before-you-memo/)
 
-- [ ] **T5.5 — Virtualization**
+- [x] **T5.5 — Virtualization**
   - 📁 `src/components/VirtualList.tsx`.
   - ✍️
     ```ts
     interface VirtualListProps<T> {
       items: T[]
-      itemHeight: number // dùng CARD_ROW_HEIGHT
+      itemHeight: number // use CARD_ROW_HEIGHT
       height: number
-      overscan?: number // mặc định 5
+      overscan?: number // defaults to 5
       renderItem: (item: T, index: number, style: CSSProperties) => ReactNode
     }
     ```
-    Dùng `ListFrame` (`ref`, `onScroll`); state `scrollTop`; tính `startIndex`, `endIndex`; div bên trong cao `items.length * itemHeight`; mỗi item `position: absolute; top: index * itemHeight`.
-  - 📋 Thay danh sách ở `SearchResults`. Sau đó thử `@tanstack/react-virtual` và so sánh.
-  - ✅ DOM trong `ListFrame` < 100 node dù 5.000 kết quả; số liệu mount trước/sau trong `PERF.md`.
+    Use `ListFrame` (`ref`, `onScroll`); a `scrollTop` state; compute `startIndex`, `endIndex`; an inner div `items.length * itemHeight` tall; each item `position: absolute; top: index * itemHeight`.
+  - 📋 Replace the list in `SearchResults`. Then try `@tanstack/react-virtual` and compare.
+  - ✅ The DOM inside `ListFrame` has < 100 nodes even with 5,000 results; before/after mount numbers in `PERF.md`.
   - 📖 [TanStack Virtual](https://tanstack.com/virtual/latest)
 
 - [ ] **T5.6 — Chrome Performance + React tracks**
-  - 📋 Chrome DevTools › Performance, ghi khi gõ tìm kiếm có/không có `useDeferredValue`. Tìm track "Scheduler ⚛" và "Components ⚛".
-  - ✅ Ảnh chụp 2 bản ghi + nhận xét (Blocking vs Transition lane, long task) trong `PERF.md`.
+  - 📋 Chrome DevTools › Performance: record typing a search with and without `useDeferredValue`. Find the "Scheduler ⚛" and "Components ⚛" tracks.
+  - ✅ Screenshots of the 2 recordings + notes (Blocking vs Transition lane, long tasks) in `PERF.md`.
   - 📖 [React Performance Tracks](https://react.dev/reference/dev-tools/react-performance-tracks)
 
 - [ ] **T5.7 — React Compiler**
-  - 📋 Bật React Compiler cho Vite theo hướng dẫn chính thức (copy project ra thư mục khác để thử). Xoá `memo`/`useMemo`/`useCallback` thủ công, profile lại, so với T5.3. Xem badge "Memo ✨" trong DevTools.
-  - ✅ `PERF.md` có số liệu + kết luận giữ memo thủ công ở đâu (nếu có).
+  - 📋 Turn on the React Compiler for Vite following the official guide (copy the project into another folder to experiment). Remove the hand-written `memo`/`useMemo`/`useCallback`, profile again, and compare with T5.3. Look for the "Memo ✨" badge in DevTools.
+  - ✅ `PERF.md` has numbers + a conclusion on where (if anywhere) to keep manual memoization.
   - 📖 [React Compiler](https://react.dev/learn/react-compiler), [Rules of React](https://react.dev/reference/rules)
 
 ---
 
-## Level 6 — Chất lượng
+## Level 6 — Quality
 
-- [ ] **T6.1 — Testing**
-  - 📁 Test đặt cạnh file: `xxx.test.ts(x)`.
-  - 📋 Tối thiểu:
-    - `boardReducer.test.ts` — mọi action, kể cả không mutate state cũ.
+- [x] **T6.1 — Testing**
+  - 📁 Tests live next to their file: `xxx.test.ts(x)`.
+  - 📋 At minimum:
+    - `boardReducer.test.ts` — every action, including not mutating the old state.
     - `filterCards.test.ts`, `cardForm.test.ts`, `tooltipPosition.test.ts`, `computeStats.test.ts`, `src/utils/date.test.ts`.
     - `useDebouncedValue.test.ts` — `renderHook` + `vi.useFakeTimers()`.
-    - `CreateCardForm.test.tsx` — `userEvent` gõ, submit, thấy lỗi; mock `fetch` (`vi.spyOn(globalThis, 'fetch')`) để thử tạo thành công. Đặt `VITE_API_DELAY=0` cho test (`vite.config.ts › test.env`).
-  - ✅ `npm test` xanh, ≥ 20 test. Query theo role/label, không theo class.
+    - `CreateCardForm.test.tsx` — `userEvent` types, submits, sees errors; mock `fetch` (`vi.spyOn(globalThis, 'fetch')`) to test a successful create. Set `VITE_API_DELAY=0` for tests (`vite.config.ts › test.env`).
+  - ✅ `npm test` is green, ≥ 20 tests. Query by role/label, not by class.
   - 📖 [Testing Library](https://testing-library.com/docs/react-testing-library/intro), [Vitest](https://vitest.dev/guide/)
 
-- [ ] **T6.2 — StrictMode**
-  - 📋 Rà lại mọi effect/subscription: request ghi nào bị gửi 2 lần? listener nào bị đăng ký 2 lần? timer nào không clear? Sửa bằng cleanup đúng.
-  - ✅ Danh sách lỗi đã tìm thấy + cách sửa trong comment hoặc ghi chú.
+- [x] **T6.2 — StrictMode**
+  - 📋 Go over every effect/subscription: which write requests get sent twice? Which listeners get registered twice? Which timers are never cleared? Fix them with proper cleanup.
+  - ✅ A list of the problems found + how they were fixed, in comments or notes.
   - 📖 [`<StrictMode>`](https://react.dev/reference/react/StrictMode)
 
-- [ ] **T6.3 — Accessibility**
-  - 📁 Sửa `BoardPage.tsx`, `Modal.tsx`.
+- [x] **T6.3 — Accessibility**
+  - 📁 Edit `BoardPage.tsx`, `Modal.tsx`.
   - 📋
-    - Card focus được: `articleProps={{ tabIndex: 0, onKeyDown }}`; `ArrowLeft/ArrowRight` chuyển cột, `Enter` mở chi tiết, `Delete` xoá (có xác nhận). Sau khi chuyển cột, focus đi theo card.
-    - Modal: focus phần tử đầu tiên khi mở, Tab/Shift+Tab không thoát ra ngoài, đóng thì trả focus về phần tử đã mở modal.
-    - Vùng `aria-live="polite"` ẩn (class `sr-only` tự viết) đọc "Đã chuyển … sang Đang làm".
-  - ✅ Dùng toàn bộ app không cần chuột.
+    - Cards are focusable: `articleProps={{ tabIndex: 0, onKeyDown }}`; `ArrowLeft/ArrowRight` move columns, `Enter` opens the detail, `Delete` deletes (with confirmation). After moving columns, focus follows the card.
+    - Modal: focus the first element on open, Tab/Shift+Tab can't escape, and closing returns focus to the element that opened the modal.
+    - A hidden `aria-live="polite"` region (a hand-written `sr-only` class) announces "Moved … to In progress".
+  - ✅ The whole app can be used without a mouse.
   - 📖 [Accessibility (MDN)](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Accessibility)
 
 ---
@@ -493,33 +502,33 @@ Chạy `npm run api:big`. Ghi mọi số đo vào `PERF.md`. **Đo trước → 
 npx create-next-app@latest taskflow-next --ts --app --eslint --src-dir
 ```
 
-Copy sang project mới: `src/types.ts`, `src/components/`, `src/features/**/…View.tsx` + các component UI + CSS. json-server vẫn chạy từ `taskflow/` (`npm run api`).
+Copy into the new project: `src/types.ts`, `src/components/`, `src/features/**/…View.tsx` + the UI components + CSS. json-server still runs from `taskflow/` (`npm run api`).
 
-- [ ] **T7.1 — Port giao diện**
-  - 📋 `app/layout.tsx` dùng `Layout`; `app/boards/[boardId]/page.tsx` render `BoardView` với dữ liệu fetch trên server. Component dùng hook/event (`Column`, `Modal`, `SearchBox`…) cần `'use client'` ở đầu file.
-  - ✅ Board hiển thị đúng dữ liệu.
+- [ ] **T7.1 — Port the UI**
+  - 📋 `app/layout.tsx` uses `Layout`; `app/boards/[boardId]/page.tsx` renders `BoardView` with data fetched on the server. Components that use hooks/events (`Column`, `Modal`, `SearchBox`…) need `'use client'` at the top of the file.
+  - ✅ The board shows the right data.
   - 📖 [Next.js App Router](https://nextjs.org/docs/app)
 
 - [ ] **T7.2 — Server vs Client Components**
-  - 📋 `page.tsx` là `async` component `await fetch('http://localhost:3001/...')`. Tách `BoardClient` (`'use client'`) chứa tìm kiếm/kéo thả. Truyền Server Component làm `children` của Client Component.
-  - ✅ Sơ đồ cây component đánh dấu Server/Client trong README; kiểm tra bundle client không chứa code fetch.
+  - 📋 `page.tsx` is an `async` component doing `await fetch('http://localhost:3001/...')`. Split out a `BoardClient` (`'use client'`) holding search/drag and drop. Pass a Server Component as the `children` of a Client Component.
+  - ✅ A component tree diagram marking Server/Client in the README; check that the client bundle doesn't contain the fetching code.
   - 📖 [Server Components](https://react.dev/reference/rsc/server-components), [`'use client'`](https://react.dev/reference/rsc/use-client)
 
 - [ ] **T7.3 — Server Functions**
-  - 📋 `app/actions.ts` với `'use server'`: `createCard(prev, formData)`, `moveCard(cardId, toColumnId)`, `addComment(prev, formData)`; gọi `revalidatePath`. Dùng lại `useActionState`, `useOptimistic`, `SubmitButton` từ Level 4.
-  - ✅ Tắt JavaScript trong DevTools vẫn tạo được card.
+  - 📋 `app/actions.ts` with `'use server'`: `createCard(prev, formData)`, `moveCard(cardId, toColumnId)`, `addComment(prev, formData)`; call `revalidatePath`. Reuse `useActionState`, `useOptimistic`, `SubmitButton` from Level 4.
+  - ✅ Cards can still be created with JavaScript disabled in DevTools.
   - 📖 [Server Functions](https://react.dev/reference/rsc/server-functions), [`'use server'`](https://react.dev/reference/rsc/use-server)
 
 - [ ] **T7.4 — Streaming**
-  - 📋 `loading.tsx` (dùng `BoardSkeleton`), `error.tsx` (dùng `ErrorMessage`), `not-found.tsx` (dùng `NotFoundView`); `<Suspense>` riêng cho phần thống kê (cố tình chậm 3s).
-  - ✅ Khung trang hiện ngay, phần chậm "chảy" vào sau.
+  - 📋 `loading.tsx` (uses `BoardSkeleton`), `error.tsx` (uses `ErrorMessage`), `not-found.tsx` (uses `NotFoundView`); a separate `<Suspense>` for the stats section (deliberately 3s slow).
+  - ✅ The page shell shows immediately, and the slow part "streams" in afterwards.
   - 📖 [loading.js](https://nextjs.org/docs/app/api-reference/file-conventions/loading)
 
-- [ ] **T7.5 — Promise từ Server sang Client**
-  - 📋 Server Component gọi `getComments(cardId)` **không await**, truyền promise vào Client Component đọc bằng `use()` trong `<Suspense fallback={<CommentListSkeleton />}>`.
-  - ✅ Comment giải thích khác biệt với T4.2 (ai tạo promise, cache ở đâu).
+- [ ] **T7.5 — Promises from Server to Client**
+  - 📋 A Server Component calls `getComments(cardId)` **without awaiting**, and passes the promise to a Client Component that reads it with `use()` inside `<Suspense fallback={<CommentListSkeleton />}>`.
+  - ✅ A comment explains the difference from T4.2 (who creates the promise, where it's cached).
   - 📖 [`use` — streaming data from server to client](https://react.dev/reference/react/use#streaming-data-from-server-to-client)
 
 ---
 
-🎓 **Hoàn thành:** đối chiếu `CONCEPTS.md` — mọi dòng đã được đánh dấu là bạn đã đi qua gần như toàn bộ React hiện đại.
+🎓 **Done:** check against `CONCEPTS.md` — once every line is ticked, you've been through almost all of modern React.

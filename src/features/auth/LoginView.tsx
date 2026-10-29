@@ -5,11 +5,11 @@ import "./LoginView.css";
 interface LoginViewProps {
   users: User[];
   onSelect: (user: User) => void;
-  /** Đang tải danh sách user từ API. */
+  /** Loading the user list from the API. */
   loading?: boolean;
 }
 
-/** Màn đăng nhập giả: chọn 1 user (T3.2). Không có mật khẩu. */
+/** Fake sign-in screen: pick a user (T3.2). No password. */
 export function LoginView({
   users,
   onSelect,
@@ -19,7 +19,7 @@ export function LoginView({
     <div className="login">
       <div className="login__panel">
         <h1 className="login__logo">TaskFlow</h1>
-        <p className="login__subtitle">Chọn tài khoản để tiếp tục</p>
+        <p className="login__subtitle">Choose an account to continue</p>
         {loading ? (
           <div className="login__loading">
             <Spinner />

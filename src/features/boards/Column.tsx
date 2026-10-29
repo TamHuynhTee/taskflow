@@ -4,7 +4,7 @@ import type { Card, ColumnId, Column as ColumnType, User } from "../../types";
 import { CardItem, type CardItemProps } from "../cards/CardItem";
 import "./Column.css";
 
-/** Những props của CardItem mà bên ngoài được phép gắn thêm cho từng card. */
+/** CardItem props that outside code may attach to each card. */
 export type CardExtraProps = Partial<
   Omit<CardItemProps, "card" | "assignee" | "today">
 >;
@@ -14,11 +14,11 @@ interface ColumnProps {
   cards: Card[];
   usersById: Record<string, User>;
   today: string;
-  /** Gắn callback/cờ riêng cho từng card, vd. card => ({ onDelete: () => ..., isPending: ... }). */
+  /** Attach callbacks/flags to each card, e.g. card => ({ onDelete: () => ..., isPending: ... }). */
   getCardProps?: (card: Card) => CardExtraProps;
-  /** Có truyền thì card kéo thả được: thả card vào cột này sẽ gọi hàm với id card và id cột đích (T4.5). */
+  /** When given, cards are draggable: dropping a card on this column calls it with the card id and target column id (T4.5). */
   onDropCard?: (cardId: string, toColumnId: ColumnId) => void;
-  /** Nội dung cuối cột, vd. nút "+ Thêm card". */
+  /** Content at the bottom of the column, e.g. a "+ Add card" button. */
   footer?: ReactNode;
 }
 
@@ -34,11 +34,11 @@ export function Column({
   footer,
 }: ColumnProps) {
   const [reversed, setReversed] = useState(false);
-  // State thuần UI: cột đang được kéo card bay qua để tô viền.
+  // Pure UI state: the column a card is being dragged over, to highlight its border.
   const [isDropTarget, setIsDropTarget] = useState(false);
 
-  // Tạo mảng mới bằng toReversed() — KHÔNG gọi cards.reverse() vì nó sửa (mutate)
-  // chính mảng props mà component cha đang giữ.
+  // Create a new array with toReversed() — DON'T call cards.reverse(), because it mutates
+  // the very props array the parent component is holding.
   const visibleCards = reversed ? cards.toReversed() : cards;
 
   const dropHandlers = onDropCard && {
@@ -73,23 +73,23 @@ export function Column({
           className="column__action"
           onClick={() => setReversed((r) => !r)}
           disabled={cards.length < 2}
-          title="Đảo thứ tự"
+          title="Reverse order"
         >
           ⇅
         </button>
       </header>
 
       {visibleCards.length === 0 ? (
-        <p className="column__empty">Trống</p>
+        <p className="column__empty">Empty</p>
       ) : (
         <div className="column__list">
           {visibleCards.map((card) => {
             const extra = getCardProps?.(card);
             return (
-              // THÍ NGHIỆM key (T0.2): truyền showNote vào CardItem, đổi thành key={index},
-              // gõ ghi chú vào card đầu tiên rồi bấm ⇅. Ghi chú sẽ "dính" ở vị trí đầu
-              // thay vì đi theo card: React ghép phần tử theo key, cùng key = cùng component
-              // = giữ nguyên state/DOM (ô input). Với key={card.id}, state đi theo đúng card.
+              // key EXPERIMENT (T0.2): pass showNote to CardItem, change to key={index},
+              // type a note into the first card, then press ⇅. The note "sticks" to the first position
+              // instead of following the card: React matches elements by key, same key = same component
+              // = keeps its state/DOM (the input). With key={card.id}, the state follows the right card.
               <CardItem
                 key={card.id}
                 card={card}

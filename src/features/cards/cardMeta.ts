@@ -1,14 +1,14 @@
-// Bảng tra hiển thị cho card. Để ngoài component vì không phụ thuộc props/state,
-// không cần tạo lại mỗi lần render.
+// Display lookup tables for cards. Kept outside the component because they don't depend on props/state,
+// so there's no need to recreate them every render.
 import type { BadgeTone } from "../../components/Badge";
 import type { CardFilter, CardFormValues, Label, Priority } from "../../types";
 
 export const priorityMeta: Record<Priority, { text: string; tone: BadgeTone }> =
   {
-    low: { text: "Thấp", tone: "neutral" },
-    medium: { text: "Trung bình", tone: "blue" },
-    high: { text: "Cao", tone: "orange" },
-    urgent: { text: "Khẩn cấp", tone: "red" },
+    low: { text: "Low", tone: "neutral" },
+    medium: { text: "Medium", tone: "blue" },
+    high: { text: "High", tone: "orange" },
+    urgent: { text: "Urgent", tone: "red" },
   };
 
 export const labelMeta: Record<Label, { text: string; tone: BadgeTone }> = {
@@ -19,14 +19,14 @@ export const labelMeta: Record<Label, { text: string; tone: BadgeTone }> = {
   chore: { text: "Chore", tone: "neutral" },
 };
 
-/** Bộ lọc rỗng = không lọc gì (T1.3). */
+/** Empty filter = no filtering (T1.3). */
 export const EMPTY_FILTER: CardFilter = {
   labels: [],
   priority: "all",
   assigneeId: "all",
 };
 
-/** Giá trị mặc định của form tạo card (T1.2). */
+/** Default values for the create-card form (T1.2). */
 export const EMPTY_CARD_FORM: CardFormValues = {
   title: "",
   description: "",
@@ -36,7 +36,7 @@ export const EMPTY_CARD_FORM: CardFormValues = {
   assigneeId: "",
 };
 
-/** Kiểm tra giá trị đọc từ FormData có phải Priority hợp lệ không. */
+/** Checks whether a value read from FormData is a valid Priority. */
 export function isPriority(value: unknown): value is Priority {
   return typeof value === "string" && value in priorityMeta;
 }

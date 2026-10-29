@@ -13,8 +13,10 @@
     "db:reset": "node -e \"require('fs').copyFileSync('db.seed.json','db.json')\"",
     "gen:seed": "tsx scripts/gen-data.ts --cards 30 --boards 2 --out db.seed.json",
     "gen:big": "tsx scripts/gen-data.ts --cards 5000 --boards 5 --out db.big.json",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "vitest run --project app",
+    "test:watch": "vitest --project app",
+    "test:labs": "vitest run --project labs",
+    "test:labs:watch": "vitest --project labs"
   },
   "dependencies": {
     "react": "^19.3.1",

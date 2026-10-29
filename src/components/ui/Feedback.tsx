@@ -1,4 +1,4 @@
-// Các khối thông báo trạng thái: rỗng, lỗi, banner, toast.
+// Status blocks: empty, error, banner, toast.
 import type { ReactNode } from "react";
 import type { ToastItem } from "../../types";
 import { errorText } from "../../utils/error";
@@ -33,13 +33,13 @@ interface ErrorMessageProps {
   title?: string;
   error: unknown;
   onRetry?: () => void;
-  /** Bản gọn để đặt trong 1 cột/khối nhỏ. */
+  /** Compact version for a single column/small block. */
   compact?: boolean;
 }
 
-/** Hiện lỗi + nút thử lại. Dùng cho fetch lỗi (T2.1) và fallback của ErrorBoundary (T3.7). */
+/** Shows an error + a retry button. Used for failed fetches (T2.1) and as the ErrorBoundary fallback (T3.7). */
 export function ErrorMessage({
-  title = "Đã có lỗi xảy ra",
+  title = "Something went wrong",
   error,
   onRetry,
   compact = false,
@@ -53,7 +53,7 @@ export function ErrorMessage({
       <p className="error-box__detail">{errorText(error)}</p>
       {onRetry && (
         <Button size="sm" onClick={onRetry}>
-          Thử lại
+          Retry
         </Button>
       )}
     </div>
@@ -66,7 +66,7 @@ interface BannerProps {
   action?: ReactNode;
 }
 
-/** Dải thông báo trên cùng trang — vd. "Mất kết nối" (T2.6). Đặt vào prop `banner` của Layout. */
+/** Notice strip at the top of the page — e.g. "Offline" (T2.6). Pass it to Layout's `banner` prop. */
 export function Banner({ tone = "info", children, action }: BannerProps) {
   return (
     <div
@@ -85,8 +85,8 @@ interface ToastStackProps {
 }
 
 /**
- * Chỉ hiển thị danh sách toast. Việc thêm toast, tự ẩn sau vài giây (setTimeout + cleanup)
- * là phần bạn tự làm (T4.5).
+ * Only displays the toast list. Adding toasts and auto-hiding them after a few seconds (setTimeout + cleanup)
+ * is your part (T4.5).
  */
 export function ToastStack({ toasts, onDismiss }: ToastStackProps) {
   return (
@@ -98,7 +98,7 @@ export function ToastStack({ toasts, onDismiss }: ToastStackProps) {
           role={t.kind === "error" ? "alert" : "status"}
         >
           <span>{t.message}</span>
-          <IconButton label="Đóng thông báo" onClick={() => onDismiss(t.id)}>
+          <IconButton label="Dismiss notification" onClick={() => onDismiss(t.id)}>
             ✕
           </IconButton>
         </div>
@@ -107,7 +107,7 @@ export function ToastStack({ toasts, onDismiss }: ToastStackProps) {
   );
 }
 
-/** Huy hiệu nhỏ hiện số lần render (T2.3). Giá trị `count` do bạn tự đếm bằng useRef. */
+/** Small badge showing the render count (T2.3). You count `count` yourself with useRef. */
 export function RenderCounter({
   count,
   label = "renders",
@@ -116,7 +116,7 @@ export function RenderCounter({
   label?: string;
 }) {
   return (
-    <span className="render-counter" title="Số lần component này đã render">
+    <span className="render-counter" title="How many times this component has rendered">
       {count} {label}
     </span>
   );

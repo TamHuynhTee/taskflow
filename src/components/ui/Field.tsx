@@ -1,11 +1,12 @@
-// Các ô nhập liệu có label + thông báo lỗi.
-// Mọi props còn lại (value, onChange, defaultValue, name, ref, ...) được chuyển thẳng xuống
-// thẻ <input>/<select>/<textarea>, nên dùng được cả kiểu controlled lẫn uncontrolled.
-// Từ React 19, `ref` cũng là một prop thường nên `...rest` truyền luôn ref xuống input (T3.5).
+// Inputs with a label + an error message.
+// All remaining props (value, onChange, defaultValue, name, ref, ...) are passed straight down to
+// the <input>/<select>/<textarea>, so they work both controlled and uncontrolled.
+// Since React 19, `ref` is a regular prop too, so `...rest` passes the ref down to the input (T3.5).
 //
-// T3.6: hiện `id` là BẮT BUỘC để nối <label htmlFor> với input. Nhiệm vụ của bạn là làm
-// `id` thành tuỳ chọn, tự sinh bằng useId() khi không truyền vào.
-import type { ComponentProps, ReactNode } from "react";
+// T3.6: `id` is optional — if omitted it's generated with useId(). useId gives an id that's stable across
+// renders, unique in the page (two forms at once never clash) and matches between server/client with SSR.
+// Don't use Math.random()/a global counter: a different id on every render, and a mismatch on hydration.
+import { useId, type ComponentProps, type ReactNode } from "react";
 
 interface FieldShellProps {
   id: string;
@@ -44,19 +45,21 @@ function describedBy(id: string, error?: string, hint?: string) {
 }
 
 type BaseFieldProps = {
-  id: string;
+  id?: string;
   label: string;
   error?: string;
   hint?: string;
 };
 
 export function TextField({
-  id,
+  id: idProp,
   label,
   error,
   hint,
   ...rest
 }: BaseFieldProps & ComponentProps<"input">) {
+  const autoId = useId();
+  const id = idProp ?? autoId;
   return (
     <FieldShell id={id} label={label} error={error} hint={hint}>
       <input
@@ -71,12 +74,14 @@ export function TextField({
 }
 
 export function TextAreaField({
-  id,
+  id: idProp,
   label,
   error,
   hint,
   ...rest
 }: BaseFieldProps & ComponentProps<"textarea">) {
+  const autoId = useId();
+  const id = idProp ?? autoId;
   return (
     <FieldShell id={id} label={label} error={error} hint={hint}>
       <textarea
@@ -97,13 +102,15 @@ export interface Option {
 }
 
 export function SelectField({
-  id,
+  id: idProp,
   label,
   error,
   hint,
   options,
   ...rest
 }: BaseFieldProps & { options: Option[] } & ComponentProps<"select">) {
+  const autoId = useId();
+  const id = idProp ?? autoId;
   return (
     <FieldShell id={id} label={label} error={error} hint={hint}>
       <select
@@ -124,11 +131,11 @@ export function SelectField({
 }
 
 interface CheckboxGroupProps {
-  id: string;
+  id?: string;
   label: string;
   name: string;
   options: Option[];
-  /** Controlled: truyền value + onChange. Uncontrolled: truyền defaultValue (đọc bằng FormData.getAll(name)). */
+  /** Controlled: pass value + onChange. Uncontrolled: pass defaultValue (read with FormData.getAll(name)). */
   value?: string[];
   defaultValue?: string[];
   onChange?: (values: string[]) => void;
@@ -136,7 +143,7 @@ interface CheckboxGroupProps {
 }
 
 export function CheckboxGroup({
-  id,
+  id: idProp,
   label,
   name,
   options,
@@ -145,6 +152,8 @@ export function CheckboxGroup({
   onChange,
   error,
 }: CheckboxGroupProps) {
+  const autoId = useId();
+  const id = idProp ?? autoId;
   return (
     <fieldset
       className={`field field--group ${error ? "field--invalid" : ""}`}

@@ -7,7 +7,7 @@ export type BadgeTone =
 interface BadgeProps {
   tone?: BadgeTone;
   title?: string;
-  // `children` là bất cứ thứ gì đặt giữa <Badge>...</Badge>: chữ, số, icon, JSX khác.
+  // `children` is whatever sits between <Badge>...</Badge>: text, numbers, icons, other JSX.
   children: ReactNode;
 }
 

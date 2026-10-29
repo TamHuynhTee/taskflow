@@ -1,13 +1,13 @@
-// Hàm thuần (pure): cùng input → luôn cùng output, không đọc/ghi gì bên ngoài.
-// Chú ý `today` được truyền vào thay vì gọi `new Date()` bên trong — nhờ vậy
-// kết quả không phụ thuộc vào thời điểm gọi và dễ test (T6.1).
+// Pure function: same input → always the same output, reads/writes nothing outside.
+// Note that `today` is passed in instead of calling `new Date()` inside — so the
+// result doesn't depend on when it's called, and it's easy to test (T6.1).
 
 export type DueStatus = "none" | "overdue" | "soon" | "normal";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const SOON_DAYS = 2;
 
-/** Chuyển 'yyyy-mm-dd' thành số ngày (UTC) để so sánh, bỏ qua giờ phút. */
+/** Converts 'yyyy-mm-dd' to a day number (UTC) for comparison, ignoring the time of day. */
 function toDayNumber(isoDate: string) {
   const [y, m, d] = isoDate.slice(0, 10).split("-").map(Number);
   return Date.UTC(y, m - 1, d) / DAY_MS;

@@ -23,6 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# json-server ghi trực tiếp vào db.json; reset bằng `npm run db:reset`
+# json-server writes straight into db.json; reset it with `npm run db:reset`
 db.json
 db.big.json

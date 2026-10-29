@@ -1,5 +1,5 @@
-// Kiểu dữ liệu dùng chung cho toàn app. Khớp với cấu trúc trong db.json.
-// json-server v1 dùng id dạng string.
+// Data types shared across the app. Match the structure in db.json.
+// json-server v1 uses string ids.
 
 export type ColumnId = "todo" | "doing" | "done";
 
@@ -36,7 +36,7 @@ export interface Card {
   priority: Priority;
   dueDate: string | null; // ISO date (yyyy-mm-dd)
   assigneeId: string | null;
-  order: number; // thứ tự trong cột, nhỏ đứng trên
+  order: number; // position in the column, lower is higher up
   createdAt: string;
 }
 
@@ -49,34 +49,34 @@ export interface Comment {
 }
 
 // ---------------------------------------------------------------------------
-// Kiểu dữ liệu cho UI (không lưu trên server)
+// UI-only types (not stored on the server)
 // ---------------------------------------------------------------------------
 
 export type Theme = "light" | "dark";
 
-/** Bộ lọc card ở sidebar (T1.3). 'all' = không lọc theo trường đó. */
+/** Sidebar card filter (T1.3). 'all' = don't filter on that field. */
 export interface CardFilter {
   labels: Label[];
   priority: Priority | "all";
   assigneeId: string | "all";
 }
 
-/** Giá trị form tạo/sửa card (T1.2, T4.3). Field text dùng chuỗi rỗng thay cho null để khớp với <input>. */
+/** Create/edit card form values (T1.2, T4.3). Text fields use empty strings instead of null to match <input>. */
 export interface CardFormValues {
   title: string;
   description: string;
   priority: Priority;
   labels: Label[];
-  dueDate: string; // '' nếu không có
-  assigneeId: string; // '' nếu chưa giao
+  dueDate: string; // '' if none
+  assigneeId: string; // '' if unassigned
 }
 
-/** Lỗi validate theo từng field; `form` là lỗi chung (vd. lỗi server). */
+/** Per-field validation errors; `form` is a general error (e.g. a server error). */
 export type CardFormErrors = Partial<
   Record<keyof CardFormValues | "form", string>
 >;
 
-/** Comment kèm cờ pending khi đang gửi optimistic (T4.5). */
+/** Comment with a pending flag while it's being sent optimistically (T4.5). */
 export type CommentView = Comment & { pending?: boolean };
 
 export interface ToastItem {
@@ -85,7 +85,7 @@ export interface ToastItem {
   message: string;
 }
 
-/** Một dòng số liệu từ <Profiler onRender> (T5.2). */
+/** One row of numbers from <Profiler onRender> (T5.2). */
 export interface ProfilerRow {
   id: string;
   phase: "mount" | "update" | "nested-update";
@@ -94,7 +94,7 @@ export interface ProfilerRow {
   commitTime: number;
 }
 
-/** Số liệu thống kê một board (T5 — trang /stats). */
+/** Stats numbers for a board (T5 — the /stats page). */
 export interface BoardStats {
   total: number;
   overdue: number;

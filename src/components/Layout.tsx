@@ -2,15 +2,15 @@ import type { ReactNode } from "react";
 import "./Layout.css";
 
 interface LayoutProps {
-  // Composition: Layout không cần biết sidebar/nội dung là gì, cha tự truyền JSX vào.
-  // Nhờ vậy dữ liệu board không phải "đi xuyên" qua Layout (tránh props drilling).
+  // Composition: Layout doesn't need to know what the sidebar/content is; the parent passes the JSX in.
+  // That way board data doesn't have to "pass through" Layout (avoids prop drilling).
   sidebar?: ReactNode;
   children: ReactNode;
-  /** Link điều hướng trên header (T3.1). Dùng <NavLink className="layout__nav-link">. */
+  /** Navigation links in the header (T3.1). Use <NavLink className="layout__nav-link">. */
   nav?: ReactNode;
-  /** Góc phải header: ThemeToggle, UserMenu (T3.2). */
+  /** Right side of the header: ThemeToggle, UserMenu (T3.2). */
   headerActions?: ReactNode;
-  /** Dải thông báo dưới header, vd. <Banner> mất kết nối (T2.6). */
+  /** Notice strip below the header, e.g. an offline <Banner> (T2.6). */
   banner?: ReactNode;
 }
 
@@ -35,7 +35,7 @@ export function Layout({
   );
 }
 
-/** Chỉ dùng trước T3.1 khi chưa có router: link giả có cùng style với NavLink. */
+/** Only for before T3.1, when there is no router: a fake link styled like NavLink. */
 export function NavLinkPlaceholder({
   children,
   active = false,

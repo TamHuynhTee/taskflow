@@ -4,7 +4,7 @@ import type { CardFilter, Label, Priority, User } from "../../types";
 import { EMPTY_FILTER, labelMeta, priorityMeta } from "../cards/cardMeta";
 
 interface FilterPanelProps {
-  /** Controlled: state bộ lọc do component cha giữ (T1.3). */
+  /** Controlled: the filter state is held by the parent component (T1.3). */
   value: CardFilter;
   onChange: (next: CardFilter) => void;
   users: User[];
@@ -15,14 +15,14 @@ const labelOptions = Object.entries(labelMeta).map(([value, m]) => ({
   label: m.text,
 }));
 const priorityOptions = [
-  { value: "all", label: "Tất cả" },
+  { value: "all", label: "All" },
   ...Object.entries(priorityMeta).map(([value, m]) => ({
     value,
     label: m.text,
   })),
 ];
 
-/** Chỉ hiển thị + báo thay đổi. Việc lọc card theo `value` là phần bạn làm (T1.3). */
+/** Only displays and reports changes. Filtering cards by `value` is your part (T1.3). */
 export function FilterPanel({ value, onChange, users }: FilterPanelProps) {
   const isEmpty =
     value.labels.length === 0 &&
@@ -41,7 +41,7 @@ export function FilterPanel({ value, onChange, users }: FilterPanelProps) {
       />
       <SelectField
         id="filter-priority"
-        label="Độ ưu tiên"
+        label="Priority"
         options={priorityOptions}
         value={value.priority}
         onChange={(e) =>
@@ -50,9 +50,9 @@ export function FilterPanel({ value, onChange, users }: FilterPanelProps) {
       />
       <SelectField
         id="filter-assignee"
-        label="Người được giao"
+        label="Assignee"
         options={[
-          { value: "all", label: "Tất cả" },
+          { value: "all", label: "All" },
           ...users.map((u) => ({ value: u.id, label: u.name })),
         ]}
         value={value.assigneeId}
@@ -64,7 +64,7 @@ export function FilterPanel({ value, onChange, users }: FilterPanelProps) {
         disabled={isEmpty}
         onClick={() => onChange(EMPTY_FILTER)}
       >
-        Xoá bộ lọc
+        Clear filters
       </Button>
     </div>
   );

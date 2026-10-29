@@ -1,4 +1,4 @@
-// Các khối giao diện cho trang /stats (Level 4–5). Số liệu, lọc, đo đạc là phần bạn làm.
+// UI blocks for the /stats page (Levels 4–5). The numbers, filtering and measuring are your part.
 import type { CSSProperties, ReactNode, Ref, UIEventHandler } from "react";
 import { Avatar, Badge, EmptyState, StatTile } from "../../components/ui";
 import type {
@@ -13,12 +13,12 @@ import { labelMeta, priorityMeta } from "../cards/cardMeta";
 import "./StatsViews.css";
 
 const columnText: Record<ColumnId, string> = {
-  todo: "Cần làm",
-  doing: "Đang làm",
-  done: "Xong",
+  todo: "To do",
+  doing: "In progress",
+  done: "Done",
 };
 
-/** Ô số liệu + biểu đồ thanh. `stats` do bạn tính bằng hàm computeBoardStats (T5.3). */
+/** Stat tiles + bar charts. You compute `stats` with computeBoardStats (T5.3). */
 export function StatsOverview({ stats }: { stats: BoardStats }) {
   const pct = (n: number) =>
     stats.total === 0 ? 0 : Math.round((n / stats.total) * 100);
@@ -27,22 +27,22 @@ export function StatsOverview({ stats }: { stats: BoardStats }) {
     <div className="stats-overview">
       <div className="stats-overview__tiles">
         <StatTile
-          label="Tổng số card"
-          value={stats.total.toLocaleString("vi-VN")}
+          label="Total cards"
+          value={stats.total.toLocaleString("en-US")}
         />
         <StatTile
-          label="Hoàn thành"
+          label="Done"
           value={`${pct(stats.byColumn.done)}%`}
           tone="success"
           hint={`${stats.byColumn.done} card`}
         />
         <StatTile
-          label="Quá hạn"
+          label="Overdue"
           value={stats.overdue}
           tone={stats.overdue > 0 ? "danger" : "default"}
         />
         <StatTile
-          label="Chưa giao"
+          label="Unassigned"
           value={stats.unassigned}
           tone={stats.unassigned > 0 ? "warning" : "default"}
         />
@@ -50,7 +50,7 @@ export function StatsOverview({ stats }: { stats: BoardStats }) {
 
       <div className="stats-overview__bars">
         <BarGroup
-          title="Theo cột"
+          title="By column"
           rows={(Object.keys(columnText) as ColumnId[]).map((k) => ({
             label: columnText[k],
             value: stats.byColumn[k],
@@ -58,7 +58,7 @@ export function StatsOverview({ stats }: { stats: BoardStats }) {
           }))}
         />
         <BarGroup
-          title="Theo độ ưu tiên"
+          title="By priority"
           rows={(Object.keys(priorityMeta) as Priority[]).map((k) => ({
             label: priorityMeta[k].text,
             value: stats.byPriority[k],
@@ -98,25 +98,25 @@ interface ProfilerTableProps {
   onClear?: () => void;
 }
 
-/** Bảng số liệu từ <Profiler onRender> (T5.2). Bạn tự gom `rows`. */
+/** Table of numbers from <Profiler onRender> (T5.2). You collect the `rows` yourself. */
 export function ProfilerTable({ rows, onClear }: ProfilerTableProps) {
   return (
     <section className="profiler-table">
       <header className="profiler-table__header">
-        <h3>Profiler — {rows.length} commit gần nhất</h3>
+        <h3>Profiler — last {rows.length} commits</h3>
         {onClear && (
           <button
             type="button"
             className="profiler-table__clear"
             onClick={onClear}
           >
-            Xoá
+            Clear
           </button>
         )}
       </header>
       {rows.length === 0 ? (
         <p className="profiler-table__empty">
-          Chưa có số liệu. Thao tác trên trang để ghi nhận commit.
+          No data yet. Interact with the page to record commits.
         </p>
       ) : (
         <div className="profiler-table__scroll">
@@ -158,19 +158,19 @@ export function ProfilerTable({ rows, onClear }: ProfilerTableProps) {
   );
 }
 
-/** Chiều cao cố định của 1 dòng CardRow — dùng khi tự viết VirtualList (T5.5). */
+/** Fixed height of 1 CardRow — used when you write VirtualList yourself (T5.5). */
 export const CARD_ROW_HEIGHT = 44;
 
 interface CardRowProps {
   card: Card;
   assignee: User | undefined;
-  /** VirtualList truyền { position: 'absolute', top, ... } vào đây. */
+  /** VirtualList passes { position: 'absolute', top, ... } in here. */
   style?: CSSProperties;
-  /** Từ khoá để tô đậm trong tiêu đề. */
+  /** Search text to highlight in the title. */
   highlight?: string;
 }
 
-/** Một dòng card dạng gọn cho danh sách dài (T4.7, T5.x). */
+/** A compact card row for long lists (T4.7, T5.x). */
 export function CardRow({ card, assignee, style, highlight }: CardRowProps) {
   return (
     <div className="card-row" style={{ height: CARD_ROW_HEIGHT, ...style }}>
@@ -213,17 +213,17 @@ function highlightText(text: string, query?: string): ReactNode {
 }
 
 interface ListFrameProps {
-  /** Chiều cao khung cuộn (px). */
+  /** Height of the scroll area (px). */
   height: number;
   ref?: Ref<HTMLDivElement>;
   onScroll?: UIEventHandler<HTMLDivElement>;
-  /** Số kết quả để hiện ở đầu khung. */
+  /** Result count shown at the top of the area. */
   count?: number;
   isStale?: boolean;
   children: ReactNode;
 }
 
-/** Khung cuộn cho danh sách CardRow. Bên trong bạn tự render CardRow (hoặc VirtualList ở T5.5). */
+/** Scroll area for a list of CardRows. Render the CardRows inside yourself (or VirtualList in T5.5). */
 export function ListFrame({
   height,
   ref,
@@ -236,7 +236,7 @@ export function ListFrame({
     <section className={`list-frame ${isStale ? "list-frame--stale" : ""}`}>
       {count !== undefined && (
         <p className="list-frame__count">
-          {count.toLocaleString("vi-VN")} kết quả
+          {count.toLocaleString("en-US")} results
         </p>
       )}
       <div
@@ -246,7 +246,7 @@ export function ListFrame({
         onScroll={onScroll}
       >
         {count === 0 ? (
-          <EmptyState icon="🔎" title="Không có card nào khớp" />
+          <EmptyState icon="🔎" title="No matching cards" />
         ) : (
           children
         )}

@@ -1,5 +1,5 @@
-// Trang xem trước toàn bộ UI có sẵn: http://localhost:5173/#gallery
-// Chỉ để tham khảo cách dùng props — dữ liệu ở đây là giả, không có logic thật.
+// Preview page for all the ready-made UI: http://localhost:5173/#gallery
+// For reference on props only — the data here is fake, there is no real logic.
 import { useState, type ReactNode } from "react";
 import { ThemeToggle, UserMenu } from "../components/HeaderWidgets";
 import { Layout, NavLinkPlaceholder } from "../components/Layout";
@@ -94,8 +94,8 @@ export default function Gallery() {
       nav={
         <>
           <NavLinkPlaceholder active>Board</NavLinkPlaceholder>
-          <NavLinkPlaceholder>Thống kê</NavLinkPlaceholder>
-          <NavLinkPlaceholder>Cài đặt</NavLinkPlaceholder>
+          <NavLinkPlaceholder>Stats</NavLinkPlaceholder>
+          <NavLinkPlaceholder>Settings</NavLinkPlaceholder>
         </>
       }
       headerActions={
@@ -106,13 +106,12 @@ export default function Gallery() {
       }
       banner={
         <Banner tone="warning">
-          Mất kết nối mạng — thay đổi sẽ không được lưu.
+          You're offline — changes won't be saved.
         </Banner>
       }
       sidebar={
         <BoardSidebar
           boards={sampleBoards}
-          activeBoardId="b1"
           filters={
             <FilterPanel
               value={filter}
@@ -125,7 +124,7 @@ export default function Gallery() {
     >
       <PageHeader
         title="UI Gallery"
-        description="Tất cả component giao diện có sẵn. Mở file tương ứng để xem props."
+        description="Every ready-made UI component. Open the matching file to see its props."
       />
 
       <Section
@@ -142,7 +141,7 @@ export default function Gallery() {
               <SearchBox onClear={noop} />
               <RenderCounter count={3} />
               <Button variant="primary" onClick={() => setModal("form")}>
-                + Tạo card
+                + New card
               </Button>
             </>
           }
@@ -186,36 +185,36 @@ export default function Gallery() {
           <Button variant="ghost">Ghost</Button>
           <Button variant="danger">Danger</Button>
           <Button variant="primary" loading>
-            Đang lưu…
+            Saving…
           </Button>
           <Button size="sm">Small</Button>
           <Spinner />
         </div>
       </Section>
 
-      <Section title="Modal (mở bằng nút)" file="components/ui/Modal.tsx">
+      <Section title="Modal (open with a button)" file="components/ui/Modal.tsx">
         <div className="gallery__row">
-          <Button onClick={() => setModal("detail")}>Chi tiết card</Button>
-          <Button onClick={() => setModal("form")}>Form tạo card</Button>
-          <Button onClick={() => setModal("confirm")}>Hộp xác nhận</Button>
+          <Button onClick={() => setModal("detail")}>Card detail</Button>
+          <Button onClick={() => setModal("form")}>New card form</Button>
+          <Button onClick={() => setModal("confirm")}>Confirm dialog</Button>
         </div>
       </Section>
 
-      <Section title="Trạng thái" file="components/ui/Feedback.tsx">
+      <Section title="Status" file="components/ui/Feedback.tsx">
         <div className="gallery__grid">
           <ErrorMessage
-            error={new Error("GET /cards thất bại: 500")}
+            error={new Error("GET /cards failed: 500")}
             onRetry={noop}
           />
           <ErrorMessage
-            error="Cột này bị lỗi khi render"
+            error="This column crashed while rendering"
             compact
             onRetry={noop}
           />
           <EmptyState
-            title="Chưa có board nào"
-            description="Tạo board đầu tiên để bắt đầu."
-            action={<Button>Tạo board</Button>}
+            title="No boards yet"
+            description="Create your first board to get started."
+            action={<Button>New board</Button>}
           />
           <div style={{ position: "relative", height: 60 }}>
             <TooltipBox style={{ position: "absolute", top: 0, left: 0 }}>
@@ -233,7 +232,7 @@ export default function Gallery() {
       </Section>
 
       <Section
-        title="Thống kê + Profiler + danh sách dài"
+        title="Stats + Profiler + long list"
         file="features/stats/StatsViews.tsx"
       >
         <StatsOverview
@@ -251,7 +250,7 @@ export default function Gallery() {
               key={c.id}
               card={c}
               assignee={c.assigneeId ? usersById[c.assigneeId] : undefined}
-              highlight="trang"
+              highlight="page"
             />
           ))}
         </ListFrame>
@@ -283,7 +282,7 @@ export default function Gallery() {
         />
       </Section>
 
-      <Section title="Cài đặt" file="features/settings/SettingsView.tsx">
+      <Section title="Settings" file="features/settings/SettingsView.tsx">
         <SettingsView
           theme={theme}
           onThemeChange={(t) => t !== theme && toggleTheme()}
@@ -294,14 +293,14 @@ export default function Gallery() {
         />
       </Section>
 
-      <Section title="Đăng nhập" file="features/auth/LoginView.tsx">
+      <Section title="Login" file="features/auth/LoginView.tsx">
         <div className="gallery__frame">
           <LoginView users={sampleUsers} onSelect={noop} />
         </div>
       </Section>
 
       <Section title="404" file="pages/NotFoundView.tsx">
-        <NotFoundView action={<Button>Về trang chủ</Button>} />
+        <NotFoundView action={<Button>Back to home</Button>} />
       </Section>
 
       <Modal
@@ -317,9 +316,9 @@ export default function Gallery() {
           today={TODAY}
           actions={
             <>
-              <Button size="sm">Sửa</Button>
+              <Button size="sm">Edit</Button>
               <Button size="sm" variant="danger">
-                Xoá
+                Delete
               </Button>
             </>
           }
@@ -331,14 +330,14 @@ export default function Gallery() {
                 id: "x1",
                 cardId: card.id,
                 authorId: "u2",
-                content: "Đã có PR, nhờ review giúp.",
+                content: "PR is up, please review.",
                 createdAt: "2026-10-20T00:00:00Z",
               },
               {
                 id: "x2",
                 cardId: card.id,
                 authorId: "u1",
-                content: "Đang gửi bình luận này…",
+                content: "Sending this comment…",
                 createdAt: "",
                 pending: true,
               },
@@ -349,7 +348,7 @@ export default function Gallery() {
             <CommentComposerFields
               submit={
                 <Button type="submit" variant="primary">
-                  Gửi
+                  Send
                 </Button>
               }
             />
@@ -359,21 +358,21 @@ export default function Gallery() {
 
       <Modal
         open={modal === "form"}
-        title="Tạo card"
+        title="New card"
         onClose={() => setModal("none")}
       >
         <form onSubmit={(e) => e.preventDefault()}>
           <FormMessage>
-            Không lưu được card: lỗi giả lập khi POST /cards
+            Couldn't save the card: simulated failure on POST /cards
           </FormMessage>
           <CardFormFields
             users={sampleUsers}
-            errors={{ title: "Tiêu đề cần ít nhất 3 ký tự" }}
+            errors={{ title: "Title needs at least 3 characters" }}
           />
           <FormActions>
-            <Button onClick={() => setModal("none")}>Huỷ</Button>
+            <Button onClick={() => setModal("none")}>Cancel</Button>
             <Button type="submit" variant="primary">
-              Tạo card
+              Create card
             </Button>
           </FormActions>
         </form>
@@ -381,8 +380,8 @@ export default function Gallery() {
 
       <ConfirmDialogView
         open={modal === "confirm"}
-        message={`Xoá card "${card.title}"? Không thể hoàn tác.`}
-        confirmText="Xoá"
+        message={`Delete card "${card.title}"? This can't be undone.`}
+        confirmText="Delete"
         danger
         onConfirm={() => setModal("none")}
         onCancel={() => setModal("none")}
@@ -391,11 +390,11 @@ export default function Gallery() {
       <ToastStack
         onDismiss={noop}
         toasts={[
-          { id: "t1", kind: "success", message: "Đã tạo card" },
+          { id: "t1", kind: "success", message: "Card created" },
           {
             id: "t2",
             kind: "error",
-            message: "Không chuyển được card — đã hoàn tác",
+            message: "Couldn't move the card — reverted",
           },
         ]}
       />

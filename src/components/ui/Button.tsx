@@ -4,7 +4,7 @@ import { Spinner } from "./Spinner";
 interface ButtonProps extends ComponentProps<"button"> {
   variant?: "primary" | "secondary" | "ghost" | "danger";
   size?: "sm" | "md";
-  /** Hiện spinner và disable nút. */
+  /** Shows a spinner and disables the button. */
   loading?: boolean;
   icon?: ReactNode;
 }
@@ -35,7 +35,7 @@ export function Button({
 }
 
 interface IconButtonProps extends ComponentProps<"button"> {
-  /** Bắt buộc vì nút chỉ có icon — dùng cho aria-label và tooltip. */
+  /** Required because the button is icon-only — used for aria-label and the tooltip. */
   label: string;
   variant?: "ghost" | "danger";
 }

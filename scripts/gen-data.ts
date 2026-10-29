@@ -1,7 +1,7 @@
-// Sinh dữ liệu giả cho json-server.
-//   npm run gen:seed  -> db.seed.json (2 board, 30 card) — dữ liệu học bình thường
-//   npm run gen:big   -> db.big.json  (5 board, 5000 card) — dữ liệu cho Level 5 (Profiler)
-// Dùng PRNG có seed cố định nên mỗi lần chạy ra cùng một dữ liệu.
+// Generates fake data for json-server.
+//   npm run gen:seed  -> db.seed.json (2 boards, 30 cards) — normal learning data
+//   npm run gen:big   -> db.big.json  (5 boards, 5000 cards) — data for Level 5 (Profiler)
+// Uses a PRNG with a fixed seed, so every run produces the same data.
 
 import { writeFileSync } from 'node:fs'
 import type { Board, Card, Column, ColumnId, Comment, Label, Priority, User } from '../src/types.ts'
@@ -27,38 +27,38 @@ function rand() {
 const pick = <T,>(arr: readonly T[]) => arr[Math.floor(rand() * arr.length)]
 
 const columns: Column[] = [
-  { id: 'todo', title: 'Cần làm' },
-  { id: 'doing', title: 'Đang làm' },
-  { id: 'done', title: 'Xong' },
+  { id: 'todo', title: 'To do' },
+  { id: 'doing', title: 'In progress' },
+  { id: 'done', title: 'Done' },
 ]
 
 const users: User[] = [
   { id: 'u1', name: 'An', avatarColor: '#e57373' },
-  { id: 'u2', name: 'Bình', avatarColor: '#64b5f6' },
+  { id: 'u2', name: 'Ben', avatarColor: '#64b5f6' },
   { id: 'u3', name: 'Chi', avatarColor: '#81c784' },
-  { id: 'u4', name: 'Dũng', avatarColor: '#ffb74d' },
+  { id: 'u4', name: 'Dan', avatarColor: '#ffb74d' },
 ]
 
 const boardNames = [
-  ['Website bán hàng', 'Làm lại trang shop và checkout'],
-  ['App mobile', 'Ứng dụng đặt lịch cho phòng gym'],
-  ['Nội bộ', 'Công cụ quản trị cho team'],
-  ['Marketing', 'Chiến dịch cuối năm'],
-  ['Hạ tầng', 'CI/CD, monitoring, bảo mật'],
+  ['Online store', 'Rebuild the shop and checkout pages'],
+  ['Mobile app', 'Booking app for a gym'],
+  ['Internal', 'Admin tools for the team'],
+  ['Marketing', 'Year-end campaign'],
+  ['Infrastructure', 'CI/CD, monitoring, security'],
 ]
 
-const verbs = ['Thiết kế', 'Sửa lỗi', 'Viết test cho', 'Tối ưu', 'Refactor', 'Thêm', 'Review', 'Viết tài liệu cho']
+const verbs = ['Design', 'Fix bugs in', 'Write tests for', 'Optimize', 'Refactor', 'Add', 'Review', 'Document']
 const things = [
-  'trang đăng nhập', 'giỏ hàng', 'form thanh toán', 'danh sách sản phẩm', 'thanh tìm kiếm',
-  'menu điều hướng', 'trang hồ sơ', 'thông báo email', 'bộ lọc', 'dark mode', 'phân trang',
-  'upload ảnh', 'dashboard', 'API đơn hàng', 'trang 404',
+  'login page', 'shopping cart', 'payment form', 'product list', 'search bar',
+  'navigation menu', 'profile page', 'email notifications', 'filters', 'dark mode', 'pagination',
+  'image upload', 'dashboard', 'orders API', '404 page',
 ]
 const labels: Label[] = ['bug', 'feature', 'design', 'docs', 'chore']
 const priorities: Priority[] = ['low', 'medium', 'high', 'urgent']
 const columnIds: ColumnId[] = ['todo', 'doing', 'done']
 const commentTexts = [
-  'Mình nhận task này nhé.', 'Đã có PR, nhờ review giúp.', 'Bị block bởi API, chờ backend.',
-  'Cần thêm mockup.', 'Đã test trên mobile, ổn.', 'Có lỗi trên Safari.',
+  "I'll take this one.", 'PR is up, please review.', 'Blocked by the API, waiting on backend.',
+  'Needs another mockup.', 'Tested on mobile, looks good.', 'Broken on Safari.',
 ]
 
 const baseDate = Date.UTC(2026, 9, 1)
@@ -90,7 +90,7 @@ const cards: Card[] = Array.from({ length: cardCount }, (_, i) => {
     boardId,
     columnId,
     title: `${pick(verbs)} ${pick(things)}`,
-    description: rand() < 0.6 ? 'Mô tả chi tiết: tiêu chí hoàn thành, link thiết kế, ghi chú kỹ thuật.' : '',
+    description: rand() < 0.6 ? 'Details: acceptance criteria, design link, technical notes.' : '',
     labels: [...labelSet],
     priority: pick(priorities),
     dueDate: rand() < 0.7 ? isoDate(Math.floor(rand() * 60) - 20).slice(0, 10) : null,
@@ -115,4 +115,4 @@ for (const card of cards.slice(0, Math.min(cards.length, 200))) {
 }
 
 writeFileSync(out, JSON.stringify({ users, boards, cards, comments }, null, 2) + '\n')
-console.log(`Đã ghi ${out}: ${boards.length} board, ${cards.length} card, ${comments.length} comment`)
+console.log(`Wrote ${out}: ${boards.length} boards, ${cards.length} cards, ${comments.length} comments`)
