@@ -26,11 +26,19 @@ export function BoardCards({
 }) {
   const [cards, setCards] = useState<string[]>([]);
 
-  const options = { boardId, includeArchived: false };
-
   useEffect(() => {
-    load(options).then(setCards);
-  }, [options, load]);
+    let ignore = false;
+
+    const options = { boardId, includeArchived: false };
+    load(options).then((res) => {
+      if (!ignore) setCards(res);
+    });
+
+    return () => {
+      ignore = true;
+    };
+  }, [boardId, load]);
+  // Passing object to dependency arr will trigger infinite re-runs
 
   return (
     <ul>
