@@ -9,10 +9,12 @@ import { memo, useState, type CSSProperties } from "react";
 
 export const renderLog: string[] = [];
 
+const ROW_STYLE: CSSProperties = { padding: 8, textAlign: "left" };
+
 interface CardRowProps {
   title: string;
   selected: boolean;
-  onSelect: () => void;
+  onSelect: (title: string) => void;
   style: CSSProperties;
 }
 
@@ -23,8 +25,11 @@ const CardRow = memo(function CardRow({
   style,
 }: CardRowProps) {
   renderLog.push(title);
+  const handleSelect = () => {
+    onSelect(title);
+  };
   return (
-    <button aria-pressed={selected} style={style} onClick={onSelect}>
+    <button aria-pressed={selected} style={style} onClick={handleSelect}>
       {title}
     </button>
   );
@@ -47,8 +52,10 @@ export function CardPicker({
           key={title}
           title={title}
           selected={title === selected}
-          onSelect={() => setSelected(title)}
-          style={{ padding: 8, textAlign: "left" }}
+          // Pass setSelected directly as props since itself always keeps its reference
+          onSelect={setSelected}
+          // Avoid passing literal object as props because it creates new reference
+          style={ROW_STYLE}
         />
       ))}
     </div>
