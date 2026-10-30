@@ -14,7 +14,11 @@ export function TodoLab() {
         onSubmit={(e) => {
           e.preventDefault();
           if (!text.trim()) return;
-          dispatch({ type: "added", text: text.trim() });
+          dispatch({
+            type: "added",
+            text: text.trim(),
+            id: crypto.randomUUID(),
+          });
           setText("");
         }}
       >

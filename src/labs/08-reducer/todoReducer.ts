@@ -10,29 +10,27 @@ export interface Todo {
 }
 
 export type TodoAction =
-  | { type: "added"; text: string }
+  | { type: "added"; text: string; id: string }
   | { type: "toggled"; id: string }
   | { type: "removed"; id: string };
 
 export function todoReducer(todos: Todo[], action: TodoAction): Todo[] {
   switch (action.type) {
     case "added": {
-      todos.push({
-        id: Math.random().toString(36).slice(2),
+      const newRecord = {
+        id: action.id,
         text: action.text,
         done: false,
-      });
-      return todos;
+      };
+      return [...todos, newRecord];
     }
     case "toggled": {
-      const todo = todos.find((t) => t.id === action.id);
-      if (todo) todo.done = !todo.done;
-      return todos;
+      return todos.map((td) =>
+        td.id === action.id ? { ...td, done: !td.done } : td,
+      );
     }
     case "removed": {
-      const index = todos.findIndex((t) => t.id === action.id);
-      todos.splice(index, 1);
-      return todos;
+      return todos.filter((td) => td.id !== action.id);
     }
   }
 }
