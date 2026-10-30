@@ -5,7 +5,13 @@
 import { useEffect, useState } from "react";
 import { delay } from "../testUtils";
 
-const TITLES = ["home page layout", "login with Google", "new logo", "payment bug", "landing page"];
+const TITLES = [
+  "home page layout",
+  "login with Google",
+  "new logo",
+  "payment bug",
+  "landing page",
+];
 
 /** Fake API: the SHORTER the query, the SLOWER the response — so the bug is easy to see on the demo page. */
 function fakeSearch(q: string) {
@@ -22,11 +28,19 @@ export function CardSearch({
   const [results, setResults] = useState<string[]>([]);
 
   useEffect(() => {
+    let ignore = false;
     if (!query) {
       setResults([]);
       return;
     }
-    search(query).then((found) => setResults(found));
+    search(query).then((res) => {
+      // cleanup marks this run stale; a late response from an old query is dropped
+      if (!ignore) setResults(res);
+    });
+
+    return () => {
+      ignore = true;
+    };
   }, [query, search]);
 
   return (
