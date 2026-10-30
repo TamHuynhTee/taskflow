@@ -6,7 +6,7 @@
 //   3. Server error → the number reverts on its own + show role="alert" "Couldn't send".
 // Use useOptimistic + startTransition (or <form action>). Don't hand-roll a "pendingLikes" state.
 // Keep as is: the `LikeButton` export (props `initialLikes`, `sendLike`), a button named "❤️ <number>".
-import { useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 
 let demoCount = 0;
 async function demoSendLike(current: number) {
@@ -24,20 +24,31 @@ export function LikeButton({
   sendLike?: (current: number) => Promise<number>;
 }) {
   const [likes, setLikes] = useState(initialLikes);
+  const [optimisticLikes, addOptimistic] = useOptimistic<number, void>(
+    likes,
+    (curr) => curr + 1,
+  );
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
 
-  async function handleClick() {
+  function handleClick() {
     setError("");
-    try {
-      setLikes(await sendLike(likes));
-    } catch {
-      setError("Couldn't send");
-    }
+    startTransition(async () => {
+      try {
+        addOptimistic();
+        const res = await sendLike(likes);
+        startTransition(() => setLikes(res));
+      } catch {
+        setError("Couldn't send");
+      }
+    });
   }
 
   return (
     <div className="lab-row">
-      <button onClick={handleClick}>❤️ {likes}</button>
+      <button aria-busy={isPending} disabled={isPending} onClick={handleClick}>
+        ❤️ {optimisticLikes}
+      </button>
       {error && <p role="alert">{error}</p>}
     </div>
   );
