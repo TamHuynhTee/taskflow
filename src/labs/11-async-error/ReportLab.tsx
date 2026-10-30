@@ -30,14 +30,30 @@ export class ErrorBoundary extends Component<
 
 function ReportButton({ load }: { load: () => Promise<string> }) {
   const [report, setReport] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  // const [error, setError] = useState<Error | null>(null);
 
   async function handleClick() {
-    const data = await load();
-    setReport(data);
+    setLoading(true);
+    try {
+      const data = await load();
+      setReport(data);
+    } catch (error) {
+      setReport(() => {
+        throw error;
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
+  // if (error) throw error;
   if (report) return <p>Report: {report}</p>;
-  return <button onClick={handleClick}>Load report</button>;
+  return (
+    <button disabled={loading} onClick={handleClick}>
+      Load report
+    </button>
+  );
 }
 
 let demoCount = 0;
@@ -47,7 +63,11 @@ async function demoLoad() {
   return "October revenue: $120k";
 }
 
-export function ReportLab({ load = demoLoad }: { load?: () => Promise<string> }) {
+export function ReportLab({
+  load = demoLoad,
+}: {
+  load?: () => Promise<string>;
+}) {
   return (
     <ErrorBoundary>
       <ReportButton load={load} />
