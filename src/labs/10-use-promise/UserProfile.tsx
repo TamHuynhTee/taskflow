@@ -4,6 +4,7 @@
 // Keep as is: the `UseLab` export (prop `fetchUser`), the "An" / "Ben" buttons, the "Loading…" fallback.
 import { Suspense, use, useState } from "react";
 import { delay } from "../testUtils";
+import { createPromiseCache } from "../../api/promiseCache";
 
 export interface LabUser {
   id: string;
@@ -20,6 +21,20 @@ function demoFetchUser(id: string) {
   console.log(`[lab10] fetchUser(${id}) call ${++demoCalls}`);
   return delay(500, USERS[id]);
 }
+type FetchUser = (id: string) => Promise<LabUser>;
+const caches = new WeakMap<
+  FetchUser,
+  ReturnType<typeof createPromiseCache<LabUser>>
+>();
+
+function getUser(fetchUser: FetchUser, userId: string) {
+  let cache = caches.get(fetchUser);
+  if (!cache) {
+    cache = createPromiseCache((id) => fetchUser(id));
+    caches.set(fetchUser, cache);
+  }
+  return cache.get(userId);
+}
 
 function UserProfile({
   userId,
@@ -28,7 +43,7 @@ function UserProfile({
   userId: string;
   fetchUser: (id: string) => Promise<LabUser>;
 }) {
-  const user = use(fetchUser(userId));
+  const user = use(getUser(fetchUser, userId));
   return <p className="lab-big">👤 {user.name}</p>;
 }
 
