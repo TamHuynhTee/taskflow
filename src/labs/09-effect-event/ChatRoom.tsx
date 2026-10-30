@@ -2,7 +2,7 @@
 // 🐞 Changing the theme → the chat room DISCONNECTS and reconnects (see the console), even though the room didn't change.
 // Goal: only reconnect when `roomId` changes; the "Connected" notification still uses the LATEST theme.
 // Keep as is: the `ChatRoom` export and its props. Don't disable the exhaustive-deps lint to "sneak around" it.
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 
 export type Theme = "light" | "dark";
 
@@ -19,11 +19,16 @@ interface ChatRoomProps {
 }
 
 export function ChatRoom({ roomId, theme, connect, notify }: ChatRoomProps) {
+  const onConnected = useEffectEvent(() =>
+    notify(`Connected to #${roomId}`, theme),
+  );
+
+  // Why: theme/notify is used when event "connected" happen, should not be dependencies to reconnect.
   useEffect(() => {
     const connection = connect(roomId);
-    connection.onConnected(() => notify(`Connected to #${roomId}`, theme));
+    connection.onConnected(onConnected);
     return () => connection.disconnect();
-  }, [roomId, theme, connect, notify]);
+  }, [roomId, connect]);
 
   return <h3>Room #{roomId}</h3>;
 }
