@@ -34,9 +34,13 @@ export function KeyLab() {
         ))}
       </div>
       <CardEditor
+        // Why: same type at the same position keeps state; a new key mounts a fresh editor
+        key={card.id}
         card={card}
         onSave={(title) =>
-          setCards((cs) => cs.map((c) => (c.id === card.id ? { ...c, title } : c)))
+          setCards((cs) =>
+            cs.map((c) => (c.id === card.id ? { ...c, title } : c)),
+          )
         }
       />
     </div>
