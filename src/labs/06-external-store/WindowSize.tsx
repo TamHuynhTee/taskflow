@@ -10,11 +10,21 @@ function subscribe(callback: () => void) {
   return () => window.removeEventListener("resize", callback);
 }
 
+let cachedSize = {
+  width: 0,
+  height: 0,
+};
+// Why: getSnapshot returns new object every re-renders → React compare Object.is → useSyncExternalStore thought store changed → infinite render.
 export function useWindowSize() {
-  return useSyncExternalStore(subscribe, () => ({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  }));
+  return useSyncExternalStore(subscribe, () => {
+    const newWidth = window.innerWidth;
+    const newHeight = window.innerHeight;
+
+    if (newHeight !== cachedSize.height || newWidth !== cachedSize.width)
+      cachedSize = { width: newWidth, height: newHeight };
+
+    return cachedSize;
+  });
 }
 
 export function WindowSize() {
